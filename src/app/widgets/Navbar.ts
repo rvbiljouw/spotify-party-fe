@@ -11,7 +11,7 @@ import {Album} from "../models/Album";
 import {MusicService} from "../services/SongService";
 import {ToastyService} from "ng2-toasty";
 import {PageEvent} from "@angular/material";
-import {environment} from "../../environments/environment";
+import {environment} from "environments/environment";
 
 @Component({
   selector: 'app-navbar',
