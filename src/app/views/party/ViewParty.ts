@@ -6,7 +6,7 @@ import {ToastyService} from 'ng2-toasty';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
-import {QueueService} from "../../services/QueueService";
+import {QueueService, VoteRequest} from "../../services/QueueService";
 import {DomSanitizer} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
@@ -23,6 +23,7 @@ import {ChatMessage} from "../../models/ChatMessage";
 export class ViewPartyComponent implements OnInit {
   party: Party;
   queue: PartyQueue;
+  progress: number = 0;
 
   websocketAuthenticated = false;
   messages: ChatMessage[] = [];
@@ -48,7 +49,7 @@ export class ViewPartyComponent implements OnInit {
 
         this.webSocketService.socket.subscribe((next) => {
           const wsMessage = JSON.parse(next.data) as WSMessage;
-          switch(wsMessage.opcode) {
+          switch (wsMessage.opcode) {
             case "AUTH":
               const success = wsMessage.body === 'true';
               if (success) {
@@ -74,6 +75,12 @@ export class ViewPartyComponent implements OnInit {
     setInterval(() => {
       this.refresh();
     }, 10000);
+    setInterval(() => {
+      if (this.queue != null && this.queue.nowPlaying != null) {
+        this.progress = this.calculateProgress(this.queue.nowPlaying);
+      }
+    }, 1000);
+
     this.refresh();
   }
 
@@ -94,7 +101,12 @@ export class ViewPartyComponent implements OnInit {
     if (message != null) {
       const trimmed = message.trim();
       if (trimmed.length > 0) {
-        this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("CHAT", {message: message, partyId: this.party.id})}))
+        this.webSocketService.socket.next(new MessageEvent("chat", {
+          data: new WSMessage("CHAT", {
+            message: message,
+            partyId: this.party.id
+          })
+        }))
         this.chatInput.nativeElement.value = "";
       }
     }
@@ -145,5 +157,16 @@ export class ViewPartyComponent implements OnInit {
     return '#0075ad';
   }
 
+
+  vote(entry: PartyQueueEntry, up: boolean) {
+    let voteReq = new VoteRequest();
+    voteReq.id = entry.id;
+    voteReq.up = up;
+    this.queueService.voteSong(voteReq).subscribe(res => {
+      this.toastyService.info('Your vote has been counted.');
+    }, err => {
+      this.toastyService.error('Sorry, we couldn\'t process your vote... please try again later.');
+    });
+  }
 
 }

@@ -32,7 +32,7 @@
                   <mat-progress-bar
                     color="primary"
                     mode="determinate"
-                    [value]="calculateProgress(queue.nowPlaying)">
+                    [value]="progress">
                   </mat-progress-bar>
                 </div>
               </mat-list-item>
@@ -44,7 +44,7 @@
 
     <div>
       <mat-toolbar color="primary">
-        <span>QUEUE ({{ queue.entries.length }})</span>
+        <span>QUEUE</span>
       </mat-toolbar>
 
       <mat-card *ngIf="queue != null">
@@ -78,12 +78,12 @@
               <td>{{ entry.member.displayName }}</td>
               <td>
                 <div fxLayout="row" fxLayoutGap="10px">
-                  <button mat-icon-button color="primary">
+                  <button mat-icon-button color="primary" (click)="vote(entry, true)">
                     <mat-icon>thumb_up</mat-icon>
                     <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
                   </button>
 
-                  <button mat-icon-button color="danger">
+                  <button mat-icon-button color="danger" (click)="vote(entry, false)">
                     <mat-icon>thumb_down</mat-icon>
                     <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
                   </button>

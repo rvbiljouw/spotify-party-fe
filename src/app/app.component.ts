@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
   static refresh() {
     // if (localStorage.getItem('darkTheme') == 'true') {
     const body = document.getElementsByTagName('body')[0];
-    // body.classList.add('dark-theme');
+    body.classList.add('dark-theme');
     // this.darkTheme = true;
     // } else {
     //   const body = document.getElementsByTagName('body')[0];
