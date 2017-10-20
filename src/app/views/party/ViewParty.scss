@@ -25,3 +25,18 @@ td {
   max-height: 250px;
   background-size: cover;
 }
+.send-chat-btn {
+  justify-content: flex-end;
+  display: flex;
+}
+
+.chat-input {
+  width: 100%;
+}
+
+.chat-container {
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
+  display: flex;
+}

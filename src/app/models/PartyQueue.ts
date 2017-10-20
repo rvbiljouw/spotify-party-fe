@@ -1,7 +1,8 @@
 import {Party} from "./Party";
-import {UserAccount} from "./VenueAccount";
+import {UserAccount} from "./UserAccount";
 
 export class PartyQueue {
+  nowPlaying: PartyQueueEntry;
   party: Party;
   entries: Array<PartyQueueEntry>;
   nowPlaying: PartyQueueEntry;

@@ -1,4 +1,4 @@
-import {UserAccount} from "./VenueAccount";
+import {UserAccount} from "./UserAccount";
 
 export class Party {
   /*

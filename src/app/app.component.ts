@@ -2,7 +2,7 @@ import {Component, EventEmitter, OnInit, PipeTransform, ViewChild,} from '@angul
 import {ToastyConfig} from 'ng2-toasty';
 import {NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart, Router,} from '@angular/router';
 import {MediaChange, ObservableMedia} from '@angular/flex-layout';
-import {AccountService} from './services/LoginService';
+import {LoginService} from './services/LoginService';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   constructor(private toastyConfig: ToastyConfig,
               private media: ObservableMedia,
               private router: Router,
-              private loginService: AccountService,) {
+              private loginService: LoginService,) {
     toastyConfig.theme = 'material';
     toastyConfig.position = 'top-center';
     AppComponent.refresh();

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BaseRequestOptions, RequestOptions, RequestOptionsArgs,} from '@angular/http';
-import {UserAccount} from "../../models/VenueAccount";
+import {UserAccount} from "../../models/UserAccount";
 
 @Injectable()
 export class DefaultRequestOptions extends BaseRequestOptions {

@@ -13,7 +13,7 @@ import {HttpModule, RequestOptions} from '@angular/http';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login/Login';
 import {RouterModule, Routes} from '@angular/router';
-import {AccountService} from './services/LoginService';
+import {LoginService} from './services/LoginService';
 import {NavbarComponent} from './widgets/Navbar';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -36,6 +36,8 @@ import {QueueService} from "./services/QueueService";
 import {SongListItemComponent} from "./widgets/SongListItem";
 import {QueueListItemComponent} from "./widgets/QueueListItem";
 import {PartiesComponent} from "./views/party/Parties";
+import {UserAccountService} from "./services/UserAccountService";
+import {EmojifyModule} from "angular-emojify";
 
 const routes: Routes = [
   {path: '', redirectTo: 'parties', pathMatch: 'full'},
@@ -55,7 +57,7 @@ const routes: Routes = [
     DurationPipe,
     SongListItemComponent,
     QueueListItemComponent,
-    PartiesComponent
+    PartiesComponent,
   ],
   imports: [
     MatNativeDateModule,
@@ -73,11 +75,13 @@ const routes: Routes = [
     DropzoneModule.forRoot({}),
     RouterModule.forRoot(routes, {useHash: true}),
     MatIconModule,
+    EmojifyModule,
   ],
   providers: [
     {provide: RequestOptions, useClass: DefaultRequestOptions},
-    AccountService,
+    LoginService,
     WebSocketService,
+    UserAccountService,
     AuthGuard,
     MatIconRegistry,
     MusicService,
