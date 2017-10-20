@@ -5,6 +5,7 @@ import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import {ToastyService} from 'ng2-toasty';
 import {UserAccount} from "../../models/VenueAccount";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'login',
@@ -46,7 +47,7 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loggingIn = true;
-    window.location.href = 'http://localhost:8080/api/v1/login';
+    window.location.href = `${environment.apiHost}/api/v1/login`;
   }
 
   getState() {

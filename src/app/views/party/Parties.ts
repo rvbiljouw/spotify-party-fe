@@ -8,6 +8,8 @@ import {Party} from "../../models/Party";
 import {PartyQueue} from "../../models/PartyQueue";
 import {QueueService} from "../../services/QueueService";
 import {ListResponse} from "../../services/ApiService";
+import {UserAccount} from "../../models/VenueAccount";
+import {AccountService} from "../../services/LoginService";
 
 @Component({
   selector: 'parties',
@@ -17,6 +19,7 @@ import {ListResponse} from "../../services/ApiService";
 })
 export class PartiesComponent implements OnInit {
   parties: ListResponse<Party>;
+  account: UserAccount;
   limit: number = 25;
   offset: number = 0;
 
@@ -24,23 +27,37 @@ export class PartiesComponent implements OnInit {
               private partyService: PartyService,
               private toastyService: ToastyService,
               private queueService: QueueService,
+              private accountService: AccountService,
               private route: ActivatedRoute,
               fb: FormBuilder,) {
   }
 
   ngOnInit() {
+    this.accountService.account.subscribe(acc => {
+      this.account = acc;
+    });
     this.partyService.getParties(this.limit, this.offset).subscribe(res => {
       this.parties = res;
     });
   }
 
   setActiveParty(party: Party) {
-    this.partyService.changeActiveParty(party.id).subscribe(res => {
-      this.toastyService.info('Joined party ' + party.name);
-      this.router.navigate(['party', party.id]);
-    }, err => {
-      this.toastyService.error('Couldn\'t join party - please try again later.');
-    })
+    let isMember = party.members.map(p => p.id).indexOf(this.account.id) > -1;
+    if (isMember) {
+      this.partyService.changeActiveParty(party.id).subscribe(res => {
+        this.toastyService.info('Joined party ' + party.name);
+        this.router.navigate(['party', party.id]);
+      }, err => {
+        this.toastyService.error('Couldn\'t join party - please try again later.');
+      });
+    } else {
+      this.partyService.joinParty(party.id).subscribe(res => {
+        this.toastyService.info('Joined party ' + party.name);
+        this.router.navigate(['party', party.id]);
+      }, err => {
+        this.toastyService.error('Couldn\'t join party - please try again later.');
+      });
+    }
   }
 
   getState() {

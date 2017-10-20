@@ -11,6 +11,7 @@ import {Album} from "../models/Album";
 import {MusicService} from "../services/SongService";
 import {ToastyService} from "ng2-toasty";
 import {PageEvent} from "@angular/material";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-navbar',
@@ -175,7 +176,7 @@ export class NavbarComponent implements OnInit {
   }
 
   login() {
-    window.location.href = 'http://localhost:8080/api/v1/login';
+    window.location.href = `${environment.apiHost}/api/v1/login`;
   }
 
 
