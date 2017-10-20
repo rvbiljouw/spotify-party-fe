@@ -1,9 +1,9 @@
-<div fxLayout="row" fxLayoutAlign="center start" fxLayoutWrap="true">
+<div fxLayout="row" fxLayoutWrap="true">
 
 
-  <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="party != null" style="margin-bottom: 20px;">
+  <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="party != null" style="padding: 5px;">
 
-    <div>
+    <div style="margin-bottom: 20px;">
       <mat-toolbar color="primary">
         <span>NOW PLAYING</span>
         <div fxLayoutAlign="end center" class="full-width">
@@ -102,7 +102,7 @@
   </div>
 
 
-  <div fxFlex.gt-xs="70" fxFlex.gt-md="30" fxFlex="100" *ngIf="party != null">
+  <div fxFlex.gt-sm="30" fxFlex="100" *ngIf="party != null" style="padding: 5px;">
     <mat-toolbar color="primary">
       <span>Chat</span>
     </mat-toolbar>
@@ -124,12 +124,6 @@
         </div>
       </mat-card-content>
     </mat-card>
-  </div>
-
-
-  <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="party != null">
-
-
   </div>
 
 </div>
