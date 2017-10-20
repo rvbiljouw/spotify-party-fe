@@ -11,7 +11,7 @@ export class ApiService<T> {
 
   getById(id: number): Observable<T> {
     return this.http
-      .get(`${this.apiBase}${this.resource}/${id}`)
+      .get(`${this.apiBase}${this.resource}/${id}`, {withCredentials: true})
       .map(result => result.json() as T)
       .catch(error => {
         return null;
@@ -20,7 +20,7 @@ export class ApiService<T> {
 
   getSingle(): Observable<T> {
     return this.http
-      .get(`${this.apiBase}${this.resource}`)
+      .get(`${this.apiBase}${this.resource}`, {withCredentials: true})
       .map(result => result.json() as T)
       .catch(error => {
         return null;
@@ -29,7 +29,7 @@ export class ApiService<T> {
 
   getAll(limit: number = 10, offset: number = 0): Observable<ListResponse<T>> {
     return this.http
-      .get(`${this.apiBase}${this.resource}?limit=${limit}&offset=${offset}`)
+      .get(`${this.apiBase}${this.resource}?limit=${limit}&offset=${offset}`, {withCredentials: true})
       .map((result: Response) => {
         const newMaxRecords = Number.parseInt(
           result.headers.get('X-Max-Records'),

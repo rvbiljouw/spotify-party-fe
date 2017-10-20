@@ -13,7 +13,6 @@ export class PartyService {
   account: BehaviorSubject<Party> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
-
   }
 
   changeActiveParty(id: number): Observable<Party> {

@@ -3,16 +3,15 @@ import {Http} from '@angular/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
-import {UserAccount} from '../models/VenueAccount';
+import {UserAccount} from '../models/UserAccount';
 import {DefaultRequestOptions} from "./util/DefaultRequestOptions";
 
 @Injectable()
-export class AccountService {
+export class LoginService {
   private endpoint = `${environment.apiHost}/api/v1/account`;
   account: BehaviorSubject<UserAccount> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
-    console.log("asdff");
     const tokenEntry = localStorage.getItem('account');
     if (tokenEntry != null) {
       try {
@@ -48,8 +47,6 @@ export class AccountService {
     } else {
       localStorage.clear();
     }
-    console.log("asdfasdf");
-    console.log(account);
     DefaultRequestOptions.account = account;
     this.account.next(account);
   }

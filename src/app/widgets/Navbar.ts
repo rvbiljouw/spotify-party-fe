@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit} from '@angular/core';
-import {AccountService} from '../services/LoginService';
+import {LoginService} from '../services/LoginService';
 import {Router} from '@angular/router';
 import {AppComponent} from '../app.component';
-import {UserAccount} from "../models/VenueAccount";
+import {UserAccount} from "../models/UserAccount";
 import {FormControl} from "@angular/forms";
 import {Filter, FilterType, ListResponse} from "../services/ApiService";
 import {Song} from "../models/Song";
@@ -45,7 +45,7 @@ export class NavbarComponent implements OnInit {
   albumsOffset = 0;
   searchingAlbums = false;
 
-  constructor(private loginService: AccountService,
+  constructor(private loginService: LoginService,
               private musicService: MusicService,
               private toastyService: ToastyService,
               private router: Router,) {

@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {AccountService} from '../../services/LoginService';
+import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import {ToastyService} from 'ng2-toasty';
-import {UserAccount} from "../../models/VenueAccount";
+import {UserAccount} from "../../models/UserAccount";
 import {environment} from "../../../environments/environment";
 
 @Component({
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   loggedIn = false;
 
   constructor(private router: Router,
-              private loginService: AccountService,
+              private loginService: LoginService,
               private toastyService: ToastyService,
               private route: ActivatedRoute,
               fb: FormBuilder,) {

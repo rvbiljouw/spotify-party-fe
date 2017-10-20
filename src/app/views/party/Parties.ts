@@ -8,8 +8,8 @@ import {Party} from "../../models/Party";
 import {PartyQueue} from "../../models/PartyQueue";
 import {QueueService} from "../../services/QueueService";
 import {ListResponse} from "../../services/ApiService";
-import {UserAccount} from "../../models/VenueAccount";
-import {AccountService} from "../../services/LoginService";
+import {UserAccount} from "../../models/UserAccount";
+import {LoginService} from "../../services/LoginService";
 
 @Component({
   selector: 'parties',
@@ -27,13 +27,13 @@ export class PartiesComponent implements OnInit {
               private partyService: PartyService,
               private toastyService: ToastyService,
               private queueService: QueueService,
-              private accountService: AccountService,
+              private loginService: LoginService,
               private route: ActivatedRoute,
               fb: FormBuilder,) {
   }
 
   ngOnInit() {
-    this.accountService.account.subscribe(acc => {
+    this.loginService.account.subscribe(acc => {
       this.account = acc;
     });
     this.partyService.getParties(this.limit, this.offset).subscribe(res => {
