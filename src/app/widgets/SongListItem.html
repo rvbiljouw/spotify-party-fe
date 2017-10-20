@@ -1,0 +1,21 @@
+<mat-list-item class="typical-list-item">
+
+  <button mat-icon-button color="primary" (click)="play()">
+    <mat-icon>play_circle_outline</mat-icon>
+  </button>
+
+  <mat-icon mat-list-icon class="artist-thumbnail"
+            [style.background-image]="getArtistThumbnail(true)"></mat-icon>
+
+  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+    {{ song.artists[0].name }}
+    </span>
+  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+    {{ song.name }}
+  </span>
+
+  <h4 mat-line fxHide.lt-mat="true">
+    {{song.artists[0].name }} - {{ song.name }}
+  </h4>
+  <p mat-line style="font-size: 11px;">{{ song.duration | duration }}</p>
+</mat-list-item>

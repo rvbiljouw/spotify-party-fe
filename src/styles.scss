@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Roboto:100,300,400,500,700,900');
+@import '~font-awesome/css/font-awesome.css';
+//@import '~ng2-toasty/style.css';
+@import '~ng2-toasty/style-default.css';
+@import '~ng2-toasty/style-bootstrap.css';
+@import '~ng2-toasty/style-material.css';
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+.button-icon {
+  margin-right: 10px;
+}
+
+.full-width {
+  width: 100%;
+}

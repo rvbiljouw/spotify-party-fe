@@ -1,0 +1,45 @@
+<div fxLayout="row" fxLayoutAlign="center start" fxLayoutWrap="true" fxLayoutGap="10px">
+
+  <div fxFlex.gt-sm="60" fxFlex.gt-md="50" fxFlex="100" *ngIf="party != null">
+
+    <mat-toolbar color="primary">
+      <span>{{ party.name }} - {{ party.description}}</span>
+      <div fxLayoutAlign="end center" class="full-width">
+        <button mat-raised-button color="accent">Leave party</button>
+      </div>
+    </mat-toolbar>
+
+    <mat-card *ngIf="queue != null">
+      <mat-card-content>
+
+        <div fxLayout="column" fxLayoutAlign="center center" *ngIf="queue.entries.length == 0">
+          <h1>The queue is empty</h1>
+          <h2>Start by selecting a song using the search field above</h2>
+        </div>
+
+        <mat-list>
+          <app-queue-list-item *ngFor="let entry of queue.entries" [entry]="entry"
+                               class="typical-list-item"></app-queue-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <div fxFlex.gt-sm="20" fxFlex.gt-md="20" fxFlex="100" *ngIf="party != null">
+    <mat-toolbar color="primary">
+      <span>Members</span>
+    </mat-toolbar>
+    <mat-card>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let member of party.members">
+            <mat-icon mat-list-icon>person</mat-icon>
+            <h4 mat-line>{{member.displayName}}</h4>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

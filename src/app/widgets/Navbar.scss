@@ -1,0 +1,32 @@
+.navbar-container {
+  position: fixed;
+  float: left;
+
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.search-overlay {
+  & {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+
+    background-color: rgba(57, 57, 57, 0.9);
+    height: 100vh;
+    padding: 20px;
+
+    padding-bottom: 64px;
+
+    overflow: scroll;
+  }
+
+  /deep/ .mat-tab-label, /deep/ .mat-tab-link {
+    //color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    opacity: 1.0;
+  }
+}

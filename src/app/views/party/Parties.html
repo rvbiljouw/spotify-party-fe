@@ -1,0 +1,39 @@
+<div fxLayout="row" fxLayoutAlign="center center">
+
+  <div fxFlex.gt-sm="60" fxFlex.gt-md="50" fxFlex="100">
+    <mat-card *ngIf="parties != null">
+      <mat-card-content>
+
+        <div *ngIf="parties.maxRecords > 0">
+          <h1>Parties</h1>
+          <mat-list>
+            <mat-list-item *ngFor="let party of parties.items">
+              <mat-icon mat-list-icon>group</mat-icon>
+              <h4 mat-line>{{ party.name }}</h4>
+              <p mat-line>{{ party.description }}</p>
+
+              <button mat-raised-button color="accent" (click)="setActiveParty(party)">
+                <mat-icon>play_arrow</mat-icon>
+                Join
+              </button>
+            </mat-list-item>
+          </mat-list>
+        </div>
+
+        <div *ngIf="parties.maxRecords == 0">
+          <div fxLayout="column" fxLayoutAlign="center center">
+            <h1>You're currently not part of any groups</h1>
+
+            <div>
+              <div fxLayout="column" fxLayoutAlign="center center">
+                <button mat-raised-button color="primary" [routerLink]="['/party/create']">Create a party</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

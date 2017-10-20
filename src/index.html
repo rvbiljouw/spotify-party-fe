@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Munamana Panel</title>
+  <base href="/">
+
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<style>
+  .pulsating-logo {
+    -webkit-animation: pulsate 2s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    opacity: 0;
+    z-index: 2;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    height: 500px;
+    margin-top: -250px;
+    margin-left: -250px;
+  }
+
+  .loading-background {
+    background-color: #4dc5fb;
+    background-image: url('/assets/login-bg.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    min-height: 100%;
+  }
+
+  @-webkit-keyframes pulsate {
+    0% {
+      -webkit-transform: scale(0.1, 0.1);
+      opacity: 0.0;
+    }
+    50% {
+      opacity: 1.0;
+    }
+    100% {
+      -webkit-transform: scale(0.8, 0.8);
+      opacity: 0.0;
+    }
+  }
+</style>
+
+<body>
+<app-root class="full-height">
+  <div class="loading-background">
+    <div>
+      <img class="pulsating-logo" src="assets/logo-sm.png" width="256px" height="256px">
+    </div>
+  </div>
+</app-root>
+</body>
+</html>
