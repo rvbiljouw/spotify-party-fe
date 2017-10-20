@@ -5,7 +5,6 @@ export class PartyQueue {
   nowPlaying: PartyQueueEntry;
   party: Party;
   entries: Array<PartyQueueEntry>;
-  nowPlaying: PartyQueueEntry;
 }
 
 export class PartyQueueEntry {

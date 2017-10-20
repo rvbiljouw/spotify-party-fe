@@ -26,12 +26,10 @@ export class LoginService {
 
   validate(): Observable<boolean> {
     return this.http
-      .get(this.endpoint, {withCredentials: true})
-      .map(res => {
+      .get(this.endpoint, {withCredentials: true}).map(res => {
         this.setAccount(res.json() as UserAccount);
         return true;
-      })
-      .catch((err: any) => {
+      }).catch((err: any) => {
         this.setAccount(null);
         return Observable.of(false);
       });
