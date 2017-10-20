@@ -1,0 +1,27 @@
+.column-header {
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+td {
+  vertical-align: center;
+  height: 60px;
+  font-size: 18px;
+}
+
+.artist-thumbnail {
+  background-image: url('https://airglide.s3.amazonaws.com/playlistThumbnails/hq/1/d19e8f1b-f210-43fa-801f-813a29f5697c.png');
+  background-size: cover;
+  height: 50px;
+  width: 50px;
+}
+
+.now-playing-thumbnail {
+  width: 250px;
+  height: 250px;
+  max-width: 250px;
+  max-height: 250px;
+  background-size: cover;
+}

@@ -5,8 +5,9 @@ import {routerTransition} from '../../utils/Animations';
 import {ToastyService} from 'ng2-toasty';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
-import {PartyQueue} from "../../models/PartyQueue";
+import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
 import {QueueService} from "../../services/QueueService";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'view-party',
@@ -23,6 +24,7 @@ export class ViewPartyComponent implements OnInit {
               private toastyService: ToastyService,
               private queueService: QueueService,
               private route: ActivatedRoute,
+              private sanitizer: DomSanitizer,
               fb: FormBuilder,) {
   }
 
@@ -45,6 +47,28 @@ export class ViewPartyComponent implements OnInit {
     }, err => {
       this.toastyService.error("Couldn't retrieve queue for party.");
     });
+  }
+
+
+  getArtistThumbnail(entry: PartyQueueEntry, style: boolean) {
+    let thumbnail = 'http://via.placeholder.com/400x400';
+    if (entry.thumbnail) {
+      thumbnail = entry.thumbnail;
+    }
+
+    if (style) {
+      return this.sanitizer.bypassSecurityTrustStyle(
+        'url(' + thumbnail + ')',
+      );
+    } else {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(thumbnail);
+    }
+  }
+
+
+  calculateProgress(entry: PartyQueueEntry) {
+    let date = new Date();
+    return ((date.getTime() - entry.playedAt) / entry.duration) * 100;
   }
 
   getState() {

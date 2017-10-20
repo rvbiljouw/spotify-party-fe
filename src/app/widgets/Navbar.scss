@@ -14,13 +14,17 @@
     left: 0;
     right: 0;
 
-    background-color: rgba(57, 57, 57, 0.9);
+    background-color: rgba(33, 33, 33, 0.9);
     height: 100vh;
     padding: 20px;
 
     padding-bottom: 64px;
 
     overflow: scroll;
+  }
+
+  .mat-card {
+    background-color: transparent;
   }
 
   /deep/ .mat-tab-label, /deep/ .mat-tab-link {

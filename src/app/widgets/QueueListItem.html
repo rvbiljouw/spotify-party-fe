@@ -29,4 +29,5 @@
     {{ entry.artist }} - {{ entry.title }}
   </h4>
   <p mat-line style="font-size: 11px;">{{ entry.duration | duration }}</p>
+  <p mat-line>Requested by {{ entry.member.displayName }}</p>
 </mat-list-item>

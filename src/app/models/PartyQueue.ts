@@ -4,6 +4,7 @@ import {UserAccount} from "./VenueAccount";
 export class PartyQueue {
   party: Party;
   entries: Array<PartyQueueEntry>;
+  nowPlaying: PartyQueueEntry;
 }
 
 export class PartyQueueEntry {
@@ -18,6 +19,8 @@ export class PartyQueueEntry {
   upvotes: number;
   downvotes: number;
   status: string;
+  playedAt: number;
+  duration: number;
   created: Date;
   updated: Date;
 }

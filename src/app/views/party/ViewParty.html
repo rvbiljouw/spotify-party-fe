@@ -1,12 +1,51 @@
-<div fxLayout="row" fxLayoutAlign="center start" fxLayoutWrap="true" fxLayoutGap="10px">
+<div fxLayout="row" fxLayoutAlign="center start" fxLayoutWrap="true">
 
-  <div fxFlex.gt-sm="60" fxFlex.gt-md="50" fxFlex="100" *ngIf="party != null">
+
+  <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="party != null" style="margin-bottom: 20px;">
 
     <mat-toolbar color="primary">
-      <span>{{ party.name }} - {{ party.description}}</span>
+      <span>NOW PLAYING</span>
       <div fxLayoutAlign="end center" class="full-width">
         <button mat-raised-button color="accent">Leave party</button>
       </div>
+    </mat-toolbar>
+
+    <mat-card *ngIf="queue != null && queue.nowPlaying != null">
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutGap="20px">
+          <div class="now-playing-thumbnail"
+               [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"></div>
+          <mat-list>
+            <mat-list-item>
+              <mat-icon mat-list-icon>music_note</mat-icon>
+              <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
+              <p mat-line> {{ queue.nowPlaying.artist }}</p>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon mat-list-icon>person</mat-icon>
+              <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon mat-list-icon>av_timer</mat-icon>
+              <div mat-line>
+                <mat-progress-bar
+                  color="primary"
+                  mode="determinate"
+                  [value]="calculateProgress(queue.nowPlaying)">
+                </mat-progress-bar>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+
+  <div fxFlex.gt-sm="70" fxFlex="100" *ngIf="party != null">
+
+    <mat-toolbar color="primary">
+      <span>QUEUE ({{ queue.entries.length }})</span>
     </mat-toolbar>
 
     <mat-card *ngIf="queue != null">
@@ -17,29 +56,49 @@
           <h2>Start by selecting a song using the search field above</h2>
         </div>
 
-        <mat-list>
-          <app-queue-list-item *ngFor="let entry of queue.entries" [entry]="entry"
-                               class="typical-list-item"></app-queue-list-item>
-        </mat-list>
+        <!--<mat-list>-->
+        <table class="full-width">
+          <thead>
+          <tr>
+            <th class="column-header">Song</th>
+            <th class="column-header">Artist</th>
+            <th class="column-header">Requested by</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let entry of queue.entries">
+            <td>
+              <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+                <mat-icon mat-list-icon class="artist-thumbnail"
+                          [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
+                <span>{{ entry.title }}</span>
+              </div>
+            </td>
+            <td>{{entry.artist }}</td>
+            <td>{{ entry.member.displayName }}</td>
+            <td>
+              <div fxLayout="row" fxLayoutGap="10px">
+                <button mat-icon-button color="primary">
+                  <mat-icon>thumb_up</mat-icon>
+                  <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
+                </button>
+
+                <button mat-icon-button color="danger">
+                  <mat-icon>thumb_down</mat-icon>
+                  <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <!--<app-queue-list-item *ngFor="let entry of queue.entries" [entry]="entry"-->
+        <!--class="typical-list-item"></app-queue-list-item>-->
+        <!--</mat-list>-->
       </mat-card-content>
     </mat-card>
 
-  </div>
-
-  <div fxFlex.gt-sm="20" fxFlex.gt-md="20" fxFlex="100" *ngIf="party != null">
-    <mat-toolbar color="primary">
-      <span>Members</span>
-    </mat-toolbar>
-    <mat-card>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item *ngFor="let member of party.members">
-            <mat-icon mat-list-icon>person</mat-icon>
-            <h4 mat-line>{{member.displayName}}</h4>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
   </div>
 
 </div>
