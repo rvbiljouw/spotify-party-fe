@@ -1,0 +1,121 @@
+.logo-container {
+  min-height: 64px;
+  height: 64px;
+  max-height: 64px;
+}
+
+.logo {
+  background: url('../../assets/logo.png');
+  width: 70%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 70%;
+}
+
+.sidenav-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.mat-sidenav {
+  min-width: 250px;
+  max-width: 250px;
+  width: 250px;
+  background-color: rgba(17, 17, 17, 0.7);
+}
+
+.sidenav-toggle {
+  position: fixed;
+  float: left;
+  left: 10px;
+  bottom: 10px;
+  z-index: 9999;
+}
+
+mat-sidenav ul {
+
+  & {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &.mat-sidenav-links {
+    padding-top: 30px;
+  }
+
+  li {
+
+    .active {
+      border-left: 4px solid orange;
+    }
+
+    .mat-button {
+
+      & {
+        width: 100%;
+        height: 50px;
+        font-size: 18px;
+        text-align: left;
+        padding-left: 20px;
+
+        overflow: hidden;
+        white-space: nowrap;
+        font-weight: normal;
+      }
+
+      i {
+        margin-right: 10px;
+      }
+
+      .playlist-thumbnail {
+        background-image: url('https://airglide.s3.amazonaws.com/playlistThumbnails/hq/1/d19e8f1b-f210-43fa-801f-813a29f5697c.png');
+        background-size: cover;
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+        box-sizing: content-box;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      .mat-button-wrapper {
+        text-overflow: ellipsis;
+      }
+
+    }
+
+  }
+
+}
+
+.header {
+  border: none;
+  font-size: 12px;
+  letter-spacing: 1px;
+  line-height: 24px;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin: 0;
+  padding: 0 16px;
+}
+
+.playlist-button {
+  overflow: visible;
+  text-overflow: ellipsis;
+}
+
+.sidebar-item {
+  opacity: 0.7;
+
+  transition: 0.2s opacity ease-in;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.sidebar-item.active {
+  opacity: 1;
+}

@@ -1,0 +1,48 @@
+<ng2-toasty style="z-index: 9999"></ng2-toasty>
+<mat-sidenav-container class="sidenav-container" [style.background-image]="getBackground(backgroundUrl)">
+  <mat-sidenav #sidenav [mode]="mode" [opened]="opened">
+    <div class="logo-container" fxLayout="row" fxLayoutAlign="center center">
+      <div class="logo">
+      </div>
+    </div>
+    <ul class="mat-sidenav-links">
+      <li class="header">ACTIVITIES</li>
+      <li>
+        <button mat-button [routerLink]="['/parties']">
+          <mat-icon class="button-icon">search</mat-icon>
+          Search for a party
+        </button>
+      </li>
+      <li>
+        <button mat-button [routerLink]="['/party/create']" routerLinkActive="active">
+          <mat-icon class="button-icon">add_circle</mat-icon>
+          Create party
+        </button>
+      </li>
+
+      <li class="header">YOUR PARTIES</li>
+      <li *ngFor="let party of parties.parties">
+        <button mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
+          <mat-icon class="button-icon">group</mat-icon>
+          {{ party.name}}
+        </button>
+      </li>
+
+      <li class="header">YOUR ACCOUNT</li>
+      <li>
+        <button mat-button (click)="logout()">
+          <mat-icon class="button-icon">exit_to_app</mat-icon>
+          Log out
+        </button>
+      </li>
+    </ul>
+  </mat-sidenav>
+
+  <div class="outlet">
+    <ng-content></ng-content>
+  </div>
+</mat-sidenav-container>
+
+<button mat-fab (click)="opened = !opened" class="sidenav-toggle">
+  <mat-icon>menu</mat-icon>
+</button>

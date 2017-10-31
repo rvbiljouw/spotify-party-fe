@@ -1,4 +1,5 @@
 import {UserAccount} from "./UserAccount";
+import {PartyQueueEntry} from "./PartyQueue";
 
 export class Party {
   /*
@@ -14,9 +15,12 @@ export class Party {
   id: number;
   owner: UserAccount;
   members: Array<UserAccount>;
+  nowPlaying: PartyQueueEntry;
   name: string;
   description: string;
+  backgroundUrl: string;
   status: string;
   created: Date;
   updated: Date;
+  access: string;
 }

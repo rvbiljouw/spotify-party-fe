@@ -1,21 +1,21 @@
 <mat-list-item class="typical-list-item">
 
-  <button mat-icon-button color="primary" (click)="play()">
-    <mat-icon>play_circle_outline</mat-icon>
+  <button mat-button color="accent" (click)="play()">
+    <mat-icon class="button-icon">play_circle_outline</mat-icon>Add to queue
   </button>
 
   <mat-icon mat-list-icon class="artist-thumbnail"
             [style.background-image]="getArtistThumbnail(true)"></mat-icon>
 
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+  <span fxHide.gt-sm="true" mat-line>
     {{ song.artists[0].name }}
     </span>
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
-    {{ song.name }}
+  <span fxHide.gt-sm="true" mat-line>
+  {{ song.name }}
   </span>
 
-  <h4 mat-line fxHide.lt-mat="true">
+  <h4 mat-line fxHide.lt-md="true">
     {{song.artists[0].name }} - {{ song.name }}
   </h4>
-  <p mat-line style="font-size: 11px;">{{ song.duration | duration }}</p>
+  <p mat-line>{{ song.duration | duration }}</p>
 </mat-list-item>

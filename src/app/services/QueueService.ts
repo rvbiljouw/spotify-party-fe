@@ -4,6 +4,7 @@ import {environment} from "../../environments/environment";
 import {Observable} from "rxjs/Observable";
 import {PartyQueue, PartyQueueEntry} from "../models/PartyQueue";
 import {Song} from "../models/Song";
+import {ListResponse} from "./ApiService";
 
 @Injectable()
 export class QueueService {
@@ -16,6 +17,18 @@ export class QueueService {
     return this.http.get(this.endpoint, {withCredentials: true}).map(res => {
       return res.json() as PartyQueue;
     })
+  }
+
+  getHistory(limit: number, offset: number): Observable<ListResponse<PartyQueueEntry>> {
+    return this.http.get(`${this.endpoint}/history`, {withCredentials: true}).map(result => {
+      const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
+      const offset = Number.parseInt(result.headers.get('X-Offset'));
+      return new ListResponse<PartyQueueEntry>(
+        result.json() as Array<PartyQueueEntry>,
+        maxRecords,
+        offset,
+      );
+    });
   }
 
   queueSong(song: QueueSongRequest): Observable<PartyQueueEntry> {

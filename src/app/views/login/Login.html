@@ -1,22 +1,20 @@
-<main [@routerTransition]="getState()">
-  <div fxLayout="row" fxLayoutAlign="center center" class="login-container">
-    <mat-card *ngIf="!loggedIn" fxFlex.gt-sm="30" fxFlex.lt-md="100" class="login-card">
+<div fxLayout="row" fxLayoutAlign="center center" class="login-container" style="height: 100vh;">
+  <mat-card *ngIf="!loggedIn" fxFlex.gt-sm="30" fxFlex.lt-md="100" class="login-card">
 
-      <div fxLayoutAlign="center center">
+    <div fxLayoutAlign="center center">
+      <mat-card-title>
         <mat-card-title>
-          <mat-card-title>
-            <img class="center" src="/assets/logo.png" width="64px" height="64px">
-          </mat-card-title>
-          <mat-card-subtitle class="subtitle">Please login</mat-card-subtitle>
+          <img class="center" src="/assets/logo.png" width="64px" height="64px">
         </mat-card-title>
-      </div>
+        <mat-card-subtitle class="subtitle">Please login</mat-card-subtitle>
+      </mat-card-title>
+    </div>
 
-      <mat-card-content>
-        <button color="primary" mat-raised-button (click)="login()">
-          <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
-          Log in with Spotify
-        </button>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</main>
+    <mat-card-content>
+      <button color="primary" mat-raised-button (click)="login()">
+        <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
+        Log in with Spotify
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

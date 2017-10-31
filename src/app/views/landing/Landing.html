@@ -1,0 +1,33 @@
+<div class="masthead">
+  <div class="landing-nav" fxLayout="row">
+    <div class="logo-container" fxLayoutAlign="center center">
+      <div class="logo">
+      </div>
+    </div>
+    <mat-toolbar class="toolbar" fxLayoutAlign="end center">
+      <button mat-button [routerLink]="['']">Home</button>
+      <button mat-button [routerLink]="['parties']">Parties</button>
+      <button mat-button [routerLink]="['login']" *ngIf="!loggedIn">Log in</button>
+      <button mat-button (click)="logout()" *ngIf="loggedIn">Log out</button>
+    </mat-toolbar>
+  </div>
+
+  <div class="container masthead-overlay">
+
+    <div fxLayout="row" fxFlex>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex>
+        <h1>Spotify for Communities</h1>
+        <h2>Listen to music, together.</h2>
+
+        <div fxLayout="row" fxLayoutAlign="center">
+          <div fxFlex="20" fxLayout="column" *ngFor="let party of parties.items">
+            <div fxFlex="100" fxLayout="column" fxLayoutAlign="center center">
+              <app-party-card [party]="party"></app-party-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

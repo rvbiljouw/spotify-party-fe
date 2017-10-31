@@ -1,0 +1,51 @@
+import {Component, Input, OnInit} from '@angular/core';
+import {QueueService} from '../services/QueueService';
+import {DomSanitizer} from '@angular/platform-browser';
+import {MatDialog} from '@angular/material';
+import {ToastyService} from 'ng2-toasty';
+import {Party} from "../models/Party";
+import {animate, state, style, transition, trigger} from "@angular/animations";
+
+@Component({
+  selector: 'app-party-card',
+  templateUrl: './PartyCard.html',
+  styleUrls: ['./PartyCard.scss'],
+  animations: [
+    trigger('fadeTrigger', [
+      transition('* => *', [
+        style({
+          opacity: 0
+        }),
+        animate('.7s', style({
+          opacity: 1
+        }))
+      ])
+    ])
+  ]
+})
+export class PartyCardComponent implements OnInit {
+
+  @Input() party: Party;
+  active: string = "false";
+
+  constructor(private queueService: QueueService,
+              private domSanitizer: DomSanitizer,
+              private toast: ToastyService,
+              private dialog: MatDialog,) {
+  }
+
+  ngOnInit() {
+  }
+
+
+  getBackground(party: Party) {
+    if (party.nowPlaying != null) {
+      return this.domSanitizer.bypassSecurityTrustUrl(party.nowPlaying.thumbnail);
+    } else if (party.backgroundUrl != null && party.backgroundUrl != null && party.backgroundUrl.length > 0) {
+      return this.domSanitizer.bypassSecurityTrustUrl(party.backgroundUrl);
+    } else {
+      return this.domSanitizer.bypassSecurityTrustUrl('assets/bg3.jpg');
+    }
+  }
+
+}

@@ -4,4 +4,5 @@ export class ChatMessage {
   isOwner: boolean;
   isStaff: boolean;
   isServer: boolean;
+  timestamp: Date;
 }

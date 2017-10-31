@@ -1,0 +1,45 @@
+.navbar-container {
+  width: 100%;
+  z-index: 9999;
+}
+
+.title-box {
+  display: inline;
+  margin-right: 30px;
+}
+
+.search-box {
+  display: inline;
+}
+
+.search-overlay {
+  & {
+    position: absolute;
+    float: left;
+    top: 64px;
+    left: 0;
+    right: 0;
+
+    min-height: 400px;
+
+    background-color: rgba(24, 24, 24, 0.9);
+
+    overflow: scroll;
+    z-index: 9999;
+  }
+
+  .mat-line {
+    font-size: 18px;
+  }
+
+  //.mat-card {
+  //  background-color: transparent;
+  //}
+
+  /deep/ .mat-tab-label, /deep/ .mat-tab-link {
+    //color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    opacity: 1.0;
+  }
+}

@@ -12,16 +12,20 @@ export class LoginService {
   account: BehaviorSubject<UserAccount> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
-    const tokenEntry = localStorage.getItem('account');
+    const tokenEntry = window.localStorage.getItem('account');
     if (tokenEntry != null) {
       try {
-        this.setAccount(JSON.parse(localStorage.getItem('account')));
+        this.setAccount(JSON.parse(window.localStorage.getItem('account')));
       } catch (e) {
         this.setAccount(null);
       }
     } else {
       console.log("nothing in local storage");
     }
+
+    this.validate().subscribe(res => {
+      console.log(res);
+    })
   }
 
   validate(): Observable<boolean> {
@@ -36,14 +40,17 @@ export class LoginService {
   }
 
   logout() {
+    document.cookie.split(";").forEach(function (c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
     this.setAccount(null);
   }
 
   private setAccount(account: UserAccount) {
     if (account != null) {
-      localStorage.setItem('account', JSON.stringify(account));
+      window.localStorage.setItem('account', JSON.stringify(account));
     } else {
-      localStorage.clear();
+      window.localStorage.clear();
     }
     DefaultRequestOptions.account = account;
     this.account.next(account);

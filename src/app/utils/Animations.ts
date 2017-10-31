@@ -33,7 +33,7 @@ export function slideToLeft() {
   ]);
 }
 export function opacityInOut() {
-  return trigger('routerTransition', [
+  return trigger('opacityInOut', [
     transition('*=>*', [
       style({ opacity: 0 }),
       animate('0.5s ease-in-out', style({ opacity: 1 })),

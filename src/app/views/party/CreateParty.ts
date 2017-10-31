@@ -14,6 +14,13 @@ import {CreatePartyRequest, PartyService} from "../../services/PartyService";
 })
 export class CreatePartyComponent implements OnInit {
   partyForm: FormGroup;
+  accessTypeOptions: Array<any> = [{
+    name: 'Public',
+    value: 'PUBLIC'
+  }, {
+    name: 'Private',
+    value: 'PRIVATE'
+  }];
 
   creating = false;
 
@@ -24,7 +31,8 @@ export class CreatePartyComponent implements OnInit {
               fb: FormBuilder,) {
     this.partyForm = fb.group({
       name: fb.control('', [Validators.required]),
-      description: fb.control('', [])
+      description: fb.control('', []),
+      access: fb.control('PRIVATE', [Validators.required])
     });
   }
 

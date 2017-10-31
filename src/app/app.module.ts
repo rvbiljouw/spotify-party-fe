@@ -1,9 +1,4 @@
-import {
-  MatButtonModule,
-  MatIconModule,
-  MatIconRegistry,
-  MatNativeDateModule,
-} from '@angular/material';
+import {MatButtonModule, MatIconModule, MatIconRegistry, MatNativeDateModule,} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
@@ -14,7 +9,7 @@ import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login/Login';
 import {RouterModule, Routes} from '@angular/router';
 import {LoginService} from './services/LoginService';
-import {NavbarComponent} from './widgets/Navbar';
+import {SearchBarComponent} from './widgets/SearchBar';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ChartsModule} from 'ng2-charts';
@@ -38,9 +33,13 @@ import {QueueListItemComponent} from "./widgets/QueueListItem";
 import {PartiesComponent} from "./views/party/Parties";
 import {UserAccountService} from "./services/UserAccountService";
 import {EmojifyModule} from "angular-emojify";
+import {ManagePartyComponent} from "./views/party/ManageParty";
+import {SidebarLayoutComponent} from "./views/SidebarLayout";
+import {LandingComponent} from "./views/landing/Landing";
+import {PartyCardComponent} from "./widgets/PartyCard";
 
 const routes: Routes = [
-  {path: '', redirectTo: 'parties', pathMatch: 'full'},
+  {path: '', component: LandingComponent, pathMatch: 'full'},
   {path: 'login', component: LoginComponent},
   {path: 'parties', component: PartiesComponent},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
@@ -51,13 +50,17 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    NavbarComponent,
+    SearchBarComponent,
     CreatePartyComponent,
     ViewPartyComponent,
     DurationPipe,
     SongListItemComponent,
     QueueListItemComponent,
     PartiesComponent,
+    ManagePartyComponent,
+    SidebarLayoutComponent,
+    LandingComponent,
+    PartyCardComponent
   ],
   imports: [
     MatNativeDateModule,
@@ -88,7 +91,7 @@ const routes: Routes = [
     PartyService,
     QueueService
   ],
-  entryComponents: [],
+  entryComponents: [ManagePartyComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {

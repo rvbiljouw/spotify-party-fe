@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
@@ -10,25 +10,42 @@ import {QueueService, VoteRequest} from "../../services/QueueService";
 import {DomSanitizer} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
-import {MatInput} from "@angular/material";
+import {MatDialog, MatInput} from "@angular/material";
 import {WSMessage} from "../../models/WSMessage";
 import {ChatMessage} from "../../models/ChatMessage";
+import {IntervalObservable} from "rxjs/observable/IntervalObservable";
+import {Subscription} from "rxjs/Subscription";
+import {ManagePartyComponent} from "./ManageParty";
+import {LoginService} from "../../services/LoginService";
+import {UserAccount} from "../../models/UserAccount";
+import {ListResponse} from "../../services/ApiService";
 
 @Component({
   selector: 'view-party',
   templateUrl: './ViewParty.html',
   styleUrls: ['./ViewParty.scss'],
-  animations: [routerTransition()],
+  animations: [routerTransition(),
+  ],
 })
-export class ViewPartyComponent implements OnInit {
+export class ViewPartyComponent implements OnInit, OnDestroy {
   party: Party;
   queue: PartyQueue;
+  history: ListResponse<PartyQueueEntry> = new ListResponse([], 0, 0);
+
   progress: number = 0;
+
+  partyName: string = "Connecting...";
 
   websocketAuthenticated = false;
   messages: ChatMessage[] = [];
 
   @ViewChild("chatInput") chatInput: ElementRef;
+
+  refreshTimer: Subscription;
+  progressTimer: Subscription;
+
+  account: UserAccount;
+  admin: boolean = false;
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -37,7 +54,9 @@ export class ViewPartyComponent implements OnInit {
               private route: ActivatedRoute,
               private sanitizer: DomSanitizer,
               private webSocketService: WebSocketService,
-              fb: FormBuilder,) {
+              private loginService: LoginService,
+              private dialog: MatDialog,
+              fb: FormBuilder) {
   }
 
   ngOnInit() {
@@ -45,7 +64,16 @@ export class ViewPartyComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.partyService.joinParty(+params["id"]).subscribe(party => {
+        this.loginService.account.subscribe(acc => {
+          this.account = acc;
+          this.admin = party.owner.id == acc.id;
+        });
+
         this.party = party;
+        this.partyName = this.party.name;
+
+        this.toastyService.info('Active party changed to ' + party.name);
+        this.refresh();
 
         this.webSocketService.socket.subscribe((next) => {
           const wsMessage = JSON.parse(next.data) as WSMessage;
@@ -67,22 +95,36 @@ export class ViewPartyComponent implements OnInit {
 
               messageEvents.forEach(event => this.addChatMessage(event));
               break;
+
+            case "QUEUE_UPDATE":
+              this.refresh();
+              break;
+
+            default:
+              console.log(wsMessage);
+              break;
           }
         });
       });
     });
 
-    setInterval(() => {
+    this.refreshTimer = IntervalObservable.create(10000).subscribe(res => {
       this.refresh();
-    }, 10000);
-    setInterval(() => {
+    });
+    this.progressTimer = IntervalObservable.create(1000).subscribe(res => {
       if (this.queue != null && this.queue.nowPlaying != null) {
         this.progress = this.calculateProgress(this.queue.nowPlaying);
       }
-    }, 1000);
-
+    });
     this.refresh();
   }
+
+  ngOnDestroy() {
+    this.refreshTimer.unsubscribe();
+    this.progressTimer.unsubscribe();
+    console.log("Destroyed");
+  }
+
 
   addChatMessage(message: ChatMessage) {
     if (this.messages.length > 100) {
@@ -113,6 +155,10 @@ export class ViewPartyComponent implements OnInit {
   }
 
   private refresh() {
+    this.queueService.getHistory(25, 0).subscribe(res => {
+      this.history = res;
+    });
+
     this.queueService.getQueue().subscribe(res => {
       this.queue = res;
     }, err => {
@@ -157,6 +203,27 @@ export class ViewPartyComponent implements OnInit {
     return '#0075ad';
   }
 
+  openSettings() {
+    let dialogRef = this.dialog.open(ManagePartyComponent, {
+      height: '60%',
+      width: '60%',
+      data: {
+        party: this.party
+      }
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      this.partyService.refresh();
+    })
+  }
+
+  leave() {
+    this.partyService.leaveParty(this.party.id).subscribe(res => {
+      this.toastyService.info('You\'ve left the party.');
+      this.router.navigate(['/parties']);
+    }, err => {
+      this.toastyService.error('Couldn\'t leave to party - you\'re stuck here forever!');
+    });
+  }
 
   vote(entry: PartyQueueEntry, up: boolean) {
     let voteReq = new VoteRequest();

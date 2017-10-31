@@ -1,39 +1,66 @@
-<div fxLayout="row" fxLayoutAlign="center center">
+<app-sidebar-layout>
 
-  <div fxFlex.gt-sm="60" fxFlex.gt-md="50" fxFlex="100">
-    <mat-card *ngIf="parties != null">
-      <mat-card-content>
+  <mat-toolbar color="primary">
+    <span class="toolbar-title" fxFlex>Search for a party</span>
+    <div class="toolbar-actions" fxLayout="row" fxLayoutAlign="end center" fxFlex>
+      <div class="toolbar-search">
+        <button mat-icon-button (click)="searching = true" *ngIf="!searching">
+          <mat-icon>search</mat-icon>
+        </button>
+        <mat-input-container *ngIf="searching">
+          <i class="button-icon fa fa-search" matPrefix></i>
+          <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+        </mat-input-container>
+        <button mat-icon-button (click)="searching = false" color="accent" *ngIf="searching">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
 
-        <div *ngIf="parties.maxRecords > 0">
-          <h1>Parties</h1>
-          <mat-list>
-            <mat-list-item *ngFor="let party of parties.items">
-              <mat-icon mat-list-icon>group</mat-icon>
-              <h4 mat-line>{{ party.name }}</h4>
-              <p mat-line>{{ party.description }}</p>
+  <mat-card>
+    <mat-card-content>
 
-              <button mat-raised-button color="accent" (click)="setActiveParty(party)">
-                <mat-icon>play_arrow</mat-icon>
-                Join
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
+      <div class="root">
 
-        <div *ngIf="parties.maxRecords == 0">
-          <div fxLayout="column" fxLayoutAlign="center center">
-            <h1>You're currently not part of any groups</h1>
+        <div *ngIf="!searching">
 
-            <div>
-              <div fxLayout="column" fxLayoutAlign="center center">
-                <button mat-raised-button color="primary" [routerLink]="['/party/create']">Create a party</button>
-              </div>
+          <h2>Most popular
+            <small>these parties are popping right now</small>
+          </h2>
+
+          <div *ngIf="popularParties != null && popularParties.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
+            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of popularParties.items">
+              <app-party-card [party]="party"></app-party-card>
             </div>
           </div>
+
+          <h2>Newly added
+            <small>these parties are just starting out</small>
+          </h2>
+
+          <div *ngIf="newParties != null && newParties.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
+            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of newParties.items">
+              <app-party-card [party]="party"></app-party-card>
+            </div>
+          </div>
+
         </div>
 
-      </mat-card-content>
-    </mat-card>
+        <div *ngIf="searching">
+          <h2>Search results</h2>
 
-  </div>
-</div>
+          <div *ngIf="searchResults != null && searchResults.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
+            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of searchResults.items">
+              <app-party-card [party]="party"></app-party-card>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+</app-sidebar-layout>

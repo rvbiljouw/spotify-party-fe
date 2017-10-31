@@ -4,8 +4,8 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  apiHost: 'http://192.168.0.100:8080',
-  wsHost: 'ws://192.168.0.100:8080',
+  apiHost: 'http://localhost:8080',
+  wsHost: 'ws://localhost:8080',
   proxyHost: 'http://sample2.forwarder-service.munamana.com',
   production: false,
 };

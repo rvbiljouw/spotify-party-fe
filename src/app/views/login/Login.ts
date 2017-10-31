@@ -19,6 +19,8 @@ export class LoginComponent implements OnInit {
   loggingIn = false;
   loggedIn = false;
 
+  referrer: string = null;
+
   constructor(private router: Router,
               private loginService: LoginService,
               private toastyService: ToastyService,
@@ -31,9 +33,13 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.referrer = params['referrer'];
+    });
+
     this.loginService.account.subscribe(
       (token: UserAccount) => {
-        if (token != null) {
+        if (token != null && token.id > 0) {
           this.loggedIn = true;
           this.router.navigateByUrl('/');
         }
@@ -47,7 +53,12 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loggingIn = true;
-    window.location.href = `${environment.apiHost}/api/v1/login`;
+
+    if (this.referrer != null) {
+      window.location.href = `${environment.apiHost}/api/v1/login?redirectUrl=${this.referrer}`;
+    } else {
+      window.location.href = `${environment.apiHost}/api/v1/login`;
+    }
   }
 
   getState() {

@@ -1,9 +1,5 @@
-const tenant = window.location.host.split('.')[0];
-
 export const environment = {
-  tenant: tenant,
-  apiHost: `http://${tenant}.panel-service.munamana.com`,
-  wsHost: 'ws://partify.quirlion.com',
-  proxyHost: `http://${tenant}.forwarder-service.munamana.com`,
+  apiHost: `http://api.awsum.io`,
+  wsHost: 'ws://api.awsum.io',
   production: true,
 };

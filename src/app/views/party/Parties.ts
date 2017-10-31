@@ -7,9 +7,11 @@ import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue} from "../../models/PartyQueue";
 import {QueueService} from "../../services/QueueService";
-import {ListResponse} from "../../services/ApiService";
+import {Filter, FilterType, ListResponse} from "../../services/ApiService";
 import {UserAccount} from "../../models/UserAccount";
 import {LoginService} from "../../services/LoginService";
+import {PartyList} from "../../models/PartyList";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'parties',
@@ -18,27 +20,59 @@ import {LoginService} from "../../services/LoginService";
   animations: [routerTransition()],
 })
 export class PartiesComponent implements OnInit {
-  parties: ListResponse<Party>;
+  yourParties: PartyList;
+  popularParties: ListResponse<Party>;
+  newParties: ListResponse<Party>;
   account: UserAccount;
   limit: number = 25;
   offset: number = 0;
+
+  searchTerm = new FormControl('', []);
+  searching: boolean;
+  searchResults: ListResponse<Party>;
 
   constructor(private router: Router,
               private partyService: PartyService,
               private toastyService: ToastyService,
               private queueService: QueueService,
               private loginService: LoginService,
+              private domSanitizer: DomSanitizer,
               private route: ActivatedRoute,
-              fb: FormBuilder,) {
+              fb: FormBuilder) {
   }
 
   ngOnInit() {
     this.loginService.account.subscribe(acc => {
       this.account = acc;
     });
-    this.partyService.getParties(this.limit, this.offset).subscribe(res => {
-      this.parties = res;
+
+    this.partyService.getMostPopular(this.limit, this.offset).subscribe(res => {
+      console.log(res);
+      this.popularParties = res;
     });
+
+    this.partyService.getNew(this.limit, this.offset).subscribe(res => {
+      this.newParties = res;
+    });
+
+
+    this.partyService.getMyParties().subscribe(res => {
+      this.yourParties = res;
+    });
+
+    this.searchTerm.valueChanges
+      .debounceTime(400)
+      .distinctUntilChanged()
+      .subscribe(term => {
+        if (term.length > 0) {
+          this.searching = true;
+
+          let filters = [new Filter(FilterType.CONTAINS, "name", term)];
+          this.partyService.getParties(this.limit, this.offset, filters).subscribe(result => {
+            this.searchResults = result;
+          });
+        }
+      });
   }
 
   setActiveParty(party: Party) {

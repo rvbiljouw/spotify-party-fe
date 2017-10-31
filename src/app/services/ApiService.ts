@@ -136,7 +136,8 @@ export type FilterType =
   | 'GREATER_THAN'
   | 'LESS_THAN'
   | 'GREATER_THAN_EQ'
-  | 'LESS_THAN_EQ';
+  | 'LESS_THAN_EQ'
+  | 'QUERY';
 
 export const FilterType = {
   NOT_EQUALS: 'NOT_EQUALS' as FilterType,
@@ -150,6 +151,7 @@ export const FilterType = {
   LESS_THAN_EQ: 'LESS_THAN_EQ' as FilterType,
   AND: 'AND' as FilterType,
   OR: 'OR' as FilterType,
+  QUERY: 'QUERY' as FilterType
 };
 
 export class Filter {

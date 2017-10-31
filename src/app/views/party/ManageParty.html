@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>Party Management</h2>
+<mat-dialog-content>
+  <mat-tab-group>
+    <mat-tab label="General">
+      <form [formGroup]="partyForm" (ngSubmit)="submit()" style="padding-bottom: 40px;" fxFlex.gt-sm="40" fxFlex="100">
+
+        <div style="margin-top: 20px;">
+          <mat-form-field>
+            <mat-select placeholder="Access type" formControlName="access">
+              <mat-option *ngFor="let accessType of accessTypeOptions" [value]="accessType.value">
+                {{ accessType.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-error *ngIf="partyForm.controls['access'].hasError('required')">
+            This field is required
+          </mat-error>
+
+          <div style="padding-bottom: 20px;"
+               *ngIf="partyForm.controls['access'].invalid && partyForm.controls['access'].dirty"></div>
+        </div>
+
+        <div>
+          <mat-input-container class="full-width">
+            <input matInput formControlName="name" placeholder="Party name">
+            <mat-error *ngIf="partyForm.controls['name'].hasError('required')">
+              This field is required
+            </mat-error>
+          </mat-input-container>
+        </div>
+
+        <div>
+          <mat-input-container class="full-width">
+            <input matInput formControlName="description" placeholder="A short description of this party">
+            <mat-error *ngIf="partyForm.controls['description'].hasError('required')">
+              This field is required
+            </mat-error>
+          </mat-input-container>
+        </div>
+
+
+        <button color="primary" mat-raised-button [disabled]="!partyForm.valid || saving">
+          <mat-spinner *ngIf="saving" class="button-spinner" strokeWidth="4"></mat-spinner>
+          Save changes
+        </button>
+      </form>
+
+    </mat-tab>
+    <mat-tab label="Members">
+      <mat-list>
+        <mat-list-item *ngFor="let member of party.members">
+          <mat-icon mat-list-icon>person</mat-icon>
+          <p mat-line>{{member.displayName}}</p>
+          <button mat-raised-button color="primary" (click)="kick(member)">Kick</button>
+        </mat-list-item>
+      </mat-list>
+    </mat-tab>
+    <mat-tab label="Background">
+      <div class="upload-area">
+        <dropzone [config]="config"
+                  [message]="'Drag content onto this area or click to upload your local content file(s).'"
+                  (error)="onUploadError($event)"
+                  (success)="onUploadSuccess($event)"></dropzone>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <hr/>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div fxLayout="row" fxLayoutAlign="end" fxFlex="100">
+    <button mat-raised-button color="primary" mat-dialog-close>Close dialog</button>
+  </div>
+</mat-dialog-actions>

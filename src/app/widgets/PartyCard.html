@@ -1,0 +1,17 @@
+<div class="party-card" [@fadeTrigger] [routerLink]="['/party', party.id]">
+  <div class="party-header" fxLayout="row" fxLayoutAlign="space-around center">
+    <div fxFlex="50"><b>{{ party.name }}</b></div>
+    <div fxLayoutAlign="center center">
+      <mat-icon class="button-icon">group</mat-icon>
+      {{ party.members.length}}
+    </div>
+  </div>
+  <img [src]="getBackground(party)"/>
+  <div class="party-details">
+    <div><b>Now playing</b></div>
+    <div class="now-playing" *ngIf="party.nowPlaying != null">{{ party.nowPlaying.artist }} - {{
+      party.nowPlaying.title}}
+    </div>
+    <div class="now-playing" *ngIf="party.nowPlaying ==null">Nothing is playing, yet!</div>
+  </div>
+</div>

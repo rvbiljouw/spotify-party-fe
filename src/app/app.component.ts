@@ -1,40 +1,32 @@
-import {Component, EventEmitter, OnInit, PipeTransform, ViewChild,} from '@angular/core';
+import {Component,} from '@angular/core';
 import {ToastyConfig} from 'ng2-toasty';
-import {NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart, Router,} from '@angular/router';
-import {MediaChange, ObservableMedia} from '@angular/flex-layout';
+import {Router,} from '@angular/router';
+import {ObservableMedia} from '@angular/flex-layout';
 import {LoginService} from './services/LoginService';
+import {PartyService} from "./services/PartyService";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
-  static darkTheme: boolean;
+export class AppComponent {
 
   constructor(private toastyConfig: ToastyConfig,
               private media: ObservableMedia,
               private router: Router,
-              private loginService: LoginService,) {
+              private loginService: LoginService,
+              private partyService: PartyService,
+              private domSanitizer: DomSanitizer) {
     toastyConfig.theme = 'material';
     toastyConfig.position = 'top-center';
     AppComponent.refresh();
   }
 
-  ngOnInit() {
-    this.loginService.validate().subscribe(res => {
-    });
-  }
-
   static refresh() {
-    // if (localStorage.getItem('darkTheme') == 'true') {
     const body = document.getElementsByTagName('body')[0];
     body.classList.add('dark-theme');
-    // this.darkTheme = true;
-    // } else {
-    //   const body = document.getElementsByTagName('body')[0];
-    //   body.classList.remove('dark-theme');
-    //   this.darkTheme = false;
-    // }
   }
+
 }
