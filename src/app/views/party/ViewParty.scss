@@ -22,9 +22,9 @@ td {
   width: 250px;
   height: 250px;
   max-width: 250px;
-  max-height: 250px;
   background-size: cover;
 }
+
 .send-chat-btn {
   justify-content: flex-end;
   display: flex;
@@ -37,10 +37,10 @@ td {
 .chat-container {
   justify-content: space-between;
   flex-direction: column;
-  height: 100%;
+  height: 400px;
+  max-height: 400px;
   display: flex;
 }
-
 
 /deep/ .mat-tab-label, /deep/ .mat-tab-link {
   //color: #fff;
@@ -53,6 +53,29 @@ td {
   opacity: 1.0 !important;
 }
 
-/deep/.mat-tab-body {
+/deep/ .mat-tab-body {
   padding-top: 20px;
+}
+
+.youtube-player {
+  min-height: 200px;
+  height: 40vh;
+}
+
+.now-playing-box {
+  padding: 0;
+  margin: 0;
+  background-color: rgb(14, 14, 14);
+}
+
+.chat-card {
+
+  & {
+    height: 62vh;
+  }
+
+  .mat-card-header {
+    border-bottom: 1px solid rgba(77, 77, 77, 0.7);
+  }
+
 }

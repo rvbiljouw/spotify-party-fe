@@ -21,7 +21,9 @@
   min-width: 250px;
   max-width: 250px;
   width: 250px;
-  background-color: rgba(17, 17, 17, 0.7);
+
+  background: linear-gradient(45deg, rgba(7, 7, 7, 0.7), rgba(14, 14, 14,0.7)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 .sidenav-toggle {

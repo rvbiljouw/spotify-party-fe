@@ -44,6 +44,13 @@ export class SidebarLayoutComponent implements OnInit {
     });
 
     this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
+    if (this.isMobileView) {
+      this.opened = false;
+      this.mode = "push";
+    } else {
+      this.opened = true;
+      this.mode = "side";
+    }
 
     this.media.subscribe((change: MediaChange) => {
       this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
@@ -69,6 +76,7 @@ export class SidebarLayoutComponent implements OnInit {
 
   logout() {
     this.loginService.logout();
+    this.router.navigateByUrl('/');
   }
 
 }

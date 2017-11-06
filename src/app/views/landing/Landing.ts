@@ -33,7 +33,7 @@ export class LandingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.partyService.getParties(3, 0).subscribe(result => {
+    this.partyService.getParties(2, 0).subscribe(result => {
       this.parties = result;
     });
 
@@ -41,8 +41,6 @@ export class LandingComponent implements OnInit {
       account => {
         this.loggedIn = account != null;
         this.account = account;
-        console.log(account);
-        console.log("ayy wot");
       },
       err => {
         this.loggedIn = false;

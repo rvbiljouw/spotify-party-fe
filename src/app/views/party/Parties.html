@@ -1,6 +1,6 @@
 <app-sidebar-layout>
 
-  <mat-toolbar color="primary">
+  <mat-toolbar class="transparent-bar">
     <span class="toolbar-title" fxFlex>Search for a party</span>
     <div class="toolbar-actions" fxLayout="row" fxLayoutAlign="end center" fxFlex>
       <div class="toolbar-search">
@@ -18,47 +18,108 @@
     </div>
   </mat-toolbar>
 
-  <mat-card>
+  <mat-card class="transparent-card">
     <mat-card-content>
 
-      <div class="root">
+      <mat-tab-group>
+        <mat-tab label="Spotify">
 
-        <div *ngIf="!searching">
+          <div class="root">
 
-          <h2>Most popular
-            <small>these parties are popping right now</small>
-          </h2>
+            <div *ngIf="!searching">
 
-          <div *ngIf="popularParties != null && popularParties.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
-            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of popularParties.items">
-              <app-party-card [party]="party"></app-party-card>
+              <h2>Most popular
+                <small>these parties are popping right now</small>
+              </h2>
+
+              <div *ngIf="spotifyGroup.popularParties != null && spotifyGroup.popularParties.maxRecords > 0"
+                   fxLayout="row" fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of spotifyGroup.popularParties.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
+              <h2>Newly added
+                <small>these parties are just starting out</small>
+              </h2>
+
+              <div *ngIf="spotifyGroup.newParties != null && spotifyGroup.newParties.maxRecords > 0" fxLayout="row"
+                   fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of spotifyGroup.newParties.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
             </div>
+
+            <div *ngIf="searching">
+              <h2>Search results</h2>
+
+              <div *ngIf="spotifyGroup.searchResults != null && spotifyGroup.searchResults.maxRecords > 0"
+                   fxLayout="row" fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of spotifyGroup.searchResults.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
-          <h2>Newly added
-            <small>these parties are just starting out</small>
-          </h2>
+        </mat-tab>
 
-          <div *ngIf="newParties != null && newParties.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
-            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of newParties.items">
-              <app-party-card [party]="party"></app-party-card>
+        <mat-tab label="YouTube">
+
+          <div class="root">
+
+            <div *ngIf="!searching">
+
+              <h2>Most popular
+                <small>these parties are popping right now</small>
+              </h2>
+
+              <div *ngIf="youtubeGroup.popularParties != null && youtubeGroup.popularParties.maxRecords > 0"
+                   fxLayout="row" fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of youtubeGroup.popularParties.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
+              <h2>Newly added
+                <small>these parties are just starting out</small>
+              </h2>
+
+              <div *ngIf="youtubeGroup.newParties != null && youtubeGroup.newParties.maxRecords > 0" fxLayout="row"
+                   fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of youtubeGroup.newParties.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
             </div>
+
+            <div *ngIf="searching">
+              <h2>Search results</h2>
+
+              <div *ngIf="youtubeGroup.searchResults != null && youtubeGroup.searchResults.maxRecords > 0"
+                   fxLayout="row" fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of youtubeGroup.searchResults.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
-        </div>
-
-        <div *ngIf="searching">
-          <h2>Search results</h2>
-
-          <div *ngIf="searchResults != null && searchResults.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
-            <div fxFlex="100" fxFlex.gt-sm="50" fxFlex.gt-md="25" *ngFor="let party of searchResults.items">
-              <app-party-card [party]="party"></app-party-card>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
+        </mat-tab>
+      </mat-tab-group>
 
     </mat-card-content>
   </mat-card>

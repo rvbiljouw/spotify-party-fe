@@ -19,6 +19,8 @@ import {ManagePartyComponent} from "./ManageParty";
 import {LoginService} from "../../services/LoginService";
 import {UserAccount} from "../../models/UserAccount";
 import {ListResponse} from "../../services/ApiService";
+import {YoutubePlayerComponent} from "../../widgets/YoutubePlayer";
+import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 
 @Component({
   selector: 'view-party',
@@ -29,7 +31,7 @@ import {ListResponse} from "../../services/ApiService";
 })
 export class ViewPartyComponent implements OnInit, OnDestroy {
   party: Party;
-  queue: PartyQueue;
+  queue: PartyQueue = new PartyQueue();
   history: ListResponse<PartyQueueEntry> = new ListResponse([], 0, 0);
 
   progress: number = 0;
@@ -39,13 +41,22 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   websocketAuthenticated = false;
   messages: ChatMessage[] = [];
 
+  showNoSpotify: boolean = false;
+
   @ViewChild("chatInput") chatInput: ElementRef;
+
+  @ViewChild(YoutubePlayerComponent) youtubeFrame: YoutubePlayerComponent;
+
+  partyType: string = "SPOTIFY";
 
   refreshTimer: Subscription;
   progressTimer: Subscription;
 
   account: UserAccount;
   admin: boolean = false;
+
+  isMobileView: boolean;
+  largeYtPlayer: boolean;
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -56,55 +67,24 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private webSocketService: WebSocketService,
               private loginService: LoginService,
               private dialog: MatDialog,
+              private media: ObservableMedia,
               fb: FormBuilder) {
   }
 
   ngOnInit() {
+    this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
+
+    this.media.subscribe((change: MediaChange) => {
+      this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
+    });
+
     this.webSocketService.connect(`${environment.wsHost}/api/v1/partySocket`, true);
 
     this.route.params.subscribe(params => {
       this.partyService.joinParty(+params["id"]).subscribe(party => {
-        this.loginService.account.subscribe(acc => {
-          this.account = acc;
-          this.admin = party.owner.id == acc.id;
-        });
-
-        this.party = party;
-        this.partyName = this.party.name;
-
-        this.toastyService.info('Active party changed to ' + party.name);
-        this.refresh();
-
-        this.webSocketService.socket.subscribe((next) => {
-          const wsMessage = JSON.parse(next.data) as WSMessage;
-          switch (wsMessage.opcode) {
-            case "AUTH":
-              const success = wsMessage.body === 'true';
-              if (success) {
-                this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
-                this.websocketAuthenticated = true;
-              }
-              break;
-            case "CHAT_MSG":
-              const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
-
-              this.addChatMessage(messageEvent);
-              break;
-            case "CHAT_MSGS":
-              const messageEvents = JSON.parse(wsMessage.body) as ChatMessage[];
-
-              messageEvents.forEach(event => this.addChatMessage(event));
-              break;
-
-            case "QUEUE_UPDATE":
-              this.refresh();
-              break;
-
-            default:
-              console.log(wsMessage);
-              break;
-          }
-        });
+        this.partyType = party.type;
+        console.log(this.partyType);
+        this.join(+params["id"], party.type == 'YOUTUBE');
       });
     });
 
@@ -125,6 +105,66 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     console.log("Destroyed");
   }
 
+  join(id: number, reconnect: boolean = false) {
+    this.partyService.joinParty(id, reconnect).subscribe(party => {
+      this.loginService.account.subscribe(acc => {
+        this.account = acc;
+        this.admin = party.owner.id == acc.id;
+        this.showNoSpotify = party.type == 'SPOTIFY' && !acc.hasSpotify
+      });
+
+      this.party = party;
+      this.partyName = this.party.name;
+
+      this.toastyService.info('Active party changed to ' + party.name);
+      this.refresh();
+
+      this.webSocketService.socket.subscribe((next) => {
+        const wsMessage = JSON.parse(next.data) as WSMessage;
+        console.log(next.data);
+        switch (wsMessage.opcode) {
+          case "AUTH":
+            const success = wsMessage.body === 'true';
+            if (success) {
+              this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
+              this.websocketAuthenticated = true;
+            }
+            break;
+          case "CHAT_MSG":
+            const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
+
+            this.addChatMessage(messageEvent);
+            break;
+          case "CHAT_MSGS":
+            const messageEvents = JSON.parse(wsMessage.body) as ChatMessage[];
+
+            messageEvents.forEach(event => this.addChatMessage(event));
+            break;
+
+          case "COMMAND":
+            const command = JSON.parse(wsMessage.body);
+            if (command.name == "PLAY") {
+              if (this.party.type == "YOUTUBE") {
+                this.playYoutube(command.params.uri, command.params.position);
+              }
+            }
+            break;
+
+          case "QUEUE_UPDATE":
+            this.refresh();
+            break;
+
+          default:
+            console.log(wsMessage);
+            break;
+        }
+      });
+    });
+  }
+
+  private playYoutube(uri: string, position: number) {
+    this.youtubeFrame.play(uri, position / 1000);
+  }
 
   addChatMessage(message: ChatMessage) {
     if (this.messages.length > 100) {
@@ -169,7 +209,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   getArtistThumbnail(entry: PartyQueueEntry, style: boolean) {
     let thumbnail = 'http://via.placeholder.com/400x400';
-    if (entry.thumbnail) {
+    if (entry != null && entry.thumbnail) {
       thumbnail = entry.thumbnail;
     }
 

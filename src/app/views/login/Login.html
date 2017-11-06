@@ -1,20 +1,95 @@
-<div fxLayout="row" fxLayoutAlign="center center" class="login-container" style="height: 100vh;">
-  <mat-card *ngIf="!loggedIn" fxFlex.gt-sm="30" fxFlex.lt-md="100" class="login-card">
+<div fxLayout="row" fxLayoutAlign="center center" class="login-container" fxLayoutWrap="true" style="height: 100vh;">
+  <div fxFlex="100" fxLayoutAlign="center center">
+    <h2 style="color: white;">Log in to continue</h2>
+  </div>
 
-    <div fxLayoutAlign="center center">
-      <mat-card-title>
-        <mat-card-title>
-          <img class="center" src="/assets/logo.png" width="64px" height="64px">
-        </mat-card-title>
-        <mat-card-subtitle class="subtitle">Please login</mat-card-subtitle>
-      </mat-card-title>
-    </div>
-
+  <mat-card *ngIf="!loggedIn" fxFlex.gt-sm="50" fxFlex.lt-md="100" class="login-card transparent-card">
     <mat-card-content>
-      <button color="primary" mat-raised-button (click)="login()">
-        <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
-        Log in with Spotify
-      </button>
+      <mat-tab-group>
+        <mat-tab label="Log in">
+
+          <div fxFlex="100">
+            <form [formGroup]="loginForm" (submit)="emailLogin()">
+
+              <div>
+                <mat-input-container>
+                  <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
+                  <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
+                    This field is required
+                  </mat-error>
+                </mat-input-container>
+              </div>
+
+              <div>
+                <mat-input-container>
+                  <input matInput formControlName="password" placeholder="Password" class="full-width" type="password">
+                  <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+                    This field is required
+                  </mat-error>
+                </mat-input-container>
+              </div>
+
+
+              <button color="primary" mat-raised-button [disabled]="!loginForm.valid">
+                <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
+                Log in
+              </button>
+
+            </form>
+          </div>
+
+        </mat-tab>
+
+        <mat-tab label="Sign up">
+          <form [formGroup]="signupForm" (submit)="emailSignup()">
+
+            <div>
+              <mat-input-container>
+                <input matInput formControlName="displayName" placeholder="Display name" class="full-width">
+                <mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">
+                  This field is required
+                </mat-error>
+              </mat-input-container>
+            </div>
+
+            <div>
+              <mat-input-container>
+                <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
+                <mat-error *ngIf="signupForm.controls['email'].hasError('required')">
+                  This field is required
+                </mat-error>
+              </mat-input-container>
+            </div>
+
+            <div>
+              <mat-input-container>
+                <input matInput formControlName="password" placeholder="Password" class="full-width" type="password">
+                <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
+                  This field is required
+                </mat-error>
+              </mat-input-container>
+            </div>
+
+
+            <button color="primary" mat-raised-button [disabled]="!signupForm.valid">
+              <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
+              Sign up
+            </button>
+
+          </form>
+        </mat-tab>
+      </mat-tab-group>
+
+
+      <div style="margin-top: 30px">
+        <h3>SSO</h3>
+
+        <button color="primary" mat-icon-button (click)="spotifyLogin()">
+          <img src="https://developer.spotify.com/wp-content/uploads/2016/07/icon1@2x.png" height="40px"/>
+        </button>
+      </div>
+
+
     </mat-card-content>
   </mat-card>
 </div>

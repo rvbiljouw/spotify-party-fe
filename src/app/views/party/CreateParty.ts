@@ -21,6 +21,13 @@ export class CreatePartyComponent implements OnInit {
     name: 'Private',
     value: 'PRIVATE'
   }];
+  typeOptions: Array<any> = [{
+    name: 'Spotify',
+    value: 'SPOTIFY'
+  }, {
+    name: 'YouTube',
+    value: 'YOUTUBE'
+  }];
 
   creating = false;
 
@@ -32,7 +39,8 @@ export class CreatePartyComponent implements OnInit {
     this.partyForm = fb.group({
       name: fb.control('', [Validators.required]),
       description: fb.control('', []),
-      access: fb.control('PRIVATE', [Validators.required])
+      access: fb.control('PRIVATE', [Validators.required]),
+      type: fb.control('SPOTIFY', [Validators.required])
     });
   }
 

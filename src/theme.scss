@@ -28,7 +28,7 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
 
-  .dark-theme .mat-card {
+  .dark-theme .transparent-card.mat-card {
     background-color: rgba(24, 24, 24, 0.8) !important;
   }
 

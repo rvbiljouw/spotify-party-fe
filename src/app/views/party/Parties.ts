@@ -21,8 +21,8 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class PartiesComponent implements OnInit {
   yourParties: PartyList;
-  popularParties: ListResponse<Party>;
-  newParties: ListResponse<Party>;
+  spotifyGroup = new PartyGroup();
+  youtubeGroup = new PartyGroup();
   account: UserAccount;
   limit: number = 25;
   offset: number = 0;
@@ -46,15 +46,8 @@ export class PartiesComponent implements OnInit {
       this.account = acc;
     });
 
-    this.partyService.getMostPopular(this.limit, this.offset).subscribe(res => {
-      console.log(res);
-      this.popularParties = res;
-    });
-
-    this.partyService.getNew(this.limit, this.offset).subscribe(res => {
-      this.newParties = res;
-    });
-
+    this.loadGroup(this.spotifyGroup, "SPOTIFY");
+    this.loadGroup(this.youtubeGroup, "YOUTUBE");
 
     this.partyService.getMyParties().subscribe(res => {
       this.yourParties = res;
@@ -67,9 +60,20 @@ export class PartiesComponent implements OnInit {
         if (term.length > 0) {
           this.searching = true;
 
-          let filters = [new Filter(FilterType.CONTAINS, "name", term)];
-          this.partyService.getParties(this.limit, this.offset, filters).subscribe(result => {
-            this.searchResults = result;
+          let spotifyFilters = [
+            new Filter(FilterType.CONTAINS, "name", term),
+            new Filter(FilterType.EQUALS, "type", "SPOTIFY")
+          ];
+          this.partyService.getParties(this.limit, this.offset, spotifyFilters).subscribe(result => {
+            this.spotifyGroup.searchResults = result;
+          });
+
+          let youtubeFilters = [
+            new Filter(FilterType.CONTAINS, "name", term),
+            new Filter(FilterType.EQUALS, "type", "YOUTUBE")
+          ];
+          this.partyService.getParties(this.limit, this.offset, youtubeFilters).subscribe(result => {
+            this.youtubeGroup.searchResults = result;
           });
         }
       });
@@ -94,7 +98,23 @@ export class PartiesComponent implements OnInit {
     }
   }
 
+  loadGroup(group: PartyGroup, type: string) {
+    this.partyService.getMostPopular(this.limit, this.offset, type).subscribe(res => {
+      group.popularParties = res;
+    });
+
+    this.partyService.getNew(this.limit, this.offset, type).subscribe(res => {
+      group.newParties = res;
+    });
+  }
+
   getState() {
     return this.route.data['state'];
   }
+}
+
+export class PartyGroup {
+  popularParties: ListResponse<Party>;
+  newParties: ListResponse<Party>;
+  searchResults: ListResponse<Party>;
 }

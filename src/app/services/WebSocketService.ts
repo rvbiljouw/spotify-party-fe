@@ -5,10 +5,17 @@ import {Observable} from 'rxjs/Observable';
 import {WSMessage} from "../models/WSMessage";
 import {UserAccountService} from "./UserAccountService";
 import {UserAccount} from "../models/UserAccount";
+import {LoginService} from "./LoginService";
 
 @Injectable()
 export class WebSocketService {
-  constructor(private userAccountService: UserAccountService) {
+
+  private account: UserAccount;
+
+  constructor(private loginService: LoginService) {
+    this.loginService.account.subscribe(res => {
+      this.account = res;
+    });
   }
 
   socket: Subject<MessageEvent>;
@@ -52,6 +59,7 @@ export class WebSocketService {
     const observer = {
       next: (evt: MessageEvent) => {
         if (this.ws.readyState === WebSocket.OPEN) {
+          console.log(evt.data)
           this.ws.send(JSON.stringify(evt.data));
         }
       },
@@ -67,9 +75,12 @@ export class WebSocketService {
     if (this.socket == null || this.ws == null || this.ws.readyState !== WebSocket.OPEN) {
       this.authTimeout = setTimeout(this.authenticate.bind(this), 1000);
     } else {
-      this.userAccountService.getSingle().subscribe((account: UserAccount) => {
-        this.socket.next(new MessageEvent("message", {data: new WSMessage("AUTH", {userId: account.id, loginToken: account.loginToken})}));
-      });
+      this.socket.next(new MessageEvent("message", {
+        data: new WSMessage("AUTH", {
+          userId: this.account.id,
+          loginToken: this.account.loginToken.token
+        })
+      }));
     }
   }
 }

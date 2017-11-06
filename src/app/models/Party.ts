@@ -19,6 +19,7 @@ export class Party {
   name: string;
   description: string;
   backgroundUrl: string;
+  type: string;
   status: string;
   created: Date;
   updated: Date;

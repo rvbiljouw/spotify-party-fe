@@ -3,8 +3,7 @@ import {Http} from '@angular/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
-import {UserAccount} from '../models/UserAccount';
-import {DefaultRequestOptions} from "./util/DefaultRequestOptions";
+import {LoginToken, UserAccount} from '../models/UserAccount';
 
 @Injectable()
 export class LoginService {
@@ -19,13 +18,10 @@ export class LoginService {
       } catch (e) {
         this.setAccount(null);
       }
-    } else {
-      console.log("nothing in local storage");
     }
 
     this.validate().subscribe(res => {
-      console.log(res);
-    })
+    });
   }
 
   validate(): Observable<boolean> {
@@ -39,6 +35,21 @@ export class LoginService {
       });
   }
 
+  login(email: string, password: string): Observable<LoginToken> {
+    return this.http.post(`${environment.apiHost}/api/v1/login`, {
+      email: email,
+      password: password
+    }, {withCredentials: true}).map(res => {
+      return res.json() as LoginToken;
+    });
+  }
+
+  register(form: any): Observable<UserAccount> {
+    return this.http.post(`${environment.apiHost}/api/v1/account`, form, {withCredentials: true}).map(res => {
+      return res.json() as UserAccount;
+    });
+  }
+
   logout() {
     document.cookie.split(";").forEach(function (c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
@@ -46,13 +57,12 @@ export class LoginService {
     this.setAccount(null);
   }
 
-  private setAccount(account: UserAccount) {
+  setAccount(account: UserAccount) {
     if (account != null) {
       window.localStorage.setItem('account', JSON.stringify(account));
     } else {
       window.localStorage.clear();
     }
-    DefaultRequestOptions.account = account;
     this.account.next(account);
   }
 }

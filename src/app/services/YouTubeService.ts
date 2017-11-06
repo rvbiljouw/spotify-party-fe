@@ -8,22 +8,14 @@ import {Artist} from "../models/Artist";
 import {Album} from "../models/Album";
 
 @Injectable()
-export class MusicService {
-  private endpoint: string = `${environment.apiHost}/api/v1/music`;
+export class YouTubeService {
+  private endpoint: string = `${environment.apiHost}/api/v1/youtube`;
 
   constructor(private http: Http) {
   }
 
   searchSongs(filters: Array<Filter>, limit: number = 25, offset: number = 0): Observable<ListResponse<Song>> {
     return this.search(`${this.endpoint}/songs`, filters, limit, offset);
-  }
-
-  searchArtists(filters: Array<Filter>, limit: number = 25, offset: number = 0): Observable<ListResponse<Artist>> {
-    return this.search(`${this.endpoint}/artists`, filters, limit, offset);
-  }
-
-  searchAlbums(filters: Array<Filter>, limit: number = 25, offset: number = 0): Observable<ListResponse<Album>> {
-    return this.search(`${this.endpoint}/albums`, filters, limit, offset);
   }
 
   private search<T>(url: string,

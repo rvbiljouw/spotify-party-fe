@@ -1,47 +1,58 @@
 <app-sidebar-layout>
 
-  <app-search-bar id="app-navbar" class="mat-elevation-z2" [showSearch]="true">
+  <app-search-bar id="app-navbar" class="mat-elevation-z2" [showSearch]="true" [partyType]="partyType">
 
+    <div fxFlex="30" fxFlex.gt-md="40">
+      <div fxLayout="row" fxLayoutAlign="end middle">
+        <div>
+          <button mat-icon-button color="accent" (click)="join(party.id, true)">
+            <mat-icon class="button-icon">refresh</mat-icon>
+          </button>
+
+          <button mat-icon-button color="accent" (click)="openSettings()" *ngIf="admin">
+            <mat-icon>settings</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="leave()">
+            <mat-icon>exit_to_app</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
   </app-search-bar>
 
   <div class="root">
 
-    <div fxLayout="row" fxLayoutAlign="end middle">
-      <div>
-        <button mat-raised-button color="accent" (click)="openSettings()" *ngIf="admin">
-          <mat-icon>settings</mat-icon>
-          Manage party
-        </button>
-
-        <button mat-raised-button color="warn" (click)="leave()">
-          <mat-icon>exit_to_app</mat-icon>
-          Leave party
-        </button>
-      </div>
-    </div>
+    <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
+      <span>You need to link your Spotify Premium account to join this party.</span>
+      <button mat-raised-button color="primary">Click here to get started.</button>
+    </mat-toolbar>
 
     <div fxLayout="row" fxLayoutWrap="true">
 
-      <div fxFlex.gt-md="80" fxFlex="100" *ngIf="party != null" style="padding: 5px;">
+      <div fxFlex.gt-md="75" fxFlex="100" *ngIf="party != null" style="padding: 10px;">
 
-        <div style="margin-bottom: 30px;" [@opacityInOut]>
+        <div style="margin-bottom: 20px;" [@opacityInOut]>
 
-          <h2>Now playing</h2>
+          <div class="now-playing-box" *ngIf="party.type == 'YOUTUBE'">
+            <div fxLayout="row" fxLayoutAlign="center">
+              <div *ngIf="queue != null" fxFlex="100">
+                <div fxLayout="row" fxLayoutWrap="true">
+                  <div fxFlex="100" fxFlex.gt-sm="60">
+                    <div class="youtube-player">
+                      <app-youtube-player #youtubeFrame>
+                      </app-youtube-player>
+                    </div>
+                  </div>
 
-          <mat-card>
-            <mat-card-content>
-              <div fxLayout="row">
-                <div *ngIf="queue != null && queue.nowPlaying != null" fxFlex="100" fxFlex.gt-md="50">
-                  <div fxLayout="row" fxLayoutGap="20px">
-                    <div class="now-playing-thumbnail"
-                         [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"></div>
-                    <mat-list>
+                  <div fxFlex="100" fxFlex.gt-sm="40">
+                    <mat-list *ngIf="queue.nowPlaying != null">
                       <mat-list-item>
                         <mat-icon mat-list-icon>music_note</mat-icon>
                         <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
                         <p mat-line> {{ queue.nowPlaying.artist }}</p>
                       </mat-list-item>
-                      <mat-list-item>
+                      <mat-list-item *ngIf="queue.nowPlaying.member != null">
                         <mat-icon mat-list-icon>person</mat-icon>
                         <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
                       </mat-list-item>
@@ -57,39 +68,64 @@
                       </mat-list-item>
                     </mat-list>
                   </div>
-                  <div *ngIf="queue == null || queue.nowPlaying == null">
-                    <div fxLayout="column" fxLayoutAlign="center center">
-                      <h3>Nothing is currently playing</h3>
-                    </div>
+                </div>
+                <div *ngIf="queue == null || queue.nowPlaying == null">
+                  <div fxLayout="column" fxLayoutAlign="center center">
+                    <h3>Nothing is currently playing</h3>
                   </div>
                 </div>
-
-                <div *ngIf="queue != null && queue.entries.length > 0" fxHide="true" fxShow.gt-md="true"
-                     fxFlex.gt-md="50">
-                  <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="end">
-                    <div>
-                      <h3>Up next</h3>
-                      <mat-list>
-                        <mat-list-item *ngFor="let entry of queue.entries | slice:0:2">
-                          <mat-icon class="artist-thumbnail" mat-list-icon
-                                    [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                          <h4 mat-line> {{ entry.title }}</h4>
-                          <p mat-line> {{entry.artist }}</p>
-                        </mat-list-item>
-                      </mat-list>
-                    </div>
-                  </div>
-                </div>
-
               </div>
+            </div>
+          </div>
 
-            </mat-card-content>
-          </mat-card>
+          <div *ngIf="party.type != 'YOUTUBE'" class="now-playing-box">
+            <div fxLayout="row" fxLayoutAlign="center">
+              <div *ngIf="queue != null" fxFlex="100" style="margin-bottom: 10px;">
+                <div fxLayout="row" fxLayoutWrap="true">
+                  <div class="now-playing-thumbnail"
+                       [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
+                       fxFlex="100"
+                       fxFlex.gt-sm="40"
+                       *ngIf="party.type != 'YOUTUBE'">
+                  </div>
+                  <div fxFlex="100" fxFlex.gt-sm="50">
+                    <mat-list *ngIf="queue.nowPlaying != null">
+                      <mat-list-item>
+                        <mat-icon mat-list-icon>music_note</mat-icon>
+                        <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
+                        <p mat-line> {{ queue.nowPlaying.artist }}</p>
+                      </mat-list-item>
+                      <mat-list-item *ngIf="queue.nowPlaying.member != null">
+                        <mat-icon mat-list-icon>person</mat-icon>
+                        <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
+                      </mat-list-item>
+                      <mat-list-item>
+                        <mat-icon mat-list-icon>av_timer</mat-icon>
+                        <div mat-line>
+                          <mat-progress-bar
+                            color="primary"
+                            mode="determinate"
+                            [value]="progress">
+                          </mat-progress-bar>
+                        </div>
+                      </mat-list-item>
+                    </mat-list>
+                  </div>
+                </div>
+                <div *ngIf="queue == null || queue.nowPlaying == null">
+                  <div fxLayout="column" fxLayoutAlign="center center">
+                    <h3>Nothing is currently playing</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div [@opacityInOut]>
 
-          <mat-card>
+          <mat-card class="transparent-card">
             <mat-card-content>
 
               <mat-tab-group>
@@ -101,16 +137,14 @@
                       <h4>Start by selecting a song using the search field above</h4>
                     </div>
 
-                    <table class="full-width" *ngIf="queue.entries.length > 0">
-                      <thead>
+                    <table class="full-width" style="display: table;" *ngIf="queue.entries.length > 0" fxShow="false"
+                           fxShow.gt-sm="true">
                       <tr>
                         <th class="column-header">Song</th>
                         <th class="column-header">Artist</th>
                         <th class="column-header">Requested by</th>
                         <th></th>
                       </tr>
-                      </thead>
-                      <tbody>
                       <tr *ngFor="let entry of queue.entries">
                         <td>
                           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
@@ -135,8 +169,11 @@
                           </div>
                         </td>
                       </tr>
-                      </tbody>
                     </table>
+
+                    <mat-list fxHide="false" fxHide.gt-sm="true">
+                      <app-queue-list-item [entry]="entry" *ngFor="let entry of queue.entries"></app-queue-list-item>
+                    </mat-list>
                   </div>
                 </mat-tab>
 
@@ -192,19 +229,24 @@
       </div>
 
 
-      <div fxFlex.gt-md="20" fxFlex="100" *ngIf="party != null" style="padding: 5px;" [@opacityInOut]>
-        <h2>Chat</h2>
-
-        <mat-card style="height: 62vh; padding: 2px;">
+      <div fxFlex.gt-md="25" fxFlex="100" *ngIf="party != null" style="padding: 10px;" [@opacityInOut]>
+        <mat-card class="transparent-card chat-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>chat</mat-icon>
+            <mat-card-title>Chatbox</mat-card-title>
+            <mat-card-subtitle>{{ party.members.length }} users online.</mat-card-subtitle>
+          </mat-card-header>
           <mat-card-content class="chat-container">
             <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
-              <div style="padding: 10px; min-height: 18px;" *ngFor="let message of messages">
+              <div style="min-height: 18px;" *ngFor="let message of messages">
                 <span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>
                 <span style="font-size: 13px; font-weight: bold;" [style.color]="getMessageColor(message)">{{message.sender}}</span>
                 <span
                   style="font-size: 13px; white-space:normal; word-wrap:break-word;">: {{message.message | emojify}}</span>
               </div>
             </div>
+          </mat-card-content>
+          <mat-card-footer>
             <div class="send-chat-btn">
               <input mdInput class="chat-input" (keydown)="sendChatMessage($event)" #chatInput
                      placeholder="Type to chat">
@@ -213,7 +255,7 @@
                 Send
               </button>
             </div>
-          </mat-card-content>
+          </mat-card-footer>
         </mat-card>
       </div>
 

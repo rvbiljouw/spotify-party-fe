@@ -1,94 +1,69 @@
 <div class="navbar-container">
-  <mat-toolbar color="primary">
-    <div style="width: 100%" fxLayout fxLayoutAlign="start center" fxLayoutGap="10px">
-      <div fxFlex.gt-sm="70" fxFlex="66">
-        <div class="title-box" *ngIf="title != null && title.length > 0">{{ title}}</div>
-        <div class="search-box" *ngIf="showSearch">
-          <mat-input-container style="width: 100%;">
-            <i class="button-icon fa fa-search" matPrefix></i>
-            <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
-          </mat-input-container>
-          <button mat-raised-button (click)="searching = false" color="accent" *ngIf="searching">
-            <mat-icon class="button-icon">close</mat-icon>
-            Close search
-          </button>
-        </div>
-      </div>
-
-      <div fxFlex.gt-sm="30" fxFlex="33">
-        <div fxLayoutAlign="end center" fxLayoutGap="20px">
-          <ng-container *ngIf="account != null">
-            <button mat-button (click)="logout()">Log out</button>
-          </ng-container>
-          <ng-container *ngIf="account == null">
-            <button mat-button (click)="login()">Log in</button>
-          </ng-container>
-        </div>
+  <mat-toolbar class="navbar" fxLayoutWrap="true">
+    <div fxFlex="80" fxFlex.gt-md="70">
+      <div class="title-box" *ngIf="title != null && title.length > 0">{{ title}}</div>
+      <div class="search-box" *ngIf="showSearch">
+        <mat-input-container style="width: 100%;">
+          <i class="button-icon fa fa-search" matPrefix></i>
+          <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+        </mat-input-container>
+        <button mat-icon-button (click)="searching = false" *ngIf="searching">
+          <mat-icon class="button-icon">close</mat-icon>
+        </button>
       </div>
     </div>
+
+    <ng-content></ng-content>
   </mat-toolbar>
 
   <div class="search-overlay" *ngIf="searching">
-    <mat-card>
-      <mat-card-content>
-        <mat-tab-group>
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <div><i class="button-icon fa fa-music"></i>
-                Songs ({{ songs.maxRecords}})
-              </div>
-            </ng-template>
 
-            <div fxFlex="100">
-              <mat-progress-spinner
-                *ngIf="searchingSongs"
-                class="in-progress"
-                color="primary"
-                mode="indeterminate">
-              </mat-progress-spinner>
+    <div fxFlex="100">
+      <mat-progress-spinner
+        *ngIf="searchingSongs"
+        class="in-progress"
+        color="primary"
+        mode="indeterminate">
+      </mat-progress-spinner>
 
-              <div *ngIf="!searchingSongs">
-                <div>
-                  <div fxLayout="row">
+      <div *ngIf="!searchingSongs">
+        <div>
+          <div fxLayout="row">
 
-                    <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" style="margin-bottom: 10px"
-                         fxFlex="100" fxFlex.gt-md="50">
-                      <mat-paginator [length]="songs.maxRecords"
-                                     [pageIndex]="songsPageNumber"
-                                     style="background: none;"
-                                     [pageSize]="songsLimit"
-                                     [pageSizeOptions]="pageSizeOptions"
-                                     (page)="onSongsPageEvent($event)">
-                      </mat-paginator>
-                    </div>
-                  </div>
-
-                  <div fxLayout="row">
-
-
-                    <mat-list fxFlex="100" fxFlex.gt-md="50">
-                      <app-song-list-item *ngFor="let item of songs.items" [song]="item"
-                                          class="typical-list-item"></app-song-list-item>
-                    </mat-list>
-
-                  </div>
-                  <div fxLayout="row">
-                    <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" fxFlex="100" fxFlex.gt-md="50">
-                      <mat-paginator [length]="songs.maxRecords"
-                                     [pageIndex]="songsPageNumber"
-                                     [pageSize]="songsLimit"
-                                     style="background: none;"
-                                     [pageSizeOptions]="pageSizeOptions"
-                                     (page)="onSongsPageEvent($event)">
-                      </mat-paginator>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" style="margin-bottom: 10px"
+                 fxFlex="100" fxFlex.gt-md="50">
+              <mat-paginator [length]="songs.maxRecords"
+                             [pageIndex]="songsPageNumber"
+                             style="background: none;"
+                             [pageSize]="songsLimit"
+                             [pageSizeOptions]="pageSizeOptions"
+                             (page)="onSongsPageEvent($event)">
+              </mat-paginator>
             </div>
-          </mat-tab>
-        </mat-tab-group>
-      </mat-card-content>
-    </mat-card>
+          </div>
+
+          <div fxLayout="row">
+
+
+            <mat-list fxFlex="100" fxFlex.gt-md="50">
+              <app-song-list-item *ngFor="let item of songs.items" [song]="item"
+                                  class="typical-list-item"></app-song-list-item>
+            </mat-list>
+
+          </div>
+          <div fxLayout="row">
+            <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" fxFlex="100" fxFlex.gt-md="50">
+              <mat-paginator [length]="songs.maxRecords"
+                             [pageIndex]="songsPageNumber"
+                             [pageSize]="songsLimit"
+                             style="background: none;"
+                             [pageSizeOptions]="pageSizeOptions"
+                             (page)="onSongsPageEvent($event)">
+              </mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

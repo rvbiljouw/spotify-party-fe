@@ -5,6 +5,7 @@ import {MatDialog} from '@angular/material';
 import {ToastyService} from 'ng2-toasty';
 import {Party} from "../models/Party";
 import {animate, state, style, transition, trigger} from "@angular/animations";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-party-card',
@@ -31,20 +32,29 @@ export class PartyCardComponent implements OnInit {
   constructor(private queueService: QueueService,
               private domSanitizer: DomSanitizer,
               private toast: ToastyService,
+              private router: Router,
               private dialog: MatDialog,) {
   }
 
   ngOnInit() {
   }
 
+  join() {
+    this.router.navigate(['party', this.party.id])
+      .catch(err => {
+      console.log(err);
+    }).then((bool) => {
+      console.log(bool);
+    })
+  }
 
   getBackground(party: Party) {
     if (party.nowPlaying != null) {
-      return this.domSanitizer.bypassSecurityTrustUrl(party.nowPlaying.thumbnail);
+      return this.domSanitizer.bypassSecurityTrustStyle(`url('${party.nowPlaying.thumbnail}')`);
     } else if (party.backgroundUrl != null && party.backgroundUrl != null && party.backgroundUrl.length > 0) {
-      return this.domSanitizer.bypassSecurityTrustUrl(party.backgroundUrl);
+      return this.domSanitizer.bypassSecurityTrustStyle(`url('${party.backgroundUrl}')`);
     } else {
-      return this.domSanitizer.bypassSecurityTrustUrl('assets/bg3.jpg');
+      return this.domSanitizer.bypassSecurityTrustStyle('url(\'assets/bg3.jpg\')');
     }
   }
 

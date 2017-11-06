@@ -1,9 +1,9 @@
 import {MatButtonModule, MatIconModule, MatIconRegistry, MatNativeDateModule,} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpModule, RequestOptions} from '@angular/http';
+import {HttpModule} from '@angular/http';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login/Login';
@@ -21,9 +21,7 @@ import 'hammerjs';
 import {AuthGuard} from './utils/AuthGuard';
 import {WebSocketService} from './services/WebSocketService';
 import {MaterialModule} from './material.module';
-import {DefaultRequestOptions} from "./services/util/DefaultRequestOptions";
 import {DurationPipe} from "./utils/DurationPipe";
-import {MusicService} from "./services/SongService";
 import {PartyService} from "./services/PartyService";
 import {CreatePartyComponent} from "./views/party/CreateParty";
 import {ViewPartyComponent} from "./views/party/ViewParty";
@@ -37,9 +35,13 @@ import {ManagePartyComponent} from "./views/party/ManageParty";
 import {SidebarLayoutComponent} from "./views/SidebarLayout";
 import {LandingComponent} from "./views/landing/Landing";
 import {PartyCardComponent} from "./widgets/PartyCard";
+import {SpotifyService} from "./services/SpotifyService";
+import {YoutubePlayerComponent} from "./widgets/YoutubePlayer";
+import {YouTubeService} from "./services/YouTubeService";
 
 const routes: Routes = [
-  {path: '', component: LandingComponent, pathMatch: 'full'},
+  {path: '', redirectTo: 'home', pathMatch: 'full'},
+  {path: 'home', component: LandingComponent},
   {path: 'login', component: LoginComponent},
   {path: 'parties', component: PartiesComponent},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
@@ -60,7 +62,8 @@ const routes: Routes = [
     ManagePartyComponent,
     SidebarLayoutComponent,
     LandingComponent,
-    PartyCardComponent
+    PartyCardComponent,
+    YoutubePlayerComponent
   ],
   imports: [
     MatNativeDateModule,
@@ -81,15 +84,15 @@ const routes: Routes = [
     EmojifyModule,
   ],
   providers: [
-    {provide: RequestOptions, useClass: DefaultRequestOptions},
     LoginService,
     WebSocketService,
     UserAccountService,
     AuthGuard,
     MatIconRegistry,
-    MusicService,
+    SpotifyService,
     PartyService,
-    QueueService
+    QueueService,
+    YouTubeService
   ],
   entryComponents: [ManagePartyComponent],
   bootstrap: [AppComponent],

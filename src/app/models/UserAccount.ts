@@ -1,11 +1,15 @@
 export class UserAccount {
   id: number;
-  spotifyId: string;
   displayName: string;
-  loginToken: string;
-  accessToken: string;
-  refreshToken: string;
-  selectedDevice: string;
+  displayPicture: string;
+  loginToken: LoginToken;
+  hasSpotify: boolean;
   created: Date;
   updated: Date;
+}
+
+export class LoginToken {
+  id: number;
+  account: UserAccount;
+  token: string;
 }

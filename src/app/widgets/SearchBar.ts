@@ -5,10 +5,11 @@ import {UserAccount} from "../models/UserAccount";
 import {FormControl} from "@angular/forms";
 import {Filter, FilterType, ListResponse} from "../services/ApiService";
 import {Song} from "../models/Song";
-import {MusicService} from "../services/SongService";
+import {SpotifyService} from "../services/SpotifyService";
 import {ToastyService} from "ng2-toasty";
 import {PageEvent} from "@angular/material";
 import {environment} from "environments/environment";
+import {YouTubeService} from "../services/YouTubeService";
 
 @Component({
   selector: 'app-search-bar',
@@ -35,8 +36,11 @@ export class SearchBarComponent implements OnInit {
   songsOffset = 0;
   searchingSongs = false;
 
+  @Input() partyType: string;
+
   constructor(private loginService: LoginService,
-              private musicService: MusicService,
+              private spotifyService: SpotifyService,
+              private youtubeService: YouTubeService,
               private toastyService: ToastyService,
               private router: Router,) {
   }
@@ -72,24 +76,44 @@ export class SearchBarComponent implements OnInit {
   setSongsPage(nextPage: any) {
     this.searchingSongs = true;
 
-    const filters: Array<Filter> = [
-      new Filter(FilterType.OR, null, null, [
-        new Filter(FilterType.STARTS_WITH, 'ARTIST', this.searchTerm.value),
-        new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value),
-      ])
-    ];
+    if(this.partyType == 'SPOTIFY') {
 
-    this.musicService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
-      result => {
-        this.songs = result;
-        this.searchingSongs = false;
-      },
-      err => {
-        console.log(err);
-        this.searchingSongs = false;
-        this.toastyService.error('Unable to search songs');
-      },
-    );
+      const filters: Array<Filter> = [
+        new Filter(FilterType.OR, null, null, [
+          new Filter(FilterType.STARTS_WITH, 'ARTIST', this.searchTerm.value),
+          new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value),
+        ])
+      ];
+
+      this.spotifyService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+        result => {
+          this.songs = result;
+          this.searchingSongs = false;
+        },
+        err => {
+          console.log(err);
+          this.searchingSongs = false;
+          this.toastyService.error('Unable to search songs');
+        },
+      );
+    } else if(this.partyType == 'YOUTUBE') {
+
+      const filters: Array<Filter> = [
+        new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value)
+      ];
+
+      this.youtubeService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+        result => {
+          this.songs = result;
+          this.searchingSongs = false;
+        },
+        err => {
+          console.log(err);
+          this.searchingSongs = false;
+          this.toastyService.error('Unable to search songs');
+        },
+      );
+    }
   }
 
   onSongsPageEvent(pageEvent: PageEvent) {

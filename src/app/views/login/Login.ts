@@ -15,9 +15,11 @@ import {environment} from "../../../environments/environment";
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  signupForm: FormGroup;
 
   loggingIn = false;
   loggedIn = false;
+  signingUp = false;
 
   referrer: string = null;
 
@@ -30,6 +32,11 @@ export class LoginComponent implements OnInit {
       email: new FormControl('', [Validators.email, Validators.required]),
       password: new FormControl('', [Validators.required]),
     });
+    this.signupForm = fb.group({
+      displayName: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.email, Validators.required]),
+      password: new FormControl('', [Validators.required])
+    })
   }
 
   ngOnInit() {
@@ -41,7 +48,9 @@ export class LoginComponent implements OnInit {
       (token: UserAccount) => {
         if (token != null && token.id > 0) {
           this.loggedIn = true;
-          this.router.navigateByUrl('/');
+          this.router.navigate(['parties']).then(() => {
+            window.location.reload(true);
+          });
         }
       },
       err => {
@@ -51,14 +60,39 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  login() {
+  spotifyLogin() {
     this.loggingIn = true;
 
     if (this.referrer != null) {
-      window.location.href = `${environment.apiHost}/api/v1/login?redirectUrl=${this.referrer}`;
+      window.location.href = `${environment.apiHost}/api/v1/spotify/login?redirectUrl=${this.referrer}`;
     } else {
-      window.location.href = `${environment.apiHost}/api/v1/login`;
+      window.location.href = `${environment.apiHost}/api/v1/spotify/login`;
     }
+  }
+
+  emailLogin() {
+    this.loggingIn = true;
+
+    this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe(res => {
+      this.loginService.setAccount(res.account);
+      this.router.navigate(['parties']).then(() => {
+        window.location.reload(true);
+      });
+    });
+  }
+
+  emailSignup() {
+    this.signingUp = true;
+
+    this.loginService.register(this.signupForm.value).subscribe(res => {
+      this.toastyService.info('Your account has been created. Logging you in...');
+      this.loginService.setAccount(res);
+      this.router.navigate(['parties']).then(() => {
+        window.location.reload(true);
+      });
+    }, err => {
+      this.toastyService.error(`Sign up failed. ${err}`);
+    });
   }
 
   getState() {

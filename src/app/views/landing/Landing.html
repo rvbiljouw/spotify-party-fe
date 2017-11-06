@@ -5,29 +5,32 @@
       </div>
     </div>
     <mat-toolbar class="toolbar" fxLayoutAlign="end center">
-      <button mat-button [routerLink]="['']">Home</button>
-      <button mat-button [routerLink]="['parties']">Parties</button>
-      <button mat-button [routerLink]="['login']" *ngIf="!loggedIn">Log in</button>
+      <button mat-button [routerLink]="['/home']">Home</button>
+      <button mat-button [routerLink]="['/parties']">Parties</button>
+      <button mat-button [routerLink]="['/login']" *ngIf="!loggedIn">Log in</button>
       <button mat-button (click)="logout()" *ngIf="loggedIn">Log out</button>
     </mat-toolbar>
   </div>
 
-  <div class="container masthead-overlay">
+  <div class="container masthead-overlay" fxLayout="row" fxLayoutAlign="center center">
 
-    <div fxLayout="row" fxFlex>
-      <div fxLayout="column" fxLayoutAlign="center center" fxFlex>
-        <h1>Spotify for Communities</h1>
-        <h2>Listen to music, together.</h2>
-
-        <div fxLayout="row" fxLayoutAlign="center">
-          <div fxFlex="20" fxLayout="column" *ngFor="let party of parties.items">
-            <div fxFlex="100" fxLayout="column" fxLayoutAlign="center center">
+    <div fxFlex="80">
+      <div fxLayout="row" fxLayoutWrap="true">
+        <div fxFlex.gt-sm="50" fxFlex="100">
+          <h1 class="masthead-title">This is Awsum</h1>
+          <h2 class="masthead-subtitle">Discover, share and listen to music with friends.</h2>
+          <p>Use awsum.io to create groups where you and your friends can listen to music with YouTube or our Spotify
+            integration.</p>
+          <button mat-raised-button [routerLink]="['/login']">Sign up</button>
+        </div>
+        <div fxFlex.gt-sm="50" fxFlex="100">
+          <div fxLayout="row" fxLayoutAlign="center" fxLayoutWrap="true">
+            <div fxFlex.gt-sm="50" fxFlex="100" fxLayout="column" *ngFor="let party of parties.items">
               <app-party-card [party]="party"></app-party-card>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>

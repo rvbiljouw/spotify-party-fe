@@ -12,6 +12,8 @@ import { environment } from './environments/environment';
 
 import 'rxjs/add/operator/distinctUntilChanged';
 
+import * as YTPlayer from "yt-player";
+
 if (environment.production) {
   enableProdMode();
 }

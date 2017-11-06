@@ -11,8 +11,9 @@ import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 
 @Injectable()
 export class PartyService {
-  private endpoint = `${environment.apiHost}/api/v1/party`;
-  private pluralEndpoint = `${environment.apiHost}/api/v1/parties`;
+  private endpoint = `${environment.apiHost}/api/v1/parties`;
+  private createEndpoint = `${environment.apiHost}/api/v1/party`;
+
   partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
@@ -36,7 +37,7 @@ export class PartyService {
   }
 
   createParty(req: CreatePartyRequest) {
-    return this.http.post(this.endpoint, req, {withCredentials: true}).map(res => {
+    return this.http.post(`${this.createEndpoint}`, req, {withCredentials: true}).map(res => {
       let party = res.json() as Party;
       this.refresh();
       return party;
@@ -44,23 +45,23 @@ export class PartyService {
   }
 
   leaveParty(id: number): Observable<boolean> {
-    return this.http.delete(`${this.endpoint}/${id}`, {withCredentials: true}).map(res => {
+    return this.http.delete(`${this.endpoint}/${id}/members`, {withCredentials: true}).map(res => {
       this.refresh();
       return true;
     });
   }
 
-  joinParty(id: number): Observable<Party> {
+  joinParty(id: number, reconnect: boolean = false): Observable<Party> {
     console.log(id);
-    return this.http.put(`${this.endpoint}/${id}/members`, {}, {withCredentials: true}).map(res => {
+    return this.http.put(`${this.endpoint}/${id}/members?reconnect=${reconnect}`, {}, {withCredentials: true}).map(res => {
       let party = res.json() as Party;
       this.refresh();
       return party;
     })
   }
 
-  getMostPopular(limit: number, offset: number): Observable<ListResponse<Party>> {
-    return this.http.get(`${this.pluralEndpoint}/popular?limit=${limit}&offset=${offset}`).map(result => {
+  getMostPopular(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
+    return this.http.get(`${this.endpoint}/popular?limit=${limit}&offset=${offset}&type=${type}`, {withCredentials: true}).map(result => {
       const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
       const offset = Number.parseInt(result.headers.get('X-Offset'));
       return new ListResponse<Party>(
@@ -71,8 +72,8 @@ export class PartyService {
     });
   }
 
-  getNew(limit: number, offset: number): Observable<ListResponse<Party>> {
-    return this.http.get(`${this.pluralEndpoint}/new?limit=${limit}&offset=${offset}`).map(result => {
+  getNew(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
+    return this.http.get(`${this.endpoint}/new?limit=${limit}&offset=${offset}&type=${type}`, {withCredentials: true}).map(result => {
       const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
       const offset = Number.parseInt(result.headers.get('X-Offset'));
       return new ListResponse<Party>(
@@ -84,11 +85,11 @@ export class PartyService {
   }
 
   getParties(limit: number, offset: number, filters: Array<Filter> = []): Observable<ListResponse<Party>> {
-    return this.search(this.pluralEndpoint, filters, limit, offset);
+    return this.search(this.endpoint, filters, limit, offset);
   }
 
   getMyParties(): Observable<PartyList> {
-    return this.http.get(this.endpoint, {withCredentials: true}).map(res => {
+    return this.http.get(`${this.endpoint}/mine`, {withCredentials: true}).map(res => {
       return res.json() as PartyList;
     });
   }
@@ -127,6 +128,6 @@ export class PartyService {
 }
 
 export class CreatePartyRequest {
-  constructor(name: string, description: string) {
+  constructor(name: string, description: string, type: string, access: string) {
   }
 }

@@ -8,7 +8,9 @@ import {ListResponse} from "./ApiService";
 
 @Injectable()
 export class QueueService {
-  private endpoint: string = `${environment.apiHost}/api/v1/queue`;
+  private endpoint: string = `${environment.apiHost}/api/v1/party/active/queue`;
+  private historyEndpoint: string = `${environment.apiHost}/api/v1/party/active/history`;
+
 
   constructor(private http: Http) {
   }
@@ -20,7 +22,7 @@ export class QueueService {
   }
 
   getHistory(limit: number, offset: number): Observable<ListResponse<PartyQueueEntry>> {
-    return this.http.get(`${this.endpoint}/history`, {withCredentials: true}).map(result => {
+    return this.http.get(this.historyEndpoint, {withCredentials: true}).map(result => {
       const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
       const offset = Number.parseInt(result.headers.get('X-Offset'));
       return new ListResponse<PartyQueueEntry>(
@@ -54,9 +56,9 @@ export class QueueSongRequest {
 
   static forSong(song: Song) {
     let req = new QueueSongRequest();
-    req.artist = song.artists[0].name;
-    req.title = song.name;
-    req.thumbnail = song.album.images[0].url;
+    req.artist = song.artist;
+    req.title = song.title;
+    req.thumbnail = song.thumbnail;
     req.uri = song.uri;
     req.duration = song.duration;
     return req;

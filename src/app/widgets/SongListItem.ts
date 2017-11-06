@@ -27,15 +27,15 @@ export class SongListItemComponent implements OnInit {
   play() {
     this.queueService.queueSong(QueueSongRequest.forSong(this.song)).subscribe(playout => {
       this.toast.success(
-        `${this.song.artists[0].name} - ${this.song.name} has been queued.`,
+        `${this.song.artist} - ${this.song.title} has been queued.`,
       );
     });
   }
 
   getArtistThumbnail(style: boolean) {
     let thumbnail = 'http://via.placeholder.com/400x400';
-    if (this.song.album && this.song.album.images.length > 0) {
-      thumbnail = this.song.album.images[0].url;
+    if (this.song.thumbnail && this.song.thumbnail.length > 0) {
+      thumbnail = this.song.thumbnail;
     }
 
     if (style) {

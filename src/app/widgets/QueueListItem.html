@@ -18,16 +18,22 @@
   <mat-icon mat-list-icon class="artist-thumbnail"
             [style.background-image]="getArtistThumbnail(true)"></mat-icon>
 
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
-    {{ entry.artist }}
-    </span>
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+  <span fxHide.gt-sm="true" mat-line style="font-size: 12px; font-weight: bold;">
     {{ entry.title }}
   </span>
 
-  <h4 mat-line fxHide.lt-mat="true">
+  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+    {{ entry.artist }}
+    </span>
+
+  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
+Added by {{ entry.member.displayName }}
+  </span>
+
+
+  <h4 mat-line fxHide.lt-md="true">
     {{ entry.artist }} - {{ entry.title }}
   </h4>
-  <p mat-line style="font-size: 11px;">{{ entry.duration | duration }}</p>
-  <p mat-line>Requested by {{ entry.member.displayName }}</p>
+
+  <p mat-line fxHide.lt-md="true">Added by {{ entry.member.displayName }}</p>
 </mat-list-item>

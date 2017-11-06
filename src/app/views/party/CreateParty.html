@@ -1,10 +1,10 @@
 <app-sidebar-layout>
 
-  <mat-toolbar color="primary">
+  <mat-toolbar class="transparent-bar">
     <span>Creating a party</span>
   </mat-toolbar>
 
-  <mat-card>
+  <mat-card class="transparent-card">
     <mat-card-content>
       <div class="root">
 
@@ -24,6 +24,25 @@
           <div fxFlex="100" fxFlex.gt-sm="40">
 
             <form [formGroup]="partyForm" (ngSubmit)="submit()">
+
+
+              <div style="margin-top: 20px;">
+                <mat-form-field>
+                  <mat-select placeholder="Party type" formControlName="type" class="full-width">
+                    <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+                      {{ type.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-error *ngIf="partyForm.controls['type'].hasError('required')">
+                  This field is required
+                </mat-error>
+
+                <div style="padding-bottom: 20px;"
+                     *ngIf="partyForm.controls['type'].invalid && partyForm.controls['type'].dirty"></div>
+              </div>
+
 
               <div style="margin-top: 20px;">
                 <mat-form-field>

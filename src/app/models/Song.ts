@@ -1,20 +1,9 @@
-import {Album} from './Album';
-import {Artist} from './Artist';
-
 export class Song {
   id: string;
-  href: string;
-  name: string;
+  artist: string;
+  title: string;
+  album: string;
   uri: string;
-  album: Album;
-  artists: Array<Artist>;
-  markets: Array<string>;
+  thumbnail: string;
   duration: number;
-  explicit: boolean;
-  ids: any;
-  urls: any;
-  popularity: number;
-  discNumber: number;
-  previewUrl: string;
-  trackNumber: number;
 }

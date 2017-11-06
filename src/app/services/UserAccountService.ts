@@ -4,7 +4,6 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
 import {UserAccount} from '../models/UserAccount';
-import {DefaultRequestOptions} from "./util/DefaultRequestOptions";
 import {ApiService} from "./ApiService";
 
 @Injectable()
