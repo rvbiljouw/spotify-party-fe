@@ -9,7 +9,7 @@
   <div class="party-thumbnail" [style.background-image]="getBackground(party)"></div>
   <div class="party-details">
 
-    <div class="now-playing">
+    <div class="now-playing" *ngIf="party.nowPlaying != null">
       <b>{{ party.nowPlaying.title}}</b>
     </div>
 
