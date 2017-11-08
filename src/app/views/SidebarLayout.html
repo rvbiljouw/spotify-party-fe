@@ -1,4 +1,3 @@
-<ng2-toasty style="z-index: 9999"></ng2-toasty>
 <mat-sidenav-container class="sidenav-container" [style.background-image]="getBackground(backgroundUrl)">
   <mat-sidenav #sidenav [mode]="mode" [opened]="opened">
     <div class="logo-container" fxLayout="row" fxLayoutAlign="center center">
@@ -19,17 +18,30 @@
           Create party
         </button>
       </li>
-
-      <li class="header">YOUR PARTIES</li>
-      <li *ngFor="let party of parties.parties">
-        <button mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
-          <mat-icon class="button-icon">group</mat-icon>
-          {{ party.name}}
+      <li *ngIf="account == null">
+        <button color="primary" mat-button [routerLink]="['/login']" routerLinkActive="active">
+          <mat-icon class="button-icon">exit_to_app</mat-icon>
+          Sign up/Login
         </button>
       </li>
 
-      <li class="header">YOUR ACCOUNT</li>
-      <li>
+      <li *ngIf="account != null" class="header">YOUR PARTIES</li>
+      <li *ngFor="let party of sortedParties()">
+        <button mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
+          <img [src]="getPartyIcon(party)" class="button-icon sidebar-party-icon" alt="party">
+          {{ party.name }}
+          <span *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id" class="active-chip">ACTIVE</span>
+        </button>
+      </li>
+
+      <li *ngIf="account != null" class="header">YOUR ACCOUNT</li>
+      <li *ngIf="account != null">
+        <button mat-button [routerLink]="['/account']" routerLinkActive="active">
+          <mat-icon class="button-icon">account_circle</mat-icon>
+          Manage
+        </button>
+      </li>
+      <li *ngIf="account != null">
         <button mat-button (click)="logout()">
           <mat-icon class="button-icon">exit_to_app</mat-icon>
           Log out

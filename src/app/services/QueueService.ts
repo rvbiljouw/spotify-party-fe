@@ -5,24 +5,31 @@ import {Observable} from "rxjs/Observable";
 import {PartyQueue, PartyQueueEntry} from "../models/PartyQueue";
 import {Song} from "../models/Song";
 import {ListResponse} from "./ApiService";
+import {Party} from "../models/Party";
 
 @Injectable()
 export class QueueService {
-  private endpoint: string = `${environment.apiHost}/api/v1/party/active/queue`;
-  private historyEndpoint: string = `${environment.apiHost}/api/v1/party/active/history`;
+  private endpoint: string = `${environment.apiHost}/api/v1/party/:id`;
+  private historyEndpoint: string = `${environment.apiHost}/api/v1/party/:id`;
 
 
   constructor(private http: Http) {
   }
 
-  getQueue(): Observable<PartyQueue> {
-    return this.http.get(this.endpoint, {withCredentials: true}).map(res => {
+  private getUrl(party: Party) {
+    return party.type === "SPOTIFY" ? this.endpoint.replace(":id", "active") :
+      this.endpoint.replace(":id", `${party.id}`);
+  }
+
+  getQueue(party: Party): Observable<PartyQueue> {
+    return this.http.get(`${this.getUrl(party)}/queue`, {withCredentials: true}).map(res => {
       return res.json() as PartyQueue;
     })
   }
 
-  getHistory(limit: number, offset: number): Observable<ListResponse<PartyQueueEntry>> {
-    return this.http.get(this.historyEndpoint, {withCredentials: true}).map(result => {
+  getHistory(party: Party, limit: number, offset: number): Observable<ListResponse<PartyQueueEntry>> {
+
+    return this.http.get(`${this.getUrl(party)}/history`, {withCredentials: true}).map(result => {
       const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
       const offset = Number.parseInt(result.headers.get('X-Offset'));
       return new ListResponse<PartyQueueEntry>(
@@ -33,14 +40,14 @@ export class QueueService {
     });
   }
 
-  queueSong(song: QueueSongRequest): Observable<PartyQueueEntry> {
-    return this.http.post(this.endpoint, song, {withCredentials: true}).map(res => {
+  queueSong(party: Party, song: QueueSongRequest): Observable<PartyQueueEntry> {
+    return this.http.post(`${this.getUrl(party)}/queue`, song, {withCredentials: true}).map(res => {
       return res.json() as PartyQueueEntry;
     });
   }
 
-  voteSong(voteRequest: VoteRequest) {
-    return this.http.put(this.endpoint, voteRequest, {withCredentials: true}).map(res => {
+  voteSong(party: Party, voteRequest: VoteRequest) {
+    return this.http.put(`${this.getUrl(party)}/queue`, voteRequest, {withCredentials: true}).map(res => {
       return res.json() as PartyQueueEntry;
     })
   }

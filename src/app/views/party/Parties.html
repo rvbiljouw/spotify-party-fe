@@ -1,20 +1,14 @@
 <app-sidebar-layout>
 
   <mat-toolbar class="transparent-bar">
-    <span class="toolbar-title" fxFlex>Search for a party</span>
-    <div class="toolbar-actions" fxLayout="row" fxLayoutAlign="end center" fxFlex>
-      <div class="toolbar-search">
-        <button mat-icon-button (click)="searching = true" *ngIf="!searching">
-          <mat-icon>search</mat-icon>
-        </button>
-        <mat-input-container *ngIf="searching">
-          <i class="button-icon fa fa-search" matPrefix></i>
-          <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
-        </mat-input-container>
-        <button mat-icon-button (click)="searching = false" color="accent" *ngIf="searching">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
+    <div fxFlex.gt-sm="50" fxFlex.lt-md="100" class="search-box">
+      <mat-input-container style="width: 100%;">
+        <i class="button-icon fa fa-search" matPrefix></i>
+        <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+      </mat-input-container>
+      <button mat-icon-button (click)="searching = false" *ngIf="searching">
+        <mat-icon class="button-icon">close</mat-icon>
+      </button>
     </div>
   </mat-toolbar>
 
@@ -22,7 +16,10 @@
     <mat-card-content>
 
       <mat-tab-group>
-        <mat-tab label="Spotify">
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <img src="/assets/spotify.png" class="button-icon tab-icon" alt="spotify"> Spotify
+          </ng-template>
 
           <div class="root">
 
@@ -71,7 +68,10 @@
 
         </mat-tab>
 
-        <mat-tab label="YouTube">
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <img src="/assets/youtube.png" class="button-icon tab-icon" alt="youtube"> YouTube
+        </ng-template>
 
           <div class="root">
 

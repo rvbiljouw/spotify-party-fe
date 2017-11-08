@@ -23,7 +23,10 @@ export class WebSocketService {
   private pingInterval: any = -1;
   private authTimeout: any = -1;
 
-  public connect(url, refresh: boolean = false): Subject<MessageEvent> {
+  private authOptions: any = {};
+
+  public connect(url, refresh: boolean = false, authOptions = {}): Subject<MessageEvent> {
+    this.authOptions = authOptions;
     if (!this.socket || refresh) {
       if (this.socket != null) {
         this.socket.complete();
@@ -59,7 +62,6 @@ export class WebSocketService {
     const observer = {
       next: (evt: MessageEvent) => {
         if (this.ws.readyState === WebSocket.OPEN) {
-          console.log(evt.data)
           this.ws.send(JSON.stringify(evt.data));
         }
       },
@@ -71,15 +73,19 @@ export class WebSocketService {
     this.socket.next(new MessageEvent("ping", {data: new WSMessage("PING", {})}));
   }
 
-  private authenticate() {
+  authenticate() {
     if (this.socket == null || this.ws == null || this.ws.readyState !== WebSocket.OPEN) {
       this.authTimeout = setTimeout(this.authenticate.bind(this), 1000);
     } else {
       this.socket.next(new MessageEvent("message", {
-        data: new WSMessage("AUTH", {
-          userId: this.account.id,
-          loginToken: this.account.loginToken.token
-        })
+        data: new WSMessage("AUTH", Object.assign(
+          {},
+          {
+            userId: this.account.id,
+            loginToken: this.account.loginToken.token
+          },
+          this.authOptions
+        ))
       }));
     }
   }

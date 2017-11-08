@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue} from "../../models/PartyQueue";
@@ -33,7 +33,7 @@ export class PartiesComponent implements OnInit {
 
   constructor(private router: Router,
               private partyService: PartyService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private queueService: QueueService,
               private loginService: LoginService,
               private domSanitizer: DomSanitizer,
@@ -49,8 +49,12 @@ export class PartiesComponent implements OnInit {
     this.loadGroup(this.spotifyGroup, "SPOTIFY");
     this.loadGroup(this.youtubeGroup, "YOUTUBE");
 
-    this.partyService.getMyParties().subscribe(res => {
-      this.yourParties = res;
+    this.partyService.partyList.subscribe(partyList => {
+      if (partyList != null) {
+        this.yourParties = partyList;
+      } else {
+        this.yourParties = new PartyList();
+      }
     });
 
     this.searchTerm.valueChanges
@@ -80,22 +84,12 @@ export class PartiesComponent implements OnInit {
   }
 
   setActiveParty(party: Party) {
-    let isMember = party.members.map(p => p.id).indexOf(this.account.id) > -1;
-    if (isMember) {
-      this.partyService.changeActiveParty(party.id).subscribe(res => {
-        this.toastyService.info('Joined party ' + party.name);
-        this.router.navigate(['party', party.id]);
-      }, err => {
-        this.toastyService.error('Couldn\'t join party - please try again later.');
-      });
-    } else {
-      this.partyService.joinParty(party.id).subscribe(res => {
-        this.toastyService.info('Joined party ' + party.name);
-        this.router.navigate(['party', party.id]);
-      }, err => {
-        this.toastyService.error('Couldn\'t join party - please try again later.');
-      });
-    }
+    this.partyService.joinParty(party.id).subscribe(res => {
+      this.notificationsService.info('Joined party ' + party.name);
+      this.router.navigate(['party', party.id]);
+    }, err => {
+      this.notificationsService.error('Couldn\'t join party - please try again later.');
+    });
   }
 
   loadGroup(group: PartyGroup, type: string) {

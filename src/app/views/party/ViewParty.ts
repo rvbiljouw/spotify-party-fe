@@ -2,7 +2,6 @@ import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import {ToastyService} from 'ng2-toasty';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
@@ -21,6 +20,7 @@ import {UserAccount} from "../../models/UserAccount";
 import {ListResponse} from "../../services/ApiService";
 import {YoutubePlayerComponent} from "../../widgets/YoutubePlayer";
 import {MediaChange, ObservableMedia} from "@angular/flex-layout";
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
   selector: 'view-party',
@@ -31,6 +31,7 @@ import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 })
 export class ViewPartyComponent implements OnInit, OnDestroy {
   party: Party;
+  partyMembers: UserAccount[];
   queue: PartyQueue = new PartyQueue();
   history: ListResponse<PartyQueueEntry> = new ListResponse([], 0, 0);
 
@@ -58,9 +59,17 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   isMobileView: boolean;
   largeYtPlayer: boolean;
 
+  mentionConfig = {
+    labelKey: "displayName",
+    maxItems: 5,
+    disableSearch: false,
+    triggerChar: '@',
+    mentionSelect: this.formatMentionOption,
+  };
+
   constructor(private router: Router,
               private partyService: PartyService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private queueService: QueueService,
               private route: ActivatedRoute,
               private sanitizer: DomSanitizer,
@@ -72,18 +81,26 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if ("Notification" in window) {
+      Notification.requestPermission().then(function (result) {
+        console.log(result);
+      });
+    }
+
     this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
 
     this.media.subscribe((change: MediaChange) => {
       this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
     });
 
-    this.webSocketService.connect(`${environment.wsHost}/api/v1/partySocket`, true);
-
     this.route.params.subscribe(params => {
       this.partyService.joinParty(+params["id"]).subscribe(party => {
         this.partyType = party.type;
-        console.log(this.partyType);
+
+        this.webSocketService.connect(`${environment.wsHost}/api/v1/partySocket`, true, {
+          partyId: party.id,
+        });
+
         this.join(+params["id"], party.type == 'YOUTUBE');
       });
     });
@@ -96,7 +113,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         this.progress = this.calculateProgress(this.queue.nowPlaying);
       }
     });
-    this.refresh();
+  }
+
+  formatMentionOption(member: UserAccount) {
+    return `@${member.displayName}`;
   }
 
   ngOnDestroy() {
@@ -114,31 +134,34 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       });
 
       this.party = party;
+      this.partyMembers = party.members.map(m => m.account).filter(a => a.id !== this.account.id);
+
       this.partyName = this.party.name;
 
-      this.toastyService.info('Active party changed to ' + party.name);
+      this.notificationsService.info('Active party changed to ' + party.name);
       this.refresh();
 
       this.webSocketService.socket.subscribe((next) => {
         const wsMessage = JSON.parse(next.data) as WSMessage;
-        console.log(next.data);
         switch (wsMessage.opcode) {
           case "AUTH":
             const success = wsMessage.body === 'true';
             if (success) {
               this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
               this.websocketAuthenticated = true;
+            } else {
+              this.webSocketService.authenticate();
             }
             break;
           case "CHAT_MSG":
             const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
 
-            this.addChatMessage(messageEvent);
+            this.addChatMessage(messageEvent, false);
             break;
           case "CHAT_MSGS":
             const messageEvents = JSON.parse(wsMessage.body) as ChatMessage[];
 
-            messageEvents.forEach(event => this.addChatMessage(event));
+            messageEvents.forEach(event => this.addChatMessage(event, true));
             break;
 
           case "COMMAND":
@@ -166,12 +189,50 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.youtubeFrame.play(uri, position / 1000);
   }
 
-  addChatMessage(message: ChatMessage) {
+  addChatMessage(message: ChatMessage, isBulk: boolean) {
     if (this.messages.length > 100) {
       this.messages.slice(1);
     }
 
+    let _messageText = message.message;
+    let users = [];
+    while (_messageText.indexOf('@') !== -1 && users.indexOf(this.account.displayName) === -1) {
+      const user = this.getUserMentioned(_messageText);
+      users = users.concat(user);
+
+      _messageText = _messageText.replace(`@${user}`, "");
+    }
+
+    if (users.indexOf(this.account.displayName) !== -1) {
+      if (!isBulk) {
+        this.spawnNotification(message.message, null, message.sender);
+      }
+
+      message.mentioningMe = true;
+    }
+
     this.messages = this.messages.concat(message);
+  }
+
+  private spawnNotification(theBody,theIcon,theTitle) {
+    const options = {
+      body: theBody,
+      icon: theIcon
+    };
+
+    if ("Notification" in window) {
+      const n = new Notification(theTitle, options);
+      setTimeout(n.close.bind(n), 3000);
+    }
+  }
+
+  private getUserMentioned(message: string) {
+    let user = message.substring(message.indexOf('@') + 1);
+    if (user.indexOf(' ') !== -1) {
+      user = user.substring(0, user.indexOf(' '));
+    }
+
+    return user.trim();
   }
 
   sendChatMessage(event) {
@@ -188,21 +249,21 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             message: message,
             partyId: this.party.id
           })
-        }))
+        }));
         this.chatInput.nativeElement.value = "";
       }
     }
   }
 
   private refresh() {
-    this.queueService.getHistory(25, 0).subscribe(res => {
+    this.queueService.getHistory(this.party,25, 0).subscribe(res => {
       this.history = res;
     });
 
-    this.queueService.getQueue().subscribe(res => {
+    this.queueService.getQueue(this.party).subscribe(res => {
       this.queue = res;
     }, err => {
-      this.toastyService.error("Couldn't retrieve queue for party.");
+      this.notificationsService.error("Couldn't retrieve queue for party.");
     });
   }
 
@@ -232,15 +293,31 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     return this.route.data['state'];
   }
 
-  getMessageColor(message: ChatMessage) {
-    if (message.isServer) {
-      return 'rgb(98, 71, 103)';
-    } else if (message.isOwner) {
+  getSenderColor(message: ChatMessage) {
+    if (message.server) {
+      return 'rgb(255, 87, 35)';
+    } else if (message.owner) {
       return 'rgb(199, 60, 169)';
-    } else if (message.isStaff) {
+    } else if (message.staff) {
       return 'red';
     }
     return '#0075ad';
+  }
+
+  getMessageColor(message: ChatMessage) {
+    if (message.server) {
+      return '#b7b7b7';
+    }
+
+    return 'white';
+  }
+
+  getMessageStyle(message: ChatMessage) {
+    if (message.server) {
+      return 'italic';
+    }
+
+    return 'normal';
   }
 
   openSettings() {
@@ -258,10 +335,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   leave() {
     this.partyService.leaveParty(this.party.id).subscribe(res => {
-      this.toastyService.info('You\'ve left the party.');
+      this.notificationsService.info('You\'ve left the party.');
       this.router.navigate(['/parties']);
     }, err => {
-      this.toastyService.error('Couldn\'t leave to party - you\'re stuck here forever!');
+      this.notificationsService.error('Couldn\'t leave to party - you\'re stuck here forever!');
     });
   }
 
@@ -269,10 +346,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     let voteReq = new VoteRequest();
     voteReq.id = entry.id;
     voteReq.up = up;
-    this.queueService.voteSong(voteReq).subscribe(res => {
-      this.toastyService.info('Your vote has been counted.');
+    this.queueService.voteSong(this.party, voteReq).subscribe(res => {
+      this.notificationsService.info('Your vote has been counted.');
     }, err => {
-      this.toastyService.error('Sorry, we couldn\'t process your vote... please try again later.');
+      this.notificationsService.error('Sorry, we couldn\'t process your vote... please try again later.');
     });
   }
 

@@ -30,23 +30,10 @@
         <div>
           <div fxLayout="row">
 
-            <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" style="margin-bottom: 10px"
-                 fxFlex="100" fxFlex.gt-md="50">
-              <mat-paginator [length]="songs.maxRecords"
-                             [pageIndex]="songsPageNumber"
-                             style="background: none;"
-                             [pageSize]="songsLimit"
-                             [pageSizeOptions]="pageSizeOptions"
-                             (page)="onSongsPageEvent($event)">
-              </mat-paginator>
-            </div>
-          </div>
-
-          <div fxLayout="row">
-
 
             <mat-list fxFlex="100" fxFlex.gt-md="50">
               <app-song-list-item *ngFor="let item of songs.items" [song]="item"
+                                  [party]="party"
                                   class="typical-list-item"></app-song-list-item>
             </mat-list>
 

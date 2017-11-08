@@ -14,7 +14,6 @@ import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ChartsModule} from 'ng2-charts';
 import {DropzoneModule} from 'ngx-dropzone-wrapper';
-import {ToastyModule} from 'ng2-toasty';
 
 
 import 'hammerjs';
@@ -38,11 +37,15 @@ import {PartyCardComponent} from "./widgets/PartyCard";
 import {SpotifyService} from "./services/SpotifyService";
 import {YoutubePlayerComponent} from "./widgets/YoutubePlayer";
 import {YouTubeService} from "./services/YouTubeService";
+import {SimpleNotificationsModule} from "angular2-notifications";
+import {MyAccountComponent} from "./views/account/MyAccount";
+import {MentionModule} from "angular2-mentions/mention";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: LandingComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'account', component: MyAccountComponent, canActivate: [AuthGuard]},
   {path: 'parties', component: PartiesComponent},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
   {path: 'party/:id', component: ViewPartyComponent, canActivate: [AuthGuard]}
@@ -63,7 +66,8 @@ const routes: Routes = [
     SidebarLayoutComponent,
     LandingComponent,
     PartyCardComponent,
-    YoutubePlayerComponent
+    YoutubePlayerComponent,
+    MyAccountComponent
   ],
   imports: [
     MatNativeDateModule,
@@ -77,11 +81,12 @@ const routes: Routes = [
     ReactiveFormsModule,
     HttpModule,
     ChartsModule,
-    ToastyModule.forRoot(),
     DropzoneModule.forRoot({}),
     RouterModule.forRoot(routes, {useHash: true}),
     MatIconModule,
     EmojifyModule,
+    SimpleNotificationsModule.forRoot(),
+    MentionModule,
   ],
   providers: [
     LoginService,

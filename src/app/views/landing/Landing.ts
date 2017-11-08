@@ -3,7 +3,7 @@ import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {UserAccount} from "../../models/UserAccount";
 import {environment} from "../../../environments/environment";
 import {PartyService} from "../../services/PartyService";
@@ -25,7 +25,7 @@ export class LandingComponent implements OnInit {
 
   constructor(private router: Router,
               private loginService: LoginService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private partyService: PartyService,
               private route: ActivatedRoute,
               private domSanitizer: DomSanitizer,

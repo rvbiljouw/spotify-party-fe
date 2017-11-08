@@ -3,7 +3,7 @@ import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {UserAccount} from "../../models/UserAccount";
 import {environment} from "../../../environments/environment";
 
@@ -25,17 +25,17 @@ export class LoginComponent implements OnInit {
 
   constructor(private router: Router,
               private loginService: LoginService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private route: ActivatedRoute,
               fb: FormBuilder,) {
     this.loginForm = fb.group({
       email: new FormControl('', [Validators.email, Validators.required]),
-      password: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
     });
     this.signupForm = fb.group({
       displayName: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.email, Validators.required]),
-      password: new FormControl('', [Validators.required])
+      password: new FormControl('', [Validators.required, Validators.minLength(8)])
     })
   }
 
@@ -78,6 +78,11 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['parties']).then(() => {
         window.location.reload(true);
       });
+      this.loggingIn = false;
+    }, error => {
+      console.log(error);
+      this.loggingIn = false;
+      this.notificationsService.error("Unable to login, please check your details");
     });
   }
 
@@ -85,13 +90,13 @@ export class LoginComponent implements OnInit {
     this.signingUp = true;
 
     this.loginService.register(this.signupForm.value).subscribe(res => {
-      this.toastyService.info('Your account has been created. Logging you in...');
+      this.notificationsService.info('Your account has been created. Logging you in...');
       this.loginService.setAccount(res);
       this.router.navigate(['parties']).then(() => {
         window.location.reload(true);
       });
     }, err => {
-      this.toastyService.error(`Sign up failed. ${err}`);
+      this.notificationsService.error(`Sign up failed. ${err}`);
     });
   }
 

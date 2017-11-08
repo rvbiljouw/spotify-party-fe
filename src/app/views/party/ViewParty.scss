@@ -25,13 +25,38 @@ td {
   background-size: cover;
 }
 
-.send-chat-btn {
-  justify-content: flex-end;
-  display: flex;
+.chat-header {
+  margin-top: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .chat-input {
-  width: 100%;
+  padding-left: 10px;
+  width: 76%;
+  font-size: 14px;
+}
+
+.chat-btn {
+  float: right;
+  margin-top: 10px
+}
+
+.chat-msg {
+  font-size: 13px;
+  white-space:normal;
+  word-wrap:break-word;
+}
+
+.chat-msg-container {
+  min-height: 18px;
+  font-size: 13px;
+  padding: 4px 4px;
+}
+
+.chat-sender {
+  font-size: 13px;
+  font-weight: bold;
 }
 
 .chat-container {
@@ -40,6 +65,49 @@ td {
   height: 400px;
   max-height: 400px;
   display: flex;
+}
+
+/deep/ .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 16px;
+  text-align: left;
+  list-style: none;
+  background-color: #121618 !important;;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+/deep/ .dropdown-menu > li > a:hover,
+/deep/ .dropdown-menu > li > a:focus {
+  text-decoration: none;
+  background-color: #0e0e0e !important;
+}
+
+/deep/ .dropdown-menu > .active {
+  background-color: #0e0e0e !important;
+}
+
+/deep/ .dropdown-menu > .active > a,
+/deep/ .dropdown-menu > .active > a:hover,
+/deep/ .dropdown-menu > .active > a:focus {
+  text-decoration: none;
+  outline: 0;
+}
+
+/deep/ .dropdown-item {
+  color: white;
 }
 
 /deep/ .mat-tab-label, /deep/ .mat-tab-link {
@@ -70,12 +138,21 @@ td {
 
 .chat-card {
 
-  & {
-    height: 62vh;
-  }
-
   .mat-card-header {
     border-bottom: 1px solid rgba(77, 77, 77, 0.7);
+    background-color: rgb(14, 14, 14);
+
+    padding: 0;
   }
+
+  .mat-card-footer {
+    border-top: 1px solid rgba(77, 77, 77, 0.7);
+    background-color: rgb(14, 14, 14);
+
+    padding: 0;
+    margin: 0;
+  }
+
+  padding: 0;
 
 }

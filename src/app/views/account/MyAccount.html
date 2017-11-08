@@ -1,0 +1,111 @@
+<app-sidebar-layout>
+
+  <div class="root">
+
+    <mat-card class="transparent-card">
+      <mat-card-content>
+
+        <mat-tab-group>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="button-icon">account_circle</mat-icon>
+              Account
+            </ng-template>
+
+            <div class="root">
+              <form [formGroup]="accountForm" (ngSubmit)="submitAccount()" class="plain-form">
+
+                <div>
+                  <mat-input-container class="full-width">
+                    <input matInput formControlName="displayName" placeholder="Display name">
+                  </mat-input-container>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                  <mat-input-container class="full-width">
+                    <input matInput formControlName="email" placeholder="E-mail address">
+                    <mat-error *ngIf="accountForm.controls['email'].hasError('required')">
+                      This field is required
+                    </mat-error>
+                    <mat-error *ngIf="accountForm.controls['email'].hasError('email')">
+                      Please enter a valid email address
+                    </mat-error>
+                  </mat-input-container>
+                </div>
+
+                <div>
+                  <mat-input-container class="full-width">
+                    <input matInput type="password" formControlName="newPassword" placeholder="New password">
+
+                    <mat-error *ngIf="accountForm.controls['newPassword'].hasError('minlength')">
+                      Your password has to be at least 8 characters long.
+                    </mat-error>
+                  </mat-input-container>
+                </div>
+
+                <div>
+                  <mat-input-container class="full-width">
+                    <input matInput type="password" formControlName="newPasswordConfirm" placeholder="Confirm new password">
+
+                    <mat-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('minlength')">
+                      Your password has to be at least 8 characters long.
+                    </mat-error>
+                    <md-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('mismatch')">
+                      This password needs to match the one above
+                    </md-error>
+                  </mat-input-container>
+                </div>
+              </form>
+
+              <button color="primary" mat-raised-button [disabled]="!accountForm.valid" (click)="submitAccount()">
+                <mat-spinner *ngIf="updating" class="button-spinner" strokeWidth="4"></mat-spinner>
+                Update
+              </button>
+            </div>
+
+          </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <img src="/assets/spotify.png" class="button-icon tab-icon" alt="spotify"> Spotify
+            </ng-template>
+            <div class="root">
+
+              <form [formGroup]="spotifyForm" (ngSubmit)="submitSpotify()" class="plain-form">
+
+                <div style="margin-top: 20px;">
+                  <mat-form-field>
+                    <mat-select placeholder="Output device" formControlName="device">
+                      <mat-option *ngFor="let device of spotifyDevices" [value]="device.id">
+                        {{ device.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-error *ngIf="spotifyForm.controls['device'].hasError('required')">
+                    This field is required
+                  </mat-error>
+
+                  <div style="padding-bottom: 20px;"
+                       *ngIf="spotifyForm.controls['device'].invalid && spotifyForm.controls['device'].dirty"></div>
+                </div>
+
+              </form>
+
+              <button color="primary" mat-raised-button [disabled]="!spotifyForm.valid" (click)="submitSpotify()">
+                <mat-spinner *ngIf="updating" class="button-spinner" strokeWidth="4"></mat-spinner>
+                Update
+              </button>
+
+            </div>
+
+          </mat-tab>
+
+        </mat-tab-group>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</app-sidebar-layout>

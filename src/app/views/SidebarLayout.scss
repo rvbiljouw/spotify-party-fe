@@ -121,3 +121,15 @@ mat-sidenav ul {
 .sidebar-item.active {
   opacity: 1;
 }
+
+.sidebar-party-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.active-chip {
+  float: right;
+  font-size: 12px;
+  margin-right: 6px;
+  color: grey;
+}

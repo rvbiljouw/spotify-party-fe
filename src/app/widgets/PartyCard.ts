@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {QueueService} from '../services/QueueService';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog} from '@angular/material';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {Party} from "../models/Party";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Router} from "@angular/router";
@@ -31,7 +31,7 @@ export class PartyCardComponent implements OnInit {
 
   constructor(private queueService: QueueService,
               private domSanitizer: DomSanitizer,
-              private toast: ToastyService,
+              private notificationsService: NotificationsService,
               private router: Router,
               private dialog: MatDialog,) {
   }

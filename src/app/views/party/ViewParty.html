@@ -1,6 +1,6 @@
-<app-sidebar-layout>
+<app-sidebar-layout [party]="party">
 
-  <app-search-bar id="app-navbar" class="mat-elevation-z2" [showSearch]="true" [partyType]="partyType">
+  <app-search-bar id="app-navbar" class="mat-elevation-z2" [showSearch]="true" [party]="party">
 
     <div fxFlex="30" fxFlex.gt-md="40">
       <div fxLayout="row" fxLayoutAlign="end middle">
@@ -80,7 +80,7 @@
 
           <div *ngIf="party.type != 'YOUTUBE'" class="now-playing-box">
             <div fxLayout="row" fxLayoutAlign="center">
-              <div *ngIf="queue != null" fxFlex="100" style="margin-bottom: 10px;">
+              <div *ngIf="queue != null" fxFlex="100">
                 <div fxLayout="row" fxLayoutWrap="true">
                   <div class="now-playing-thumbnail"
                        [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
@@ -228,33 +228,37 @@
         </div>
       </div>
 
-
       <div fxFlex.gt-md="25" fxFlex="100" *ngIf="party != null" style="padding: 10px;" [@opacityInOut]>
         <mat-card class="transparent-card chat-card">
           <mat-card-header>
-            <mat-icon mat-card-avatar>chat</mat-icon>
-            <mat-card-title>Chatbox</mat-card-title>
-            <mat-card-subtitle>{{ party.members.length }} users online.</mat-card-subtitle>
+            <mat-card-title class="chat-header">Chat</mat-card-title>
           </mat-card-header>
           <mat-card-content class="chat-container">
             <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
-              <div style="min-height: 18px;" *ngFor="let message of messages">
-                <span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>
-                <span style="font-size: 13px; font-weight: bold;" [style.color]="getMessageColor(message)">{{message.sender}}</span>
-                <span
-                  style="font-size: 13px; white-space:normal; word-wrap:break-word;">: {{message.message | emojify}}</span>
+              <div class="chat-msg-container" *ngFor="let message of messages">
+                <!--<span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>-->
+
+                <span class="chat-msg">
+                  <span class="chat-sender" [style.color]="getSenderColor(message)">
+                    {{ message.sender }}
+                  </span>
+                  <span [style.background-color]="message.mentioningMe ? '#dc7c15' : null" [style.color]="getMessageColor(message)" [style.font-style]="getMessageStyle(message)">
+                    {{message.message | emojify}}
+                  </span>
+                </span>
               </div>
             </div>
           </mat-card-content>
           <mat-card-footer>
-            <div class="send-chat-btn">
-              <input mdInput class="chat-input" (keydown)="sendChatMessage($event)" #chatInput
-                     placeholder="Type to chat">
-              <button mat-raised-button color="accent" [disabled]="!websocketAuthenticated"
-                      (click)="sendChatMessage()">
-                Send
-              </button>
-            </div>
+              <div>
+                <mat-input-container class="chat-input" floatPlaceholder="never">
+                  <input matInput [mention]="partyMembers" [mentionConfig]="mentionConfig" placeholder="Type to chat" (keydown)="sendChatMessage($event)" #chatInput>
+                </mat-input-container>
+                <button mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
+                        (click)="sendChatMessage()">
+                  <mat-icon>send</mat-icon>
+                </button>
+              </div>
           </mat-card-footer>
         </mat-card>
       </div>

@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {QueueService, VoteRequest} from '../services/QueueService';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog} from '@angular/material';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {PartyQueueEntry} from "../models/PartyQueue";
 
 @Component({
@@ -15,7 +15,7 @@ export class QueueListItemComponent implements OnInit {
 
   constructor(private queueService: QueueService,
               private sanitizer: DomSanitizer,
-              private toast: ToastyService,
+              private notificationsService: NotificationsService,
               private dialog: MatDialog,) {
   }
 
@@ -26,10 +26,10 @@ export class QueueListItemComponent implements OnInit {
     let voteReq = new VoteRequest();
     voteReq.id = this.entry.id;
     voteReq.up = up;
-    this.queueService.voteSong(voteReq).subscribe(res => {
-      this.toast.info('Your vote has been counted.');
+    this.queueService.voteSong(this.entry.party, voteReq).subscribe(res => {
+      this.notificationsService.info('Your vote has been counted.');
     }, err => {
-      this.toast.error('Sorry, we couldn\'t process your vote... please try again later.');
+      this.notificationsService.error('Sorry, we couldn\'t process your vote... please try again later.');
     });
   }
 

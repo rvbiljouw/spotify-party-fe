@@ -32,6 +32,14 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     background-color: rgba(24, 24, 24, 0.8) !important;
   }
 
+  .notification > div > div {
+    font-size: 14px !important;
+  }
+
+  .simple-notification-svg {
+    width: 75% !important;
+    height: 75% !important;
+  }
 }
 
 @include spotty-theme($theme);

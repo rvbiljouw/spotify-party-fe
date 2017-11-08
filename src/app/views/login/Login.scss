@@ -3,3 +3,26 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+.center {
+  display: table;
+  margin: 0 auto;
+}
+
+.tab-content {
+  margin-top: 20px;
+}
+
+.sso-option {
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in;
+}
+
+.sso-option:hover {
+  opacity: 1;
+}
+
+
+.button {
+  transition: all 0.3s ease-in;
+}

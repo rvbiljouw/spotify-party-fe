@@ -3,17 +3,17 @@
     <h2 style="color: white;">Log in to continue</h2>
   </div>
 
-  <mat-card *ngIf="!loggedIn" fxFlex.gt-sm="50" fxFlex.lt-md="100" class="login-card transparent-card">
+  <mat-card *ngIf="!loggedIn" class="login-card transparent-card">
     <mat-card-content>
-      <mat-tab-group>
+      <mat-tab-group class="center">
         <mat-tab label="Log in">
 
-          <div fxFlex="100">
+          <div class="tab-content" fxFlex="100">
             <form [formGroup]="loginForm" (submit)="emailLogin()">
 
               <div>
-                <mat-input-container>
-                  <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
+                <mat-input-container class="full-width">
+                  <input matInput formControlName="email" placeholder="E-mail address">
                   <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
                     This field is required
                   </mat-error>
@@ -21,16 +21,19 @@
               </div>
 
               <div>
-                <mat-input-container>
-                  <input matInput formControlName="password" placeholder="Password" class="full-width" type="password">
+                <mat-input-container class="full-width">
+                  <input matInput formControlName="password" placeholder="Password" type="password">
                   <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
                     This field is required
+                  </mat-error>
+                  <mat-error *ngIf="accountForm.controls['password'].hasError('minlength')">
+                    Your password has to be at least 8 characters long.
                   </mat-error>
                 </mat-input-container>
               </div>
 
 
-              <button color="primary" mat-raised-button [disabled]="!loginForm.valid">
+              <button color="primary" class="center button" mat-raised-button [disabled]="!loginForm.valid">
                 <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
                 Log in
               </button>
@@ -41,51 +44,56 @@
         </mat-tab>
 
         <mat-tab label="Sign up">
-          <form [formGroup]="signupForm" (submit)="emailSignup()">
+          <div class="tab-content">
+            <form [formGroup]="signupForm" (submit)="emailSignup()">
 
-            <div>
-              <mat-input-container>
-                <input matInput formControlName="displayName" placeholder="Display name" class="full-width">
-                <mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">
-                  This field is required
-                </mat-error>
-              </mat-input-container>
-            </div>
+              <div>
+                <mat-input-container class="full-width">
+                  <input matInput formControlName="displayName" placeholder="Display name" class="full-width">
+                  <mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">
+                    This field is required
+                  </mat-error>
+                </mat-input-container>
+              </div>
 
-            <div>
-              <mat-input-container>
-                <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
-                <mat-error *ngIf="signupForm.controls['email'].hasError('required')">
-                  This field is required
-                </mat-error>
-              </mat-input-container>
-            </div>
+              <div>
+                <mat-input-container class="full-width">
+                  <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
+                  <mat-error *ngIf="signupForm.controls['email'].hasError('required')">
+                    This field is required
+                  </mat-error>
+                </mat-input-container>
+              </div>
 
-            <div>
-              <mat-input-container>
-                <input matInput formControlName="password" placeholder="Password" class="full-width" type="password">
-                <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
-                  This field is required
-                </mat-error>
-              </mat-input-container>
-            </div>
+              <div>
+                <mat-input-container class="full-width">
+                  <input matInput formControlName="password" placeholder="Password" class="full-width" type="password">
+                  <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
+                    This field is required
+                  </mat-error>
+                  <mat-error *ngIf="accountForm.controls['password'].hasError('minlength')">
+                    Your password has to be at least 8 characters long.
+                  </mat-error>
+                </mat-input-container>
+              </div>
 
 
-            <button color="primary" mat-raised-button [disabled]="!signupForm.valid">
-              <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
-              Sign up
-            </button>
+              <button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">
+                <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
+                Sign up
+              </button>
 
-          </form>
+            </form>
+          </div>
         </mat-tab>
       </mat-tab-group>
 
 
-      <div style="margin-top: 30px">
-        <h3>SSO</h3>
+      <div class="center" style="margin-top: 20px">
+        <h3>Sign in using:</h3>
 
-        <button color="primary" mat-icon-button (click)="spotifyLogin()">
-          <img src="https://developer.spotify.com/wp-content/uploads/2016/07/icon1@2x.png" height="40px"/>
+        <button class="sso-option" color="primary" mat-icon-button (click)="spotifyLogin()">
+          <img src="/assets/spotify.png" height="40px"/>
         </button>
       </div>
 

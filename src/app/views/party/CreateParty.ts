@@ -3,7 +3,7 @@ import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {CreatePartyRequest, PartyService} from "../../services/PartyService";
 
 @Component({
@@ -33,7 +33,7 @@ export class CreatePartyComponent implements OnInit {
 
   constructor(private router: Router,
               private partyService: PartyService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private route: ActivatedRoute,
               fb: FormBuilder,) {
     this.partyForm = fb.group({
@@ -50,7 +50,7 @@ export class CreatePartyComponent implements OnInit {
 
   submit() {
     this.partyService.createParty(this.partyForm.value as CreatePartyRequest).subscribe(res => {
-      this.toastyService.success('Party created.');
+      this.notificationsService.success('Party created.');
       this.router.navigate(['/party', res.id]);
     });
   }

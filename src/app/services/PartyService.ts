@@ -14,9 +14,11 @@ export class PartyService {
   private endpoint = `${environment.apiHost}/api/v1/parties`;
   private createEndpoint = `${environment.apiHost}/api/v1/party`;
 
-  partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
+   partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
+    this.refresh();
+
     IntervalObservable.create(5000).subscribe(res => {
       this.refresh();
     });
@@ -25,14 +27,6 @@ export class PartyService {
   refresh() {
     this.getMyParties().subscribe(result => {
       this.partyList.next(result);
-    });
-  }
-
-  changeActiveParty(id: number): Observable<Party> {
-    return this.http.put(`${this.endpoint}/activate?partyId=${id}`, {}, {withCredentials: true}).map(res => {
-      let party = res.json() as Party;
-      this.refresh();
-      return party;
     });
   }
 

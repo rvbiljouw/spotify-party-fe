@@ -1,8 +1,9 @@
 export class ChatMessage {
   sender: string;
   message: string;
-  isOwner: boolean;
-  isStaff: boolean;
-  isServer: boolean;
+  owner: boolean;
+  staff: boolean;
+  server: boolean;
   timestamp: Date;
+  mentioningMe: boolean;
 }

@@ -2,7 +2,7 @@ import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {environment} from "../../../environments/environment";
 import {DropzoneConfigInterface} from "ngx-dropzone-wrapper";
-import {ToastyService} from "ng2-toasty";
+import { NotificationsService } from 'angular2-notifications';
 import {Party} from "../../models/Party";
 import {UserAccount} from "../../models/UserAccount";
 import {PartyService} from "../../services/PartyService";
@@ -36,7 +36,7 @@ export class ManagePartyComponent {
   saving: boolean;
 
   constructor(public dialogRef: MatDialogRef<ManagePartyComponent>,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private partyService: PartyService,
               private fb: FormBuilder,
               @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -54,28 +54,28 @@ export class ManagePartyComponent {
   }
 
   onUploadError(args: any) {
-    this.toastyService.error(`Upload failed`);
+    this.notificationsService.error(`Upload failed`);
   }
 
   onUploadSuccess(args: any) {
-    this.toastyService.success('Upload successful.');
+    this.notificationsService.success('Upload successful.');
   }
 
   kick(member: UserAccount) {
     this.partyService.kickUser(this.party, member).subscribe(res => {
-      this.toastyService.success('User has been kicked.');
+      this.notificationsService.success('User has been kicked.');
       this.party = res;
     }, err => {
-      this.toastyService.error('Couldn\'t kick user');
+      this.notificationsService.error('Couldn\'t kick user');
     });
   }
 
   submit() {
     this.partyService.updateParty(this.party.id, this.partyForm.value).subscribe(res => {
-      this.toastyService.info('Party settings updated.');
+      this.notificationsService.info('Party settings updated.');
       this.party = res;
     }, err => {
-      this.toastyService.error('Couldn\'t update settings: ' + err);
+      this.notificationsService.error('Couldn\'t update settings: ' + err);
     })
   }
 

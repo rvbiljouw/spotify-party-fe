@@ -1,6 +1,6 @@
 import {Party} from "./Party";
 
 export class PartyList {
-  activeParty: Party;
+  activeSpotifyParty: Party;
   parties: Array<Party>;
 }

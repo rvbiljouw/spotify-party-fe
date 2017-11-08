@@ -3,9 +3,10 @@ import {QueueService, QueueSongRequest} from '../services/QueueService';
 import {Artist} from '../models/Artist';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog} from '@angular/material';
-import {ToastyService} from 'ng2-toasty';
+import { NotificationsService } from 'angular2-notifications';
 import {Observable} from 'rxjs/Observable';
 import {Song} from "../models/Song";
+import {Party} from "../models/Party";
 
 @Component({
   selector: 'app-song-list-item',
@@ -14,10 +15,11 @@ import {Song} from "../models/Song";
 })
 export class SongListItemComponent implements OnInit {
   @Input() song: Song;
+  @Input() party: Party;
 
   constructor(private queueService: QueueService,
               private sanitizer: DomSanitizer,
-              private toast: ToastyService,
+              private notificationsService: NotificationsService,
               private dialog: MatDialog,) {
   }
 
@@ -25,8 +27,8 @@ export class SongListItemComponent implements OnInit {
   }
 
   play() {
-    this.queueService.queueSong(QueueSongRequest.forSong(this.song)).subscribe(playout => {
-      this.toast.success(
+    this.queueService.queueSong(this.party, QueueSongRequest.forSong(this.song)).subscribe(playout => {
+      this.notificationsService.success(
         `${this.song.artist} - ${this.song.title} has been queued.`,
       );
     });

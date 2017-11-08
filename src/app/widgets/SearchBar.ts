@@ -6,10 +6,11 @@ import {FormControl} from "@angular/forms";
 import {Filter, FilterType, ListResponse} from "../services/ApiService";
 import {Song} from "../models/Song";
 import {SpotifyService} from "../services/SpotifyService";
-import {ToastyService} from "ng2-toasty";
+import { NotificationsService } from 'angular2-notifications';
 import {PageEvent} from "@angular/material";
 import {environment} from "environments/environment";
 import {YouTubeService} from "../services/YouTubeService";
+import {Party} from "../models/Party";
 
 @Component({
   selector: 'app-search-bar',
@@ -36,12 +37,12 @@ export class SearchBarComponent implements OnInit {
   songsOffset = 0;
   searchingSongs = false;
 
-  @Input() partyType: string;
+  @Input() party: Party;
 
   constructor(private loginService: LoginService,
               private spotifyService: SpotifyService,
               private youtubeService: YouTubeService,
-              private toastyService: ToastyService,
+              private notificationsService: NotificationsService ,
               private router: Router,) {
   }
 
@@ -76,7 +77,7 @@ export class SearchBarComponent implements OnInit {
   setSongsPage(nextPage: any) {
     this.searchingSongs = true;
 
-    if(this.partyType == 'SPOTIFY') {
+    if(this.party.type == 'SPOTIFY') {
 
       const filters: Array<Filter> = [
         new Filter(FilterType.OR, null, null, [
@@ -93,10 +94,10 @@ export class SearchBarComponent implements OnInit {
         err => {
           console.log(err);
           this.searchingSongs = false;
-          this.toastyService.error('Unable to search songs');
+          this.notificationsService.error('Unable to search songs');
         },
       );
-    } else if(this.partyType == 'YOUTUBE') {
+    } else if(this.party.type == 'YOUTUBE') {
 
       const filters: Array<Filter> = [
         new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value)
@@ -110,7 +111,7 @@ export class SearchBarComponent implements OnInit {
         err => {
           console.log(err);
           this.searchingSongs = false;
-          this.toastyService.error('Unable to search songs');
+          this.notificationsService.error('Unable to search songs');
         },
       );
     }

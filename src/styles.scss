@@ -2,10 +2,6 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 @import '~font-awesome/css/font-awesome.css';
-//@import '~ng2-toasty/style.css';
-@import '~ng2-toasty/style-default.css';
-@import '~ng2-toasty/style-bootstrap.css';
-@import '~ng2-toasty/style-material.css';
 
 html, body {
   width: 100vw;
@@ -27,7 +23,7 @@ app-root {
 }
 
 .full-width {
-  width: 100%;
+  width: 100% !important;
 }
 
 .root {
@@ -41,11 +37,24 @@ app-root {
 
 .button-spinner {
   display: inline;
+  margin-right: 10px;
+  margin-top: 10px;
+  float: left;
   width: 14px;
   height: 14px;
   max-width: 14px;
   max-height: 14px;
-  margin-right: 10px;
+}
+
+.button-spinner > svg {
+  width: 14px;
+  height: 14px;
+  max-width: 14px;
+  max-height: 14px;
+}
+
+.button-spinner > svg > circle {
+  stroke: black !important;
 }
 
 .transparent-bar {

@@ -1,11 +1,12 @@
-import {Component, OnInit,} from '@angular/core';
-import {ToastyConfig} from 'ng2-toasty';
+import {Component, Input, OnInit,} from '@angular/core';
 import {Router,} from '@angular/router';
 import {MediaChange, ObservableMedia} from '@angular/flex-layout';
 import {LoginService} from '../services/LoginService';
 import {PartyService} from "../services/PartyService";
 import {PartyList} from "../models/PartyList";
 import {DomSanitizer} from "@angular/platform-browser";
+import {Party} from "../models/Party";
+import {UserAccount} from "../models/UserAccount";
 
 @Component({
   selector: 'app-sidebar-layout',
@@ -13,6 +14,9 @@ import {DomSanitizer} from "@angular/platform-browser";
   styleUrls: ['./SidebarLayout.scss'],
 })
 export class SidebarLayoutComponent implements OnInit {
+
+  @Input() party: Party;
+  account: UserAccount;
   parties: PartyList = new PartyList();
   opened: boolean = true;
   mode: string = "side";
@@ -21,27 +25,28 @@ export class SidebarLayoutComponent implements OnInit {
 
   backgroundUrl: string = "assets/bg3.jpg";
 
-  constructor(private toastyConfig: ToastyConfig,
-              private media: ObservableMedia,
+  constructor(private media: ObservableMedia,
               private router: Router,
               private loginService: LoginService,
               private partyService: PartyService,
               private domSanitizer: DomSanitizer) {
-    toastyConfig.theme = 'material';
-    toastyConfig.position = 'top-center';
   }
 
   ngOnInit() {
-    this.loginService.validate().subscribe(res => {
+    this.loginService.account.subscribe(account => {
+      this.account = account;
     });
+
     this.partyService.partyList.subscribe(partyList => {
       if (partyList != null) {
         this.parties = partyList;
-        if (partyList.activeParty != null && partyList.activeParty.backgroundUrl != null && partyList.activeParty.backgroundUrl.length > 0) {
-          this.backgroundUrl = partyList.activeParty.backgroundUrl;
-        }
+      } else {
+        this.parties = new PartyList();
       }
     });
+    if (this.party != null && this.party.backgroundUrl != null && this.party.backgroundUrl.length > 0) {
+      this.backgroundUrl = this.party.backgroundUrl;
+    }
 
     this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
     if (this.isMobileView) {
@@ -74,9 +79,29 @@ export class SidebarLayoutComponent implements OnInit {
     }
   }
 
+  getPartyIcon(party: Party) {
+    if (party.type === "SPOTIFY") {
+      return '/assets/spotify.png';
+    } else if (party.type === "YOUTUBE" ) {
+      return '/assets/youtube.png';
+    }
+
+    return null;
+  }
+
   logout() {
     this.loginService.logout();
     this.router.navigateByUrl('/');
+  }
+
+  sortedParties() {
+    if (this.account != null && this.parties != null && this.parties.parties != null) {
+      return this.parties.parties.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    return [];
   }
 
 }
