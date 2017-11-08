@@ -85,7 +85,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router,
               private partyService: PartyService,
-              private notificationsService: NotificationsService ,
+              private notificationsService: NotificationsService,
               private queueService: QueueService,
               private route: ActivatedRoute,
               private sanitizer: DomSanitizer,
@@ -115,6 +115,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     });
 
     this.route.params.subscribe(params => {
+      this.resetParty();
       this.partyService.joinParty(+params["id"]).subscribe(party => {
         this.partyType = party.type;
 
@@ -139,6 +140,11 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.refreshTimer.unsubscribe();
     this.progressTimer.unsubscribe();
+    this.resetParty();
+    console.log("Destroyed");
+  }
+
+  private resetParty() {
     this.lastMentionInput = 0;
     this.partyMembers = null;
     this.messages = [];
@@ -149,7 +155,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.partyType = "SPOTIFY";
     this.admin = false;
     this.largeYtPlayer = false;
-    console.log("Destroyed");
   }
 
   handleEmojiSelection(event: EmojiEvent) {
@@ -257,7 +262,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.messages = this.messages.concat(message);
   }
 
-  private spawnNotification(theBody,theIcon,theTitle) {
+  private spawnNotification(theBody, theIcon, theTitle) {
     const options = {
       body: theBody,
       icon: theIcon
@@ -317,7 +322,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   private refresh() {
-    this.queueService.getHistory(this.party,25, 0).subscribe(res => {
+    this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
       this.history = res;
     });
 
