@@ -88,6 +88,15 @@ export class PartyService {
     });
   }
 
+  getById(id: number): Observable<Party> {
+    return this.http
+      .get(`${this.createEndpoint}/${id}`, {withCredentials: true})
+      .map(result => result.json() as Party)
+      .catch(error => {
+        return null;
+      });
+  }
+
   private search<T>(url: string,
                     filters: Array<Filter>,
                     limit: number = 10,

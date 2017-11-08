@@ -1,16 +1,5 @@
 <div class="masthead">
-  <div class="landing-nav" fxLayout="row">
-    <div class="logo-container" fxLayoutAlign="center center">
-      <div class="logo">
-      </div>
-    </div>
-    <mat-toolbar class="toolbar" fxLayoutAlign="end center">
-      <button mat-button [routerLink]="['/home']">Home</button>
-      <button mat-button [routerLink]="['/parties']">Parties</button>
-      <button mat-button [routerLink]="['/login']" *ngIf="!loggedIn">Log in</button>
-      <button mat-button (click)="logout()" *ngIf="loggedIn">Log out</button>
-    </mat-toolbar>
-  </div>
+  <app-landing-navbar></app-landing-navbar>
 
   <div class="container masthead-overlay" fxLayout="row" fxLayoutAlign="center center">
 

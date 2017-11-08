@@ -1,11 +1,13 @@
+<app-landing-navbar></app-landing-navbar>
+
 <div fxLayout="row" fxLayoutAlign="center center" class="login-container" fxLayoutWrap="true" style="height: 100vh;">
   <div fxFlex="100" fxLayoutAlign="center center">
     <h2 style="color: white;">Log in to continue</h2>
   </div>
 
-  <mat-card *ngIf="!loggedIn" class="login-card transparent-card">
-    <mat-card-content>
-      <mat-tab-group class="center">
+  <mat-card fxFlex.lt-md="80" fxFlex.md="40" fxFlex.gt-md="35" *ngIf="!loggedIn" class="login-card transparent-card">
+    <mat-card-content fxFlex="100">
+      <mat-tab-group>
         <mat-tab label="Log in">
 
           <div class="tab-content" fxFlex="100">
@@ -26,7 +28,7 @@
                   <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
                     This field is required
                   </mat-error>
-                  <mat-error *ngIf="accountForm.controls['password'].hasError('minlength')">
+                  <mat-error *ngIf="loginForm.controls['password'].hasError('minlength')">
                     Your password has to be at least 8 characters long.
                   </mat-error>
                 </mat-input-container>
@@ -35,7 +37,8 @@
 
               <button color="primary" class="center button" mat-raised-button [disabled]="!loginForm.valid">
                 <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
-                Log in
+                <span *ngIf="!loggingIn">Log in</span>
+                <span *ngIf="loggingIn">Logging in...</span>
               </button>
 
             </form>
@@ -71,7 +74,7 @@
                   <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
                     This field is required
                   </mat-error>
-                  <mat-error *ngIf="accountForm.controls['password'].hasError('minlength')">
+                  <mat-error *ngIf="signupForm.controls['password'].hasError('minlength')">
                     Your password has to be at least 8 characters long.
                   </mat-error>
                 </mat-input-container>
@@ -80,7 +83,8 @@
 
               <button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">
                 <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
-                Sign up
+                <span *ngIf="!signingUp">Sign up</span>
+                <span *ngIf="signingUp">Signing up...</span>
               </button>
 
             </form>

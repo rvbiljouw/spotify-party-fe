@@ -21,6 +21,10 @@ import {ListResponse} from "../../services/ApiService";
 import {YoutubePlayerComponent} from "../../widgets/YoutubePlayer";
 import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 import {NotificationsService} from "angular2-notifications";
+import {debounce} from 'lodash';
+import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist";
+import {EmojiPickerAppleSheetLocator} from "angular2-emoji-picker/lib-dist/sheets/sheet_apple_map";
+import {EmojiEvent} from "angular2-emoji-picker/lib-dist/lib/emoji-event";
 
 @Component({
   selector: 'view-party',
@@ -30,6 +34,12 @@ import {NotificationsService} from "angular2-notifications";
   ],
 })
 export class ViewPartyComponent implements OnInit, OnDestroy {
+
+  formatMentionOption = (member: UserAccount) => {
+    this.setLastMentionInputTime(Date.now());
+    return `@${member.displayName} `;
+  };
+
   party: Party;
   partyMembers: UserAccount[];
   queue: PartyQueue = new PartyQueue();
@@ -67,6 +77,12 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     mentionSelect: this.formatMentionOption,
   };
 
+  lastMentionInput = 0;
+
+  emojiPickerToggled = false;
+
+  chatInputModel = '';
+
   constructor(private router: Router,
               private partyService: PartyService,
               private notificationsService: NotificationsService ,
@@ -77,7 +93,12 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private loginService: LoginService,
               private dialog: MatDialog,
               private media: ObservableMedia,
+              private emojiPickerOptions: EmojiPickerOptions,
               fb: FormBuilder) {
+    this.emojiPickerOptions.setEmojiSheet({
+      url: 'sheet_apple_32.png',
+      locator: EmojiPickerAppleSheetLocator
+    });
   }
 
   ngOnInit() {
@@ -115,14 +136,33 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatMentionOption(member: UserAccount) {
-    return `@${member.displayName}`;
-  }
-
   ngOnDestroy() {
     this.refreshTimer.unsubscribe();
     this.progressTimer.unsubscribe();
+    this.lastMentionInput = 0;
+    this.partyMembers = null;
+    this.messages = [];
+    this.queue = new PartyQueue();
+    this.history = new ListResponse([], 0, 0);
+    this.partyName = "Connecting...";
+    this.websocketAuthenticated = false;
+    this.partyType = "SPOTIFY";
+    this.admin = false;
+    this.largeYtPlayer = false;
     console.log("Destroyed");
+  }
+
+  handleEmojiSelection(event: EmojiEvent) {
+    this.chatInputModel = `${this.chatInputModel} :${event.label}:`;
+    this.chatInput.nativeElement.focus();
+  }
+
+  onChatInput(event) {
+    this.chatInputModel = event;
+  }
+
+  onMentionInput(text) {
+    this.setLastMentionInputTime(Date.now());
   }
 
   join(id: number, reconnect: boolean = false) {
@@ -164,6 +204,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             messageEvents.forEach(event => this.addChatMessage(event, true));
             break;
 
+          case "PARTY_UPDATE":
+            this.refreshParty();
+            break;
+
           case "COMMAND":
             const command = JSON.parse(wsMessage.body);
             if (command.name == "PLAY") {
@@ -178,7 +222,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             break;
 
           default:
-            console.log(wsMessage);
             break;
         }
       });
@@ -235,8 +278,11 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     return user.trim();
   }
 
-  sendChatMessage(event) {
+  sendChatMessage = debounce((event) => {
     if (event != null && event.keyCode != 13) {
+      return;
+    }
+    if (Date.now() - this.lastMentionInput < 500) {
       return;
     }
 
@@ -253,6 +299,21 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         this.chatInput.nativeElement.value = "";
       }
     }
+  }, 150);
+
+  private refreshParty() {
+    this.partyService.getById(this.party.id).subscribe(party => {
+      this.loginService.account.subscribe(acc => {
+        this.account = acc;
+        this.admin = party.owner.id == acc.id;
+        this.showNoSpotify = party.type == 'SPOTIFY' && !acc.hasSpotify
+      });
+
+      this.party = party;
+      this.partyMembers = party.members.map(m => m.account).filter(a => a.id !== this.account.id);
+
+      this.partyName = this.party.name;
+    });
   }
 
   private refresh() {
@@ -351,6 +412,12 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     }, err => {
       this.notificationsService.error('Sorry, we couldn\'t process your vote... please try again later.');
     });
+  }
+
+  setLastMentionInputTime(time) {
+    if (time > this.lastMentionInput) {
+      this.lastMentionInput = time;
+    }
   }
 
 }

@@ -33,13 +33,16 @@ td {
 
 .chat-input {
   padding-left: 10px;
-  width: 76%;
   font-size: 14px;
+}
+
+.emoji-btn {
+  margin-top: 10px;
 }
 
 .chat-btn {
   float: right;
-  margin-top: 10px
+  margin-top: 10px;
 }
 
 .chat-msg {

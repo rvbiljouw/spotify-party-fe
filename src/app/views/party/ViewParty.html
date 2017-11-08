@@ -250,14 +250,35 @@
             </div>
           </mat-card-content>
           <mat-card-footer>
-              <div>
-                <mat-input-container class="chat-input" floatPlaceholder="never">
-                  <input matInput [mention]="partyMembers" [mentionConfig]="mentionConfig" placeholder="Type to chat" (keydown)="sendChatMessage($event)" #chatInput>
+              <div fxFlex="100">
+                <mat-input-container fxFlex.lt-lg="90" fxFlex.gt-md="76" class="chat-input" floatPlaceholder="never">
+                  <input matInput
+                       [mention]="partyMembers"
+                       [mentionConfig]="mentionConfig"
+                       (searchTerm)="onMentionInput($event)"
+                       placeholder="Type to chat"
+                       [ngModel]="chatInputModel"
+                       (ngModelChange)="onChatInput($event)"
+                       autocomplete="off"
+                       (keydown)="sendChatMessage($event)"
+                       #chatInput>
                 </mat-input-container>
-                <button mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
-                        (click)="sendChatMessage()">
+
+                <button fxFlex.lt-lg="5" fxFlex.gt-md="12" mat-icon-button class="emoji-btn" [disabled]="!websocketAuthenticated"
+                        (click)="emojiPickerToggled = !emojiPickerToggled"
+                        [(emojiPickerIf)]="emojiPickerToggled"
+                        [emojiPickerDirection]="'bottom'"
+                        [emojiPickerPreserveSelection]="true"
+                        [emojiPickerAutofocus]="true "
+                        (emojiPickerSelect)="handleEmojiSelection($event)">
+                  <mat-icon>face</mat-icon>
+                </button>
+
+                <button fxFlex.lt-lg="5" fxFlex.gt-md="12" mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
+                        (click)="sendChatMessage(null)">
                   <mat-icon>send</mat-icon>
                 </button>
+
               </div>
           </mat-card-footer>
         </mat-card>

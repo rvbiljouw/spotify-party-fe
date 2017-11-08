@@ -40,6 +40,8 @@ import {YouTubeService} from "./services/YouTubeService";
 import {SimpleNotificationsModule} from "angular2-notifications";
 import {MyAccountComponent} from "./views/account/MyAccount";
 import {MentionModule} from "angular2-mentions/mention";
+import {LandingNavbarComponent} from "./widgets/LandingNavbar";
+import {EmojiPickerModule} from "angular2-emoji-picker";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -67,7 +69,8 @@ const routes: Routes = [
     LandingComponent,
     PartyCardComponent,
     YoutubePlayerComponent,
-    MyAccountComponent
+    MyAccountComponent,
+    LandingNavbarComponent
   ],
   imports: [
     MatNativeDateModule,
@@ -87,6 +90,7 @@ const routes: Routes = [
     EmojifyModule,
     SimpleNotificationsModule.forRoot(),
     MentionModule,
+    EmojiPickerModule.forRoot(),
   ],
   providers: [
     LoginService,

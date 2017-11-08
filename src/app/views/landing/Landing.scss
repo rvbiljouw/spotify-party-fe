@@ -11,31 +11,6 @@
     height: 100vh;
   }
 
-  .logo-container {
-    min-height: 64px;
-    height: 64px;
-    max-height: 64px;
-    min-width: 250px;
-    max-width: 250px;
-    width: 250px;
-    background-color: rgba(17, 17, 17, 0.7);
-  }
-
-  .logo {
-    background: url('../../../assets/logo.png');
-    min-height: 50px;
-    height: 64px;
-    max-height: 64px;
-    width: 70%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-
-  .toolbar {
-    background-color: rgba(17, 17, 17, 0.7);
-  }
-
   .masthead-overlay {
     padding-top: 84px;
     min-height: 100%;
@@ -52,12 +27,6 @@
     font-family: "Open Sans", sans-serif;
     font-weight: 300;
     font-size: 20px;
-  }
-
-  .landing-nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
   }
 
 }

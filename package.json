@@ -28,6 +28,7 @@
     "@angular/router": "^4.0.0",
     "@swimlane/ngx-datatable": "~9.0.0",
     "angular-emojify": "^0.2.0",
+    "angular2-emoji-picker": "^1.4.6",
     "angular2-mentions": "^0.7.2",
     "angular2-notifications": "0.7.0",
     "chart.js": "^2.5.0",
