@@ -155,6 +155,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.partyType = "SPOTIFY";
     this.admin = false;
     this.largeYtPlayer = false;
+    this.webSocketService.disconnect();
   }
 
   handleEmojiSelection(event: EmojiEvent) {

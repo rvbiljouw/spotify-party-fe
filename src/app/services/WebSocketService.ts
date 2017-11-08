@@ -39,6 +39,9 @@ export class WebSocketService {
   }
 
   private create(url): Subject<MessageEvent> {
+    if (this.ws) {
+      this.ws.close();
+    }
     this.ws = new WebSocket(url);
 
     if (this.pingInterval >= 0) {
@@ -87,6 +90,12 @@ export class WebSocketService {
           this.authOptions
         ))
       }));
+    }
+  }
+
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
     }
   }
 }
