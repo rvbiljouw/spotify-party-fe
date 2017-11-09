@@ -6,6 +6,8 @@ import {WSMessage} from "../models/WSMessage";
 import {UserAccountService} from "./UserAccountService";
 import {UserAccount} from "../models/UserAccount";
 import {LoginService} from "./LoginService";
+import {IntervalObservable} from "rxjs/observable/IntervalObservable";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class WebSocketService {
@@ -20,8 +22,8 @@ export class WebSocketService {
 
   socket: Subject<MessageEvent>;
   private ws: WebSocket;
-  private pingInterval: any = -1;
-  private authTimeout: any = -1;
+  private pingInterval: Subscription;
+  private authInterval: Subscription;
 
   private authOptions: any = {};
 
@@ -44,15 +46,19 @@ export class WebSocketService {
     }
     this.ws = new WebSocket(url);
 
-    if (this.pingInterval >= 0) {
-      clearInterval(this.pingInterval);
+    if (this.pingInterval != null) {
+      this.pingInterval.unsubscribe();
     }
-    if (this.authTimeout >= 0) {
-      clearTimeout(this.authTimeout);
+    if (this.authInterval != null) {
+      this.authInterval.unsubscribe();
     }
 
-    this.pingInterval = setInterval(this.ping.bind(this), 5000);
-    this.authTimeout = setTimeout(this.authenticate.bind(this), 1000);
+    this.pingInterval = IntervalObservable.create(5000).subscribe(res => {
+      this.ping();
+    });
+    this.authInterval = IntervalObservable.create(1000).subscribe(res => {
+      this.authenticate();
+    });
 
     const observable = Observable.create((obs: Observer<MessageEvent>) => {
       // this.ws.onopen = this.authenticate.bind(this);
@@ -77,9 +83,8 @@ export class WebSocketService {
   }
 
   authenticate() {
-    if (this.socket == null || this.ws == null || this.ws.readyState !== WebSocket.OPEN) {
-      this.authTimeout = setTimeout(this.authenticate.bind(this), 1000);
-    } else {
+    if (this.socket != null && this.ws != null && this.ws.readyState === WebSocket.OPEN) {
+      this.authInterval.unsubscribe();
       this.socket.next(new MessageEvent("message", {
         data: new WSMessage("AUTH", Object.assign(
           {},
@@ -96,6 +101,12 @@ export class WebSocketService {
   disconnect() {
     if (this.ws) {
       this.ws.close();
+    }
+    if (this.pingInterval != null) {
+      this.pingInterval.unsubscribe();
+    }
+    if (this.authInterval != null) {
+      this.authInterval.unsubscribe();
     }
   }
 }
