@@ -1,9 +1,9 @@
 <div class="navbar-container">
   <mat-toolbar class="navbar" fxLayoutWrap="true">
-    <div fxFlex="80" fxFlex.gt-md="70">
+    <div fxFlex="90" fxFlex.gt-md="90">
       <div class="title-box" *ngIf="title != null && title.length > 0">{{ title}}</div>
       <div class="search-box" *ngIf="showSearch">
-        <mat-input-container style="width: 100%;">
+        <mat-input-container [style.width]="getInputWidth()">
           <i class="button-icon fa fa-search" matPrefix></i>
           <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
         </mat-input-container>
@@ -19,12 +19,13 @@
   <div class="search-overlay" *ngIf="searching">
 
     <div fxFlex="100">
-      <mat-progress-spinner
-        *ngIf="searchingSongs"
-        class="in-progress"
-        color="primary"
-        mode="indeterminate">
-      </mat-progress-spinner>
+      <div class="search-spinner" *ngIf="searchingSongs" fxLayout="column" fxLayoutAlign="center center">
+        <mat-progress-spinner
+          class="in-progress"
+          color="primary"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
 
       <div *ngIf="!searchingSongs">
         <div>

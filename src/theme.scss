@@ -40,6 +40,10 @@ $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
     width: 75% !important;
     height: 75% !important;
   }
+
+  .mat-paginator {
+    justify-content: normal;
+  }
 }
 
 @include spotty-theme($theme);

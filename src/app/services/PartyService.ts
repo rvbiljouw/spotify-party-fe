@@ -38,8 +38,8 @@ export class PartyService {
     });
   }
 
-  leaveParty(id: number): Observable<boolean> {
-    return this.http.delete(`${this.endpoint}/${id}/members`, {withCredentials: true}).map(res => {
+  leaveParty(id: number, remove: boolean): Observable<boolean> {
+    return this.http.delete(`${this.endpoint}/${id}/members?remove=${remove}`, {withCredentials: true}).map(res => {
       this.refresh();
       return true;
     });

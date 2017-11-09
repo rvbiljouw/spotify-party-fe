@@ -75,4 +75,5 @@ export class QueueSongRequest {
 export class VoteRequest {
   id: number;
   up: boolean;
+  voteToSkip: boolean;
 }

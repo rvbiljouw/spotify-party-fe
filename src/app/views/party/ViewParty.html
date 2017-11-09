@@ -1,10 +1,24 @@
 <app-sidebar-layout [party]="party">
 
-  <app-search-bar id="app-navbar" class="mat-elevation-z2" [showSearch]="true" [party]="party">
+  <app-search-bar id="app-navbar" #searchBar class="mat-elevation-z2" [showSearch]="true" [party]="party">
 
-    <div fxFlex="30" fxFlex.gt-md="40">
+    <div fxFlex="30" fxFlex.gt-md="40" *ngIf="!isMobileView || !searchBar.searching">
       <div fxLayout="row" fxLayoutAlign="end middle">
         <div>
+
+          <mat-menu #deviceMenu="matMenu">
+            <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
+              {{ device.name }}
+            </button>
+          </mat-menu>
+
+          <button *ngIf="party != null && party.type == 'SPOTIFY' && account.spotify != null"
+                  matTooltip="{{getDeviceName(account.spotify.device)}}"
+                  class="device-btn"
+                  mat-icon-button [matMenuTriggerFor]="deviceMenu">
+            <mat-icon>speaker_phone</mat-icon>
+          </button>
+
           <button mat-icon-button color="accent" (click)="join(party.id, true)">
             <mat-icon class="button-icon">refresh</mat-icon>
           </button>
@@ -13,7 +27,11 @@
             <mat-icon>settings</mat-icon>
           </button>
 
-          <button mat-icon-button color="warn" (click)="leave()">
+          <button mat-icon-button color="primary" (click)="leave(false)">
+            <mat-icon>stop</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="leave(true)">
             <mat-icon>exit_to_app</mat-icon>
           </button>
         </div>
@@ -21,7 +39,7 @@
     </div>
   </app-search-bar>
 
-  <div class="root">
+  <div class="root" *ngIf="!searchBar.searching">
 
     <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
       <span>You need to link your Spotify Premium account to join this party.</span>
@@ -66,6 +84,15 @@
                           </mat-progress-bar>
                         </div>
                       </mat-list-item>
+                      <mat-list-item>
+                        <button class="skip-btn" mat-button color="accent" (click)="vote(queue.nowPlaying, false, true)">
+                          <mat-icon class="button-icon">skip_next</mat-icon>
+                          Vote to skip
+                        </button>
+                      </mat-list-item>
+                      <mat-list-item class="skip-msg-item">
+                        <p md-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
+                      </mat-list-item>
                     </mat-list>
                   </div>
                 </div>
@@ -108,6 +135,15 @@
                             [value]="progress">
                           </mat-progress-bar>
                         </div>
+                      </mat-list-item>
+                      <mat-list-item>
+                        <button class="skip-btn" mat-button color="accent" (click)="vote(queue.nowPlaying, false, true)">
+                          <mat-icon class="button-icon">skip_next</mat-icon>
+                          Vote to skip
+                        </button>
+                      </mat-list-item>
+                      <mat-list-item class="skip-msg-item">
+                        <p md-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
                       </mat-list-item>
                     </mat-list>
                   </div>
@@ -157,12 +193,12 @@
                         <td>{{ entry.member.displayName }}</td>
                         <td>
                           <div fxLayout="row" fxLayoutGap="10px">
-                            <button mat-icon-button color="primary" (click)="vote(entry, true)">
+                            <button mat-icon-button color="primary" (click)="vote(entry, true, false)">
                               <mat-icon>thumb_up</mat-icon>
                               <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
                             </button>
 
-                            <button mat-icon-button color="danger" (click)="vote(entry, false)">
+                            <button mat-icon-button color="danger" (click)="vote(entry, false, false)">
                               <mat-icon>thumb_down</mat-icon>
                               <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
                             </button>
@@ -243,7 +279,7 @@
                     {{ message.sender }}
                   </span>
                   <span [style.background-color]="message.mentioningMe ? '#dc7c15' : null" [style.color]="getMessageColor(message)" [style.font-style]="getMessageStyle(message)">
-                    {{message.message | emojify}}
+                    {{emojifyPipe.transform(message.message)}}
                   </span>
                 </span>
               </div>
@@ -251,8 +287,9 @@
           </mat-card-content>
           <mat-card-footer>
               <div fxFlex="100">
-                <mat-input-container fxFlex.lt-lg="90" fxFlex.gt-md="76" class="chat-input" floatPlaceholder="never">
+                <mat-input-container fxFlex="76" class="chat-input" floatPlaceholder="never">
                   <input matInput
+                       class="chat-input-box"
                        [mention]="partyMembers"
                        [mentionConfig]="mentionConfig"
                        (searchTerm)="onMentionInput($event)"
@@ -264,7 +301,7 @@
                        #chatInput>
                 </mat-input-container>
 
-                <button fxFlex.lt-lg="5" fxFlex.gt-md="12" mat-icon-button class="emoji-btn" [disabled]="!websocketAuthenticated"
+                <button fxFlex="12" mat-icon-button class="emoji-btn" [disabled]="!websocketAuthenticated"
                         (click)="emojiPickerToggled = !emojiPickerToggled"
                         [(emojiPickerIf)]="emojiPickerToggled"
                         [emojiPickerDirection]="'bottom'"
@@ -274,7 +311,7 @@
                   <mat-icon>face</mat-icon>
                 </button>
 
-                <button fxFlex.lt-lg="5" fxFlex.gt-md="12" mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
+                <button fxFlex="12" mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
                         (click)="sendChatMessage(null)">
                   <mat-icon>send</mat-icon>
                 </button>

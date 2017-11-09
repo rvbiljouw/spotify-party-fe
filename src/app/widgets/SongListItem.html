@@ -1,8 +1,4 @@
-<mat-list-item class="typical-list-item">
-
-  <button mat-button color="accent" (click)="play()">
-    <mat-icon class="button-icon">play_circle_outline</mat-icon>Add to queue
-  </button>
+<mat-list-item class="song-list-item" (click)="play()">
 
   <mat-icon mat-list-icon class="artist-thumbnail"
             [style.background-image]="getArtistThumbnail(true)"></mat-icon>

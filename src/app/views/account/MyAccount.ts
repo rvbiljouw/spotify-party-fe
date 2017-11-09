@@ -14,6 +14,8 @@ import {NotificationsService} from "angular2-notifications";
 import {UserAccountService} from "../../services/UserAccountService";
 import {SpotifyService} from "../../services/SpotifyService";
 import {SpotifyDevice} from "../../models/SpotifyDevice";
+import {Subscription} from "rxjs/Subscription";
+import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 
 @Component({
   selector: 'my-account',
@@ -32,6 +34,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   account: UserAccount;
   admin: boolean = false;
   spotifyDevices: SpotifyDevice[];
+  deviceTimer: Subscription;
 
   isMobileView: boolean;
 
@@ -72,16 +75,22 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       })
     });
 
-    this.spotifyService.getDevices().subscribe(devices => {
-      this.spotifyDevices = devices;
-    }, err => {
-      console.log(err);
-    })
+    this.refreshDevices();
+    this.deviceTimer = IntervalObservable.create(2000).subscribe(next => {
+      this.refreshDevices();
+    });
   }
 
   ngOnDestroy() {
   }
 
+  refreshDevices() {
+    this.spotifyService.getDevices().subscribe(devices => {
+      this.spotifyDevices = devices;
+    }, err => {
+      console.log(err);
+    });
+  }
 
   submitAccount() {
     this.updating = true;

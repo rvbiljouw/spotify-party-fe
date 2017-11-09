@@ -14,3 +14,14 @@
   }
 
 }
+
+
+.song-list-item {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease-in;
+}
+
+.song-list-item:hover {
+  opacity: 1;
+}

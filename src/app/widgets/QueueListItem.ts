@@ -22,10 +22,11 @@ export class QueueListItemComponent implements OnInit {
   ngOnInit() {
   }
 
-  vote(up: boolean) {
+  vote(up: boolean, voteToSkip: boolean) {
     let voteReq = new VoteRequest();
     voteReq.id = this.entry.id;
     voteReq.up = up;
+    voteReq.voteToSkip = voteToSkip;
     this.queueService.voteSong(this.entry.party, voteReq).subscribe(res => {
       this.notificationsService.info('Your vote has been counted.');
     }, err => {

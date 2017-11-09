@@ -11,6 +11,7 @@ import {PageEvent} from "@angular/material";
 import {environment} from "environments/environment";
 import {YouTubeService} from "../services/YouTubeService";
 import {Party} from "../models/Party";
+import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 
 @Component({
   selector: 'app-search-bar',
@@ -29,11 +30,13 @@ export class SearchBarComponent implements OnInit {
   @Input()
   title: string = "";
 
-  pageSizeOptions = [5, 10, 25, 100];
+  isMobileView: boolean;
+
+  pageSizeOptions = [5, 10, 20, 25, 100];
 
   songs: ListResponse<Song> = new ListResponse([], 0, 0);
   songsPageNumber = 0;
-  songsLimit = 10;
+  songsLimit = 20;
   songsOffset = 0;
   searchingSongs = false;
 
@@ -42,11 +45,18 @@ export class SearchBarComponent implements OnInit {
   constructor(private loginService: LoginService,
               private spotifyService: SpotifyService,
               private youtubeService: YouTubeService,
-              private notificationsService: NotificationsService ,
+              private notificationsService: NotificationsService,
+              private media: ObservableMedia,
               private router: Router,) {
   }
 
   ngOnInit() {
+    this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
+
+    this.media.subscribe((change: MediaChange) => {
+      this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
+    });
+
     this.loginService.account.subscribe(
       account => {
         this.loggedIn = account != null;
@@ -73,6 +83,15 @@ export class SearchBarComponent implements OnInit {
     this.loginService.logout();
   }
 
+  getInputWidth() {
+    if (this.searching || !this.isMobileView) {
+      return '100%';
+    } else if (this.party != null && this.party.type == 'SPOTIFY') {
+      return '60%';
+    } else {
+      return '70%';
+    }
+  }
 
   setSongsPage(nextPage: any) {
     this.searchingSongs = true;

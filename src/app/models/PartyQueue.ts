@@ -18,6 +18,7 @@ export class PartyQueueEntry {
   votes: number;
   upvotes: number;
   downvotes: number;
+  votesToSkip: number;
   status: string;
   playedAt: number;
   duration: number;

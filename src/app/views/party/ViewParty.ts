@@ -25,6 +25,10 @@ import {debounce} from 'lodash';
 import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist";
 import {EmojiPickerAppleSheetLocator} from "angular2-emoji-picker/lib-dist/sheets/sheet_apple_map";
 import {EmojiEvent} from "angular2-emoji-picker/lib-dist/lib/emoji-event";
+import {SpotifyDevice} from "app/models/SpotifyDevice";
+import {SpotifyService} from "../../services/SpotifyService";
+import {EmojifyPipe} from "angular-emojify";
+import {SearchBarComponent} from "../../widgets/SearchBar";
 
 @Component({
   selector: 'view-party',
@@ -58,6 +62,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   @ViewChild(YoutubePlayerComponent) youtubeFrame: YoutubePlayerComponent;
 
+  @ViewChild("searchBar") searchBar: SearchBarComponent;
+
   partyType: string = "SPOTIFY";
 
   refreshTimer: Subscription;
@@ -68,6 +74,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   isMobileView: boolean;
   largeYtPlayer: boolean;
+
+  spotifyDevices: SpotifyDevice[];
+  deviceTimer: Subscription;
+  changingDevice: boolean;
 
   mentionConfig = {
     labelKey: "displayName",
@@ -83,6 +93,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   chatInputModel = '';
 
+  emojifyPipe: EmojifyPipe = new EmojifyPipe();
+
   constructor(private router: Router,
               private partyService: PartyService,
               private notificationsService: NotificationsService,
@@ -93,6 +105,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private loginService: LoginService,
               private dialog: MatDialog,
               private media: ObservableMedia,
+              private spotifyService: SpotifyService,
               private emojiPickerOptions: EmojiPickerOptions,
               fb: FormBuilder) {
     this.emojiPickerOptions.setEmojiSheet({
@@ -135,6 +148,11 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         this.progress = this.calculateProgress(this.queue.nowPlaying);
       }
     });
+
+    this.refreshDevices();
+    this.deviceTimer = IntervalObservable.create(5000).subscribe(next => {
+      this.refreshDevices();
+    });
   }
 
   ngOnDestroy() {
@@ -145,6 +163,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   private resetParty() {
+    this.deviceTimer.unsubscribe();
     this.lastMentionInput = 0;
     this.partyMembers = null;
     this.messages = [];
@@ -158,17 +177,83 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.webSocketService.disconnect();
   }
 
+  changeDevice(device: SpotifyDevice) {
+    this.changingDevice = true;
+
+    if (device.id !== this.account.spotify.device) {
+      this.spotifyService.updateAccount({device: device.id}).subscribe(res => {
+        this.notificationsService.success(`Output device changed to ${device.name}`);
+        this.refreshDevices();
+      }, err => {
+        console.log(err);
+        this.notificationsService.error("Unable to change output device");
+        this.refreshDevices();
+      })
+    } else {
+      this.refreshDevices();
+    }
+  }
+
+  getDeviceName(id: string) {
+    if (this.spotifyDevices != null) {
+      const device = this.spotifyDevices.find(device => device.id === id);
+      if (device != null) {
+        return device.name;
+      }
+    }
+
+    return null;
+  }
+
+  refreshDevices() {
+    this.spotifyService.getDevices().subscribe(devices => {
+      this.spotifyDevices = devices;
+      this.changingDevice = false;
+    }, err => {
+      console.log(err);
+      this.changingDevice = false;
+    });
+  }
+
   handleEmojiSelection(event: EmojiEvent) {
-    this.chatInputModel = `${this.chatInputModel} :${event.label}:`;
+    const tempNewModel = this.chatInputModel.length === 0 ? `:${event.label}: ` : `${this.chatInputModel} :${event.label}: `;
+
+    this.chatInputModel = this.emojifyPipe.transform(tempNewModel);
     this.chatInput.nativeElement.focus();
+    this.emojiPickerToggled = false;
   }
 
   onChatInput(event) {
-    this.chatInputModel = event;
+    if (event.endsWith(":") && event.length > this.chatInputModel.length) {
+      const transformed = this.emojifyPipe.transform(event);
+      if (transformed !== event) {
+        event = `${event} `;
+      }
+    }
+
+    this.chatInputModel = this.emojifyPipe.transform(event);
   }
 
   onMentionInput(text) {
     this.setLastMentionInputTime(Date.now());
+  }
+
+  getRemainingToSkipMessage() {
+    const required = Math.ceil(this.party.activeMemberCount / 2);
+    const diff = required - this.queue.nowPlaying.votesToSkip;
+    if (isNaN(diff)) {
+      return "";
+    }
+
+    if (diff <= 0) {
+      return "No more votes required, skipping...";
+    }
+
+    if (diff === 1) {
+      return `(${diff} more vote is required to skip)`;
+    } else {
+      return `(${diff} more votes are required to skip)`;
+    }
   }
 
   join(id: number, reconnect: boolean = false) {
@@ -296,6 +381,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     if (message != null) {
       const trimmed = message.trim();
       if (trimmed.length > 0) {
+        this.chatInputModel = '';
         this.webSocketService.socket.next(new MessageEvent("chat", {
           data: new WSMessage("CHAT", {
             message: message,
@@ -400,8 +486,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     })
   }
 
-  leave() {
-    this.partyService.leaveParty(this.party.id).subscribe(res => {
+  leave(remove: boolean) {
+    this.partyService.leaveParty(this.party.id, remove).subscribe(res => {
       this.notificationsService.info('You\'ve left the party.');
       this.router.navigate(['/parties']);
     }, err => {
@@ -409,10 +495,11 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     });
   }
 
-  vote(entry: PartyQueueEntry, up: boolean) {
+  vote(entry: PartyQueueEntry, up: boolean, voteToSkip: boolean) {
     let voteReq = new VoteRequest();
     voteReq.id = entry.id;
     voteReq.up = up;
+    voteReq.voteToSkip = voteToSkip;
     this.queueService.voteSong(this.party, voteReq).subscribe(res => {
       this.notificationsService.info('Your vote has been counted.');
     }, err => {

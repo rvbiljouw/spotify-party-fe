@@ -16,7 +16,13 @@
   display: inline;
 }
 
+.search-spinner {
+  margin-top: 30vh;
+}
+
 .search-overlay {
+  height: 100vh;
+
   & {
     position: absolute;
     float: left;
@@ -27,6 +33,8 @@
     min-height: 400px;
 
     background-color: rgb(24, 24, 24);
+
+    opacity: 0.8;
 
     overflow: scroll;
     z-index: 9999;

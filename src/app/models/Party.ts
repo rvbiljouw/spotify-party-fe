@@ -16,6 +16,7 @@ export class Party {
   id: number;
   owner: UserAccount;
   members: Array<PartyMember>;
+  activeMemberCount: number;
   nowPlaying: PartyQueueEntry;
   name: string;
   description: string;
