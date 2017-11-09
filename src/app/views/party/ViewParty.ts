@@ -6,7 +6,7 @@ import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
 import {QueueService, VoteRequest} from "../../services/QueueService";
-import {DomSanitizer} from "@angular/platform-browser";
+import {DomSanitizer, Title} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
 import {MatDialog, MatInput} from "@angular/material";
@@ -107,6 +107,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private media: ObservableMedia,
               private spotifyService: SpotifyService,
               private emojiPickerOptions: EmojiPickerOptions,
+              private titleService: Title,
               fb: FormBuilder) {
     this.emojiPickerOptions.setEmojiSheet({
       url: 'sheet_apple_32.png',
@@ -136,7 +137,9 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
           partyId: party.id,
         });
 
-        this.join(+params["id"], party.type == 'YOUTUBE');
+        this.party = party;
+
+        this.join(this.party.id, this.party.type == 'YOUTUBE');
       });
     });
 
@@ -163,7 +166,9 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   private resetParty() {
-    this.deviceTimer.unsubscribe();
+    if (this.deviceTimer != null) {
+      this.deviceTimer.unsubscribe();
+    }
     this.lastMentionInput = 0;
     this.partyMembers = null;
     this.messages = [];
@@ -206,13 +211,15 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   refreshDevices() {
-    this.spotifyService.getDevices().subscribe(devices => {
-      this.spotifyDevices = devices;
-      this.changingDevice = false;
-    }, err => {
-      console.log(err);
-      this.changingDevice = false;
-    });
+    if (this.account != null && this.account.hasSpotify) {
+      this.spotifyService.getDevices().subscribe(devices => {
+        this.spotifyDevices = devices;
+        this.changingDevice = false;
+      }, err => {
+        console.log(err);
+        this.changingDevice = false;
+      });
+    }
   }
 
   handleEmojiSelection(event: EmojiEvent) {
@@ -258,6 +265,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   join(id: number, reconnect: boolean = false) {
     this.partyService.joinParty(id, reconnect).subscribe(party => {
+      console.log(party);
       this.loginService.account.subscribe(acc => {
         this.account = acc;
         this.admin = party.owner.id == acc.id;
@@ -409,15 +417,25 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   private refresh() {
-    this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
-      this.history = res;
-    });
+    if (this.party != null && (this.partyType === 'YOUTUBE' || this.account.hasSpotify)) {
+      this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
+        this.history = res;
+      });
 
-    this.queueService.getQueue(this.party).subscribe(res => {
-      this.queue = res;
-    }, err => {
-      this.notificationsService.error("Couldn't retrieve queue for party.");
-    });
+      this.queueService.getQueue(this.party).subscribe(res => {
+        this.queue = res;
+        if (this.queue != null) {
+          const nowPlaying = this.queue.nowPlaying;
+          if (nowPlaying != null) {
+            this.titleService.setTitle(`${nowPlaying.title} - ${nowPlaying.artist} -- ${this.partyName}`);
+          } else {
+            this.titleService.setTitle(`${this.partyName}`);
+          }
+        }
+      }, err => {
+        this.notificationsService.error("Couldn't retrieve queue for party.");
+      });
+    }
   }
 
 

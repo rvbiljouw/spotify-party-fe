@@ -1,8 +1,9 @@
 <app-sidebar-layout [party]="party">
 
-  <app-search-bar id="app-navbar" #searchBar class="mat-elevation-z2" [showSearch]="true" [party]="party">
+  <app-search-bar id="app-navbar" #searchBar class="mat-elevation-z2"
+                  [showSearch]="partyType == 'YOUTUBE' || !showNoSpotify" [party]="party">
 
-    <div fxFlex="30" fxFlex.gt-md="40" *ngIf="!isMobileView || !searchBar.searching">
+    <div fxFlex="30" fxFlex.gt-md="40" *ngIf="(!isMobileView || !searchBar.searching) && account != null && account.hasSpotify">
       <div fxLayout="row" fxLayoutAlign="end middle">
         <div>
 
@@ -42,8 +43,9 @@
   <div class="root" *ngIf="!searchBar.searching">
 
     <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
-      <span>You need to link your Spotify Premium account to join this party.</span>
-      <button mat-raised-button color="primary">Click here to get started.</button>
+      <span>You need to link your Spotify Premium account to join this party, click
+        <a class="link" [routerLink]="['/account']" [queryParams]="{tab: 'spotify'}">here</a> to get started.
+      </span>
     </mat-toolbar>
 
     <div fxLayout="row" fxLayoutWrap="true">

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import { NotificationsService } from 'angular2-notifications';
@@ -14,12 +14,12 @@ import {PartyList} from "../../models/PartyList";
 import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
-  selector: 'parties',
-  templateUrl: './Parties.html',
-  styleUrls: ['./Parties.scss'],
+  selector: 'app-my-parties',
+  templateUrl: './MyParties.html',
+  styleUrls: ['./MyParties.scss'],
   animations: [routerTransition()],
 })
-export class PartiesComponent implements OnInit {
+export class MyPartiesComponent implements OnInit {
   yourParties: PartyList;
   spotifyGroup = new PartyGroup();
   youtubeGroup = new PartyGroup();
@@ -30,8 +30,6 @@ export class PartiesComponent implements OnInit {
   searchTerm = new FormControl('', []);
   searching: boolean;
   searchResults: ListResponse<Party>;
-
-  selectedTab = 0;
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -59,16 +57,6 @@ export class PartiesComponent implements OnInit {
       }
     });
 
-    this.route.queryParams.subscribe((params: Params) => {
-      const tab = params['tab'];
-
-      if (tab === 'youtube') {
-        this.selectedTab = 1;
-      } else {
-        this.selectedTab = 0;
-      }
-    });
-
     this.searchTerm.valueChanges
       .debounceTime(400)
       .distinctUntilChanged()
@@ -76,19 +64,11 @@ export class PartiesComponent implements OnInit {
         if (term.length > 0) {
           this.searching = true;
 
-          let spotifyFilters = [
-            new Filter(FilterType.CONTAINS, "name", term),
-            new Filter(FilterType.EQUALS, "type", "SPOTIFY")
-          ];
-          this.partyService.getParties(this.limit, this.offset, spotifyFilters).subscribe(result => {
+          this.partyService.searchAllMyParties(this.limit, this.offset, 'SPOTIFY', term, this.account).subscribe(result => {
             this.spotifyGroup.searchResults = result;
           });
 
-          let youtubeFilters = [
-            new Filter(FilterType.CONTAINS, "name", term),
-            new Filter(FilterType.EQUALS, "type", "YOUTUBE")
-          ];
-          this.partyService.getParties(this.limit, this.offset, youtubeFilters).subscribe(result => {
+          this.partyService.searchAllMyParties(this.limit, this.offset, 'YOUTUBE', term, this.account).subscribe(result => {
             this.youtubeGroup.searchResults = result;
           });
         }
@@ -105,12 +85,8 @@ export class PartiesComponent implements OnInit {
   }
 
   loadGroup(group: PartyGroup, type: string) {
-    this.partyService.getMostPopular(this.limit, this.offset, type).subscribe(res => {
+    this.partyService.searchAllMyParties(this.limit, this.offset, type, "", this.account).subscribe(res => {
       group.popularParties = res;
-    });
-
-    this.partyService.getNew(this.limit, this.offset, type).subscribe(res => {
-      group.newParties = res;
     });
   }
 
@@ -121,6 +97,5 @@ export class PartiesComponent implements OnInit {
 
 export class PartyGroup {
   popularParties: ListResponse<Party>;
-  newParties: ListResponse<Party>;
   searchResults: ListResponse<Party>;
 }

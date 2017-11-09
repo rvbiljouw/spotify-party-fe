@@ -98,7 +98,7 @@ export class SidebarLayoutComponent implements OnInit {
     if (this.account != null && this.parties != null && this.parties.parties != null) {
       return this.parties.parties.sort((a, b) => {
         return a.name.localeCompare(b.name);
-      });
+      }).slice(0, 4);
     }
 
     return [];

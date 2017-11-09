@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import {PartyService} from "../../services/PartyService";
@@ -16,6 +16,7 @@ import {SpotifyService} from "../../services/SpotifyService";
 import {SpotifyDevice} from "../../models/SpotifyDevice";
 import {Subscription} from "rxjs/Subscription";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'my-account',
@@ -38,9 +39,11 @@ export class MyAccountComponent implements OnInit, OnDestroy {
 
   isMobileView: boolean;
 
+  selectedTab = 0;
+
   constructor(private router: Router,
               private partyService: PartyService,
-              private notificationsService: NotificationsService ,
+              private notificationsService: NotificationsService,
               private route: ActivatedRoute,
               private sanitizer: DomSanitizer,
               private loginService: LoginService,
@@ -55,6 +58,21 @@ export class MyAccountComponent implements OnInit, OnDestroy {
 
     this.media.subscribe((change: MediaChange) => {
       this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
+    });
+
+    this.route.queryParams.subscribe((params: Params) => {
+      const tab = params['tab'];
+
+      if (tab === 'spotify') {
+        this.selectedTab = 1;
+      } else {
+        this.selectedTab = 0;
+      }
+
+      const error = params['error'];
+      if (error === 'spotify_already_linked') {
+        this.notificationsService.error("That spotify account is already linked to another account");
+      }
     });
 
     this.loginService.account.subscribe(account => {
@@ -109,7 +127,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       );
   }
 
-submitSpotify() {
+  submitSpotify() {
     this.updating = true;
     this.spotifyService
       .updateAccount(this.spotifyForm.value)
@@ -126,6 +144,10 @@ submitSpotify() {
       );
   }
 
+  spotifyLogin() {
+    const redirectUrl = encodeURIComponent(`${window.location.protocol}//${window.location.host}/#/account~${this.account.loginToken.token}`);
+    window.location.href = `${environment.apiHost}/api/v1/spotify/login?redirectUrl=${redirectUrl}`;
+  }
 
   confirmPasswordValidator(): { mismatch: boolean } {
     if (
@@ -135,7 +157,7 @@ submitSpotify() {
       this.accountForm.get('newPassword').value !==
       this.accountForm.get('newPasswordConfirm').value
     ) {
-      return { mismatch: true };
+      return {mismatch: true};
     }
     return null;
   }

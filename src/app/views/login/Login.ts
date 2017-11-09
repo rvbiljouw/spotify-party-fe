@@ -90,6 +90,7 @@ export class LoginComponent implements OnInit {
     this.signingUp = true;
 
     this.loginService.register(this.signupForm.value).subscribe(res => {
+      this.signingUp = false;
       this.notificationsService.info('Your account has been created. Logging you in...');
       this.loginService.setAccount(res);
       this.router.navigate(['parties']).then(() => {
@@ -97,6 +98,7 @@ export class LoginComponent implements OnInit {
       });
     }, err => {
       this.notificationsService.error(`Sign up failed. ${err}`);
+      this.signingUp = false;
     });
   }
 

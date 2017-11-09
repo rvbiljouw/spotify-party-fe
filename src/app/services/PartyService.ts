@@ -4,7 +4,7 @@ import {environment} from "../../environments/environment";
 import {Http} from "@angular/http";
 import {Party} from "../models/Party";
 import {Observable} from "rxjs/Observable";
-import {Filter, ListResponse} from "./ApiService";
+import {Filter, FilterType, ListResponse} from "./ApiService";
 import {PartyList} from "../models/PartyList";
 import {UserAccount} from "../models/UserAccount";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
@@ -14,7 +14,7 @@ export class PartyService {
   private endpoint = `${environment.apiHost}/api/v1/parties`;
   private createEndpoint = `${environment.apiHost}/api/v1/party`;
 
-   partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
+  partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
 
   constructor(private http: Http) {
     this.refresh();
@@ -55,31 +55,27 @@ export class PartyService {
   }
 
   getMostPopular(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
-    return this.http.get(`${this.endpoint}/popular?limit=${limit}&offset=${offset}&type=${type}`, {withCredentials: true}).map(result => {
-      const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
-      const offset = Number.parseInt(result.headers.get('X-Offset'));
-      return new ListResponse<Party>(
-        result.json() as Array<Party>,
-        maxRecords,
-        offset,
-      );
-    });
+    return this.search(this.endpoint, [new Filter(FilterType.EQUALS, "type", type, [])],
+      limit, offset, {sort: "activeMemberCount", order: "desc"});
   }
 
   getNew(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
-    return this.http.get(`${this.endpoint}/new?limit=${limit}&offset=${offset}&type=${type}`, {withCredentials: true}).map(result => {
-      const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
-      const offset = Number.parseInt(result.headers.get('X-Offset'));
-      return new ListResponse<Party>(
-        result.json() as Array<Party>,
-        maxRecords,
-        offset,
-      );
-    });
+    return this.search(this.endpoint, [new Filter(FilterType.EQUALS, "type", type, [])],
+      limit, offset, {sort: "created", order: "desc"});
   }
 
   getParties(limit: number, offset: number, filters: Array<Filter> = []): Observable<ListResponse<Party>> {
     return this.search(this.endpoint, filters, limit, offset);
+  }
+
+  searchAllMyParties(limit: number, offset: number, type: string, name: string, account: UserAccount): Observable<ListResponse<Party>> {
+    return this.search(this.endpoint, [
+        new Filter(FilterType.EQUALS, "type", type, []),
+        new Filter(FilterType.CONTAINS, "name", name, []),
+        new Filter(FilterType.EQUALS, "members.account.id", account.id, []),
+      ],
+      limit, offset, {sort: "activeMemberCount", order: "desc"}
+    );
   }
 
   getMyParties(): Observable<PartyList> {
@@ -97,17 +93,24 @@ export class PartyService {
       });
   }
 
-  private search<T>(url: string,
-                    filters: Array<Filter>,
-                    limit: number = 10,
-                    offset: number = 0,): Observable<ListResponse<T>> {
+  search(url: string,
+         filters: Array<Filter>,
+         limit: number = 10,
+         offset: number = 0,
+         params: any = {}): Observable<ListResponse<Party>> {
+    let queryParams = '';
+    for (const key in params) {
+      queryParams += `${key}=${params[key]}&`;
+    }
+    queryParams += `limit=${limit}&offset=${offset}`;
+
     return this.http
-      .post(`${url}?limit=${limit}&offset=${offset}`, filters, {withCredentials: true})
+      .post(`${url}?${queryParams}`, filters, {withCredentials: true})
       .map(result => {
         const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
         const offset = Number.parseInt(result.headers.get('X-Offset'));
-        return new ListResponse<T>(
-          result.json() as Array<T>,
+        return new ListResponse<Party>(
+          result.json() as Array<Party>,
           maxRecords,
           offset,
         );

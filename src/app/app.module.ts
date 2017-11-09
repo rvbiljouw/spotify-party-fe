@@ -42,6 +42,7 @@ import {MyAccountComponent} from "./views/account/MyAccount";
 import {MentionModule} from "angular2-mentions/mention";
 import {LandingNavbarComponent} from "./widgets/LandingNavbar";
 import {EmojiPickerModule} from "angular2-emoji-picker";
+import {MyPartiesComponent} from "./views/party/MyParties";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -49,6 +50,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'account', component: MyAccountComponent, canActivate: [AuthGuard]},
   {path: 'parties', component: PartiesComponent},
+  {path: 'my-parties', component: MyPartiesComponent, canActivate: [AuthGuard]},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
   {path: 'party/:id', component: ViewPartyComponent, canActivate: [AuthGuard]}
 ];
@@ -70,7 +72,8 @@ const routes: Routes = [
     PartyCardComponent,
     YoutubePlayerComponent,
     MyAccountComponent,
-    LandingNavbarComponent
+    LandingNavbarComponent,
+    MyPartiesComponent
   ],
   imports: [
     MatNativeDateModule,

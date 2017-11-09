@@ -33,6 +33,12 @@
           <span *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id" class="active-chip">ACTIVE</span>
         </button>
       </li>
+      <li *ngIf="parties != null && parties.parties != null && parties.parties.length > 4">
+        <button color="primary" mat-button [routerLink]="['/my-parties']" routerLinkActive="active">
+          <mat-icon class="button-icon">people</mat-icon>
+          View more...
+        </button>
+      </li>
 
       <li *ngIf="account != null" class="header">YOUR ACCOUNT</li>
       <li *ngIf="account != null">
