@@ -40,7 +40,7 @@
     </div>
   </app-search-bar>
 
-  <div class="root" *ngIf="!searchBar.searching">
+  <div class="root" fxShow="{{ !searchBar.searching }}">
 
     <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
       <span>You need to link your Spotify Premium account to join this party, click
