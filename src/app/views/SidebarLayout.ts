@@ -1,4 +1,4 @@
-import {Component, Input, OnInit,} from '@angular/core';
+import {Component, Input, OnInit, ViewChild,} from '@angular/core';
 import {Router,} from '@angular/router';
 import {MediaChange, ObservableMedia} from '@angular/flex-layout';
 import {LoginService} from '../services/LoginService';
@@ -7,6 +7,7 @@ import {PartyList} from "../models/PartyList";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Party} from "../models/Party";
 import {UserAccount} from "../models/UserAccount";
+import {MatSidenav} from "@angular/material";
 
 @Component({
   selector: 'app-sidebar-layout',
@@ -18,12 +19,11 @@ export class SidebarLayoutComponent implements OnInit {
   @Input() party: Party;
   account: UserAccount;
   parties: PartyList = new PartyList();
-  opened: boolean = true;
-  mode: string = "side";
-
-  isMobileView: boolean;
 
   backgroundUrl: string = "assets/bg3.jpg";
+
+  @ViewChild(MatSidenav)
+  sidenav: MatSidenav;
 
   constructor(private media: ObservableMedia,
               private router: Router,
@@ -47,28 +47,6 @@ export class SidebarLayoutComponent implements OnInit {
     if (this.party != null && this.party.backgroundUrl != null && this.party.backgroundUrl.length > 0) {
       this.backgroundUrl = this.party.backgroundUrl;
     }
-
-    this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
-    if (this.isMobileView) {
-      this.opened = false;
-      this.mode = "push";
-    } else {
-      this.opened = true;
-      this.mode = "side";
-    }
-
-    this.media.subscribe((change: MediaChange) => {
-      this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
-      if (this.isMobileView) {
-        this.opened = false;
-        this.mode = "push";
-      } else {
-        this.opened = true;
-        this.mode = "side";
-      }
-    });
-
-
   }
 
   getBackground(backgroundUrl: string) {
@@ -82,7 +60,7 @@ export class SidebarLayoutComponent implements OnInit {
   getPartyIcon(party: Party) {
     if (party.type === "SPOTIFY") {
       return '/assets/spotify.png';
-    } else if (party.type === "YOUTUBE" ) {
+    } else if (party.type === "YOUTUBE") {
       return '/assets/youtube.png';
     }
 
@@ -102,6 +80,10 @@ export class SidebarLayoutComponent implements OnInit {
     }
 
     return [];
+  }
+
+  toggle() {
+    this.sidenav.toggle();
   }
 
 }

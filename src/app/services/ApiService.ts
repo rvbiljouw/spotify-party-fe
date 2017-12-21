@@ -14,7 +14,7 @@ export class ApiService<T> {
       .get(`${this.apiBase}${this.resource}/${id}`, {withCredentials: true})
       .map(result => result.json() as T)
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -23,7 +23,7 @@ export class ApiService<T> {
       .get(`${this.apiBase}${this.resource}`, {withCredentials: true})
       .map(result => result.json() as T)
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -42,7 +42,7 @@ export class ApiService<T> {
         );
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -67,7 +67,7 @@ export class ApiService<T> {
         );
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -78,7 +78,7 @@ export class ApiService<T> {
         return result.json() as T;
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -94,7 +94,7 @@ export class ApiService<T> {
         return result.json() as T;
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -110,7 +110,7 @@ export class ApiService<T> {
         return result.json().success;
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 }

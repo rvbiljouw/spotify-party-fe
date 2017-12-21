@@ -1,9 +1,17 @@
-<mat-sidenav-container class="sidenav-container" [style.background-image]="getBackground(backgroundUrl)">
-  <mat-sidenav #sidenav [mode]="mode" [opened]="opened">
-    <div class="logo-container" fxLayout="row" fxLayoutAlign="center center">
-      <div class="logo">
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="over">
+
+    <mat-toolbar *ngIf="sidenav.mode != 'side'">
+      <div fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="logo" fxLayoutAlign="center center">
+          <img src="../../../assets/logo.png">
+        </div>
       </div>
-    </div>
+    </mat-toolbar>
+
     <ul class="mat-sidenav-links">
       <li class="header">ACTIVITIES</li>
       <li>
@@ -30,7 +38,8 @@
         <button mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
           <img [src]="getPartyIcon(party)" class="button-icon sidebar-party-icon" alt="party">
           {{ party.name }}
-          <span *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id" class="active-chip">ACTIVE</span>
+          <span *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id"
+                class="active-chip">ACTIVE</span>
         </button>
       </li>
       <li *ngIf="parties != null && parties.parties != null && parties.parties.length > 4">
@@ -60,7 +69,3 @@
     <ng-content></ng-content>
   </div>
 </mat-sidenav-container>
-
-<button mat-fab (click)="opened = !opened" class="sidenav-toggle">
-  <mat-icon>menu</mat-icon>
-</button>

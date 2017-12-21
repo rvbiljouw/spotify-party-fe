@@ -1,330 +1,253 @@
-<app-sidebar-layout [party]="party">
+<app-sidebar-layout #sidenav>
 
-  <app-search-bar id="app-navbar" #searchBar class="mat-elevation-z2"
-                  [showSearch]="partyType == 'YOUTUBE' || !showNoSpotify" [party]="party">
+  <mat-toolbar color="primary" class="navbar">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="logo" fxLayoutAlign="center center">
+          <img src="../../../assets/logo.png">
+        </div>
+      </div>
 
-    <div fxFlex="30" fxFlex.gt-md="40" *ngIf="(!isMobileView || !searchBar.searching) && account != null && account.hasSpotify">
-      <div fxLayout="row" fxLayoutAlign="end middle">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin>
+          <mat-icon>search</mat-icon>
+        </button>
+        <ng-container *ngIf="searching">
+          <mat-input-container>
+            <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+          </mat-input-container>
+          <button mat-icon-button (click)="setSearching(false)">
+            <mat-icon class="button-icon">close</mat-icon>
+          </button>
+        </ng-container>
+
+        <mat-menu #deviceMenu="matMenu">
+          <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
+            {{ device.name }}
+          </button>
+        </mat-menu>
+
+        <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
+                matTooltip="{{getDeviceName(account.spotify.device)}}"
+                class="device-btn"
+                mat-icon-button [matMenuTriggerFor]="deviceMenu">
+          <mat-icon>speaker_phone</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="join(party.id, true)">
+          <mat-icon class="button-icon">refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="openSettings()">
+          <mat-icon>settings</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="leave(false)">
+          <mat-icon>stop</mat-icon>
+        </button>
+
+        <button mat-icon-button color="warn" (click)="leave(true)">
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
+
+        <ng-container *ngIf="loggedIn">
+          <button mat-button>
+            <mat-icon>person</mat-icon>
+            {{ account.displayName }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <ng-template cdkPortal #searchTemplate="cdkPortal">
+  <div class="search-overlay" *ngIf="searching">
+
+    <div fxFlex="100">
+      <div class="search-spinner" *ngIf="searchingSongs" fxLayout="column" fxLayoutAlign="center center">
+        <mat-progress-spinner
+          class="in-progress"
+          color="primary"
+          mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+
+      <div *ngIf="!searchingSongs">
         <div>
+          <div fxLayout="row">
 
-          <mat-menu #deviceMenu="matMenu">
-            <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
-              {{ device.name }}
-            </button>
-          </mat-menu>
 
-          <button *ngIf="party != null && party.type == 'SPOTIFY' && account.spotify != null"
-                  matTooltip="{{getDeviceName(account.spotify.device)}}"
-                  class="device-btn"
-                  mat-icon-button [matMenuTriggerFor]="deviceMenu">
-            <mat-icon>speaker_phone</mat-icon>
-          </button>
+            <mat-list fxFlex="100" fxFlex.gt-md="50">
+              <app-song-list-item *ngFor="let item of songs.items" [song]="item"
+                                  [party]="party"
+                                  class="typical-list-item"></app-song-list-item>
+            </mat-list>
 
-          <button mat-icon-button color="accent" (click)="join(party.id, true)">
-            <mat-icon class="button-icon">refresh</mat-icon>
-          </button>
-
-          <button mat-icon-button color="accent" (click)="openSettings()" *ngIf="admin">
-            <mat-icon>settings</mat-icon>
-          </button>
-
-          <button mat-icon-button color="primary" (click)="leave(false)">
-            <mat-icon>stop</mat-icon>
-          </button>
-
-          <button mat-icon-button color="warn" (click)="leave(true)">
-            <mat-icon>exit_to_app</mat-icon>
-          </button>
+          </div>
+          <div fxLayout="row">
+            <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" fxFlex="100" fxFlex.gt-md="50">
+              <mat-paginator [length]="songs.maxRecords"
+                             [pageIndex]="songsPageNumber"
+                             [pageSize]="songsLimit"
+                             style="background: none;"
+                             [pageSizeOptions]="pageSizeOptions"
+                             (page)="onSongsPageEvent($event)">
+              </mat-paginator>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </app-search-bar>
+  </div>
+  </ng-template>
 
-  <div class="root" fxShow="{{ !searchBar.searching }}">
 
-    <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
-      <span>You need to link your Spotify Premium account to join this party, click
-        <a class="link" [routerLink]="['/account']" [queryParams]="{tab: 'spotify'}">here</a> to get started.
-      </span>
-    </mat-toolbar>
+  <div class="content" fxLayoutAlign="center">
 
-    <div fxLayout="row" fxLayoutWrap="true">
+    <div fxFlex="100" fxFlex.lt-sm="90" fxFlex.gt-md="75">
 
-      <div fxFlex.gt-md="75" fxFlex="100" *ngIf="party != null" style="padding: 10px;">
+      <div style="padding: 20px;">
 
-        <div style="margin-bottom: 20px;" [@opacityInOut]>
+        <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
+          <span>You need to link your Spotify Premium account to join this party, click
+            <a class="link" [routerLink]="['/account']" [queryParams]="{tab: 'spotify'}">here</a> to get started.
+          </span>
+        </mat-toolbar>
 
-          <div class="now-playing-box" *ngIf="party.type == 'YOUTUBE'">
-            <div fxLayout="row" fxLayoutAlign="center">
-              <div *ngIf="queue != null" fxFlex="100">
-                <div fxLayout="row" fxLayoutWrap="true">
-                  <div fxFlex="100" fxFlex.gt-sm="60">
-                    <div class="youtube-player">
-                      <app-youtube-player #youtubeFrame>
-                      </app-youtube-player>
+        <div fxLayout="row" fxLayoutWrap="true" *ngIf="party != null">
+
+          <div fxFlex.gt-md="75" fxFlex="100" style="padding: 10px">
+            <mat-card class="compact-card" style="height: 100%">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>group</mat-icon>
+                <mat-card-title>{{ party.name }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content class="no-pad">
+                <div class="now-playing-box" *ngIf="party.type == 'YOUTUBE'">
+                  <div fxLayout="row" fxLayoutAlign="center">
+                    <div *ngIf="queue != null" fxFlex="100">
+                      <div fxLayout="row" fxLayoutWrap="true">
+                        <div fxFlex="100" fxFlex.gt-sm="60">
+                          <div class="youtube-player">
+                            <app-youtube-player #youtubeFrame>
+                            </app-youtube-player>
+                          </div>
+                        </div>
+
+                        <div fxFlex="100" fxFlex.gt-sm="40">
+                          <mat-list *ngIf="queue.nowPlaying != null">
+                            <mat-list-item>
+                              <mat-icon mat-list-icon>music_note</mat-icon>
+                              <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
+                              <p mat-line> {{ queue.nowPlaying.artist }}</p>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="queue.nowPlaying.member != null">
+                              <mat-icon mat-list-icon>person</mat-icon>
+                              <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
+                            </mat-list-item>
+                            <mat-list-item>
+                              <mat-icon mat-list-icon>av_timer</mat-icon>
+                              <div mat-line>
+                                <mat-progress-bar
+                                  color="primary"
+                                  mode="determinate"
+                                  [value]="progress">
+                                </mat-progress-bar>
+                              </div>
+                            </mat-list-item>
+                            <mat-list-item>
+                              <button class="skip-btn" mat-button color="accent"
+                                      (click)="vote(queue.nowPlaying, false, true)">
+                                <mat-icon class="button-icon">skip_next</mat-icon>
+                                Vote to skip
+                              </button>
+                            </mat-list-item>
+                            <mat-list-item class="skip-msg-item">
+                              <p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
+                            </mat-list-item>
+                          </mat-list>
+                        </div>
+                      </div>
+                      <div *ngIf="queue == null || queue.nowPlaying == null">
+                        <div fxLayout="column" fxLayoutAlign="center center">
+                          <h3>Nothing is currently playing</h3>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </div>
 
-                  <div fxFlex="100" fxFlex.gt-sm="40">
-                    <mat-list *ngIf="queue.nowPlaying != null">
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>music_note</mat-icon>
-                        <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
-                        <p mat-line> {{ queue.nowPlaying.artist }}</p>
-                      </mat-list-item>
-                      <mat-list-item *ngIf="queue.nowPlaying.member != null">
-                        <mat-icon mat-list-icon>person</mat-icon>
-                        <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
-                      </mat-list-item>
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>av_timer</mat-icon>
-                        <div mat-line>
-                          <mat-progress-bar
-                            color="primary"
-                            mode="determinate"
-                            [value]="progress">
-                          </mat-progress-bar>
+                <div *ngIf="party.type != 'YOUTUBE'" class="now-playing-box">
+                  <div fxLayout="row" fxLayoutAlign="center">
+                    <div *ngIf="queue != null" fxFlex="100">
+                      <div fxLayout="row" fxLayoutWrap="true">
+                        <div class="now-playing-thumbnail"
+                             [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
+                             fxFlex="100"
+                             fxFlex.gt-sm="40"
+                             *ngIf="party.type != 'YOUTUBE'">
                         </div>
-                      </mat-list-item>
-                      <mat-list-item>
-                        <button class="skip-btn" mat-button color="accent" (click)="vote(queue.nowPlaying, false, true)">
-                          <mat-icon class="button-icon">skip_next</mat-icon>
-                          Vote to skip
-                        </button>
-                      </mat-list-item>
-                      <mat-list-item class="skip-msg-item">
-                        <p md-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
-                      </mat-list-item>
-                    </mat-list>
+                        <div fxFlex="100" fxFlex.gt-sm="50">
+                          <mat-list *ngIf="queue.nowPlaying != null">
+                            <mat-list-item>
+                              <mat-icon mat-list-icon>music_note</mat-icon>
+                              <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
+                              <p mat-line> {{ queue.nowPlaying.artist }}</p>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="queue.nowPlaying.member != null">
+                              <mat-icon mat-list-icon>person</mat-icon>
+                              <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
+                            </mat-list-item>
+                            <mat-list-item>
+                              <mat-icon mat-list-icon>av_timer</mat-icon>
+                              <div mat-line>
+                                <mat-progress-bar
+                                  color="primary"
+                                  mode="determinate"
+                                  [value]="progress">
+                                </mat-progress-bar>
+                              </div>
+                            </mat-list-item>
+                            <mat-list-item>
+                              <button class="skip-btn" mat-button color="accent"
+                                      (click)="vote(queue.nowPlaying, false, true)">
+                                <mat-icon class="button-icon">skip_next</mat-icon>
+                                Vote to skip
+                              </button>
+                            </mat-list-item>
+                            <mat-list-item class="skip-msg-item">
+                              <p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
+                            </mat-list-item>
+                          </mat-list>
+                        </div>
+                      </div>
+                      <div *ngIf="queue == null || queue.nowPlaying == null">
+                        <div fxLayout="column" fxLayoutAlign="center center">
+                          <h3>Nothing is currently playing</h3>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div *ngIf="queue == null || queue.nowPlaying == null">
-                  <div fxLayout="column" fxLayoutAlign="center center">
-                    <h3>Nothing is currently playing</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </mat-card-content>
+            </mat-card>
           </div>
 
-          <div *ngIf="party.type != 'YOUTUBE'" class="now-playing-box">
-            <div fxLayout="row" fxLayoutAlign="center">
-              <div *ngIf="queue != null" fxFlex="100">
-                <div fxLayout="row" fxLayoutWrap="true">
-                  <div class="now-playing-thumbnail"
-                       [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
-                       fxFlex="100"
-                       fxFlex.gt-sm="40"
-                       *ngIf="party.type != 'YOUTUBE'">
-                  </div>
-                  <div fxFlex="100" fxFlex.gt-sm="50">
-                    <mat-list *ngIf="queue.nowPlaying != null">
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>music_note</mat-icon>
-                        <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
-                        <p mat-line> {{ queue.nowPlaying.artist }}</p>
-                      </mat-list-item>
-                      <mat-list-item *ngIf="queue.nowPlaying.member != null">
-                        <mat-icon mat-list-icon>person</mat-icon>
-                        <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
-                      </mat-list-item>
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>av_timer</mat-icon>
-                        <div mat-line>
-                          <mat-progress-bar
-                            color="primary"
-                            mode="determinate"
-                            [value]="progress">
-                          </mat-progress-bar>
-                        </div>
-                      </mat-list-item>
-                      <mat-list-item>
-                        <button class="skip-btn" mat-button color="accent" (click)="vote(queue.nowPlaying, false, true)">
-                          <mat-icon class="button-icon">skip_next</mat-icon>
-                          Vote to skip
-                        </button>
-                      </mat-list-item>
-                      <mat-list-item class="skip-msg-item">
-                        <p md-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
-                      </mat-list-item>
-                    </mat-list>
-                  </div>
-                </div>
-                <div *ngIf="queue == null || queue.nowPlaying == null">
-                  <div fxLayout="column" fxLayoutAlign="center center">
-                    <h3>Nothing is currently playing</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div fxFlex="100" fxFlex.gt-md="25" style="padding: 10px">
+            <app-party-chat [party]="party" [partyMembers]="partyMembers"></app-party-chat>
           </div>
-
         </div>
 
-        <div [@opacityInOut]>
-
-          <mat-card class="transparent-card">
-            <mat-card-content>
-
-              <mat-tab-group>
-                <mat-tab label="Queue">
-                  <div *ngIf="queue != null">
-
-                    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="queue.entries.length == 0">
-                      <h3>The queue is empty</h3>
-                      <h4>Start by selecting a song using the search field above</h4>
-                    </div>
-
-                    <table class="full-width" style="display: table;" *ngIf="queue.entries.length > 0" fxShow="false"
-                           fxShow.gt-sm="true">
-                      <tr>
-                        <th class="column-header">Song</th>
-                        <th class="column-header">Artist</th>
-                        <th class="column-header">Requested by</th>
-                        <th></th>
-                      </tr>
-                      <tr *ngFor="let entry of queue.entries">
-                        <td>
-                          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
-                            <mat-icon mat-list-icon class="artist-thumbnail"
-                                      [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                            <span>{{ entry.title }}</span>
-                          </div>
-                        </td>
-                        <td>{{entry.artist }}</td>
-                        <td>{{ entry.member.displayName }}</td>
-                        <td>
-                          <div fxLayout="row" fxLayoutGap="10px">
-                            <button mat-icon-button color="primary" (click)="vote(entry, true, false)">
-                              <mat-icon>thumb_up</mat-icon>
-                              <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
-                            </button>
-
-                            <button mat-icon-button color="danger" (click)="vote(entry, false, false)">
-                              <mat-icon>thumb_down</mat-icon>
-                              <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <mat-list fxHide="false" fxHide.gt-sm="true">
-                      <app-queue-list-item [entry]="entry" *ngFor="let entry of queue.entries"></app-queue-list-item>
-                    </mat-list>
-                  </div>
-                </mat-tab>
-
-                <mat-tab label="History">
-                  <div *ngIf="history != null">
-
-                    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="history.items.length == 0">
-                      <h3>No history available</h3>
-                    </div>
-
-                    <table class="full-width" *ngIf="history.items.length > 0">
-                      <thead>
-                      <tr>
-                        <th class="column-header">Song</th>
-                        <th class="column-header">Artist</th>
-                        <th class="column-header">Requested by</th>
-                        <th></th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr *ngFor="let entry of history.items">
-                        <td>
-                          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
-                            <mat-icon mat-list-icon class="artist-thumbnail"
-                                      [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                            <span>{{ entry.title }}</span>
-                          </div>
-                        </td>
-                        <td>{{entry.artist }}</td>
-                        <td>{{ entry.member.displayName }}</td>
-                        <td>
-                          <div fxLayout="row" fxLayoutGap="10px">
-                            <button mat-icon-button color="primary" disabled>
-                              <mat-icon>thumb_up</mat-icon>
-                              <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
-                            </button>
-
-                            <button mat-icon-button color="danger" disabled>
-                              <mat-icon>thumb_down</mat-icon>
-                              <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </mat-tab>
-              </mat-tab-group>
-            </mat-card-content>
-          </mat-card>
+        <div fxLayout="row">
+          <div [@opacityInOut] fxFlex="100" style="padding: 10px;">
+            <app-party-queue [party]="party" [queue]="queue" [history]="history"></app-party-queue>
+          </div>
         </div>
       </div>
-
-      <div fxFlex.gt-md="25" fxFlex="100" *ngIf="party != null" style="padding: 10px;" [@opacityInOut]>
-        <mat-card class="transparent-card chat-card">
-          <mat-card-header>
-            <mat-card-title class="chat-header">Chat</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="chat-container">
-            <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
-              <div class="chat-msg-container" *ngFor="let message of messages">
-                <!--<span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>-->
-
-                <span class="chat-msg">
-                  <span class="chat-sender" [style.color]="getSenderColor(message)">
-                    {{ message.sender }}
-                  </span>
-                  <span [style.background-color]="message.mentioningMe ? '#dc7c15' : null" [style.color]="getMessageColor(message)" [style.font-style]="getMessageStyle(message)">
-                    {{emojifyPipe.transform(message.message)}}
-                  </span>
-                </span>
-              </div>
-            </div>
-          </mat-card-content>
-          <mat-card-footer>
-              <div fxFlex="100">
-                <mat-input-container fxFlex="76" class="chat-input" floatPlaceholder="never">
-                  <input matInput
-                       class="chat-input-box"
-                       [mention]="partyMembers"
-                       [mentionConfig]="mentionConfig"
-                       (searchTerm)="onMentionInput($event)"
-                       placeholder="Type to chat"
-                       [ngModel]="chatInputModel"
-                       (ngModelChange)="onChatInput($event)"
-                       autocomplete="off"
-                       (keydown)="sendChatMessage($event)"
-                       #chatInput>
-                </mat-input-container>
-
-                <button fxFlex="12" mat-icon-button class="emoji-btn" [disabled]="!websocketAuthenticated"
-                        (click)="emojiPickerToggled = !emojiPickerToggled"
-                        [(emojiPickerIf)]="emojiPickerToggled"
-                        [emojiPickerDirection]="'bottom'"
-                        [emojiPickerPreserveSelection]="true"
-                        [emojiPickerAutofocus]="true "
-                        (emojiPickerSelect)="handleEmojiSelection($event)">
-                  <mat-icon>face</mat-icon>
-                </button>
-
-                <button fxFlex="12" mat-icon-button class="chat-btn" [disabled]="!websocketAuthenticated"
-                        (click)="sendChatMessage(null)">
-                  <mat-icon>send</mat-icon>
-                </button>
-
-              </div>
-          </mat-card-footer>
-        </mat-card>
-      </div>
-
     </div>
-
   </div>
 
 </app-sidebar-layout>

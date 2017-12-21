@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
@@ -9,7 +9,7 @@ import {QueueService, VoteRequest} from "../../services/QueueService";
 import {DomSanitizer, Title} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
-import {MatDialog, MatInput} from "@angular/material";
+import {MatDialog, PageEvent} from "@angular/material";
 import {WSMessage} from "../../models/WSMessage";
 import {ChatMessage} from "../../models/ChatMessage";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
@@ -17,7 +17,7 @@ import {Subscription} from "rxjs/Subscription";
 import {ManagePartyComponent} from "./ManageParty";
 import {LoginService} from "../../services/LoginService";
 import {UserAccount} from "../../models/UserAccount";
-import {ListResponse} from "../../services/ApiService";
+import {Filter, FilterType, ListResponse} from "../../services/ApiService";
 import {YoutubePlayerComponent} from "../../widgets/YoutubePlayer";
 import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 import {NotificationsService} from "angular2-notifications";
@@ -29,6 +29,12 @@ import {SpotifyDevice} from "app/models/SpotifyDevice";
 import {SpotifyService} from "../../services/SpotifyService";
 import {EmojifyPipe} from "angular-emojify";
 import {SearchBarComponent} from "../../widgets/SearchBar";
+import {YouTubeService} from "../../services/YouTubeService";
+import {Song} from "../../models/Song";
+import {Overlay, OverlayConfig, OverlayOrigin} from "@angular/cdk/overlay";
+import {CdkPortal} from "@angular/cdk/portal";
+import {OverlayRef} from "@angular/cdk/overlay";
+
 
 @Component({
   selector: 'view-party',
@@ -38,12 +44,6 @@ import {SearchBarComponent} from "../../widgets/SearchBar";
   ],
 })
 export class ViewPartyComponent implements OnInit, OnDestroy {
-
-  formatMentionOption = (member: UserAccount) => {
-    this.setLastMentionInputTime(Date.now());
-    return `@${member.displayName} `;
-  };
-
   party: Party;
   partyMembers: UserAccount[];
   queue: PartyQueue = new PartyQueue();
@@ -54,11 +54,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   partyName: string = "Connecting...";
 
   websocketAuthenticated = false;
-  messages: ChatMessage[] = [];
 
   showNoSpotify: boolean = false;
-
-  @ViewChild("chatInput") chatInput: ElementRef;
 
   @ViewChild(YoutubePlayerComponent) youtubeFrame: YoutubePlayerComponent;
 
@@ -70,6 +67,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   progressTimer: Subscription;
 
   account: UserAccount;
+  loggedIn: boolean = false;
   admin: boolean = false;
 
   isMobileView: boolean;
@@ -79,21 +77,21 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   deviceTimer: Subscription;
   changingDevice: boolean;
 
-  mentionConfig = {
-    labelKey: "displayName",
-    maxItems: 5,
-    disableSearch: false,
-    triggerChar: '@',
-    mentionSelect: this.formatMentionOption,
-  };
+  searching: boolean;
 
-  lastMentionInput = 0;
+  searchTerm: FormControl = new FormControl('', []);
 
-  emojiPickerToggled = false;
+  pageSizeOptions = [5, 10, 20, 25, 100];
 
-  chatInputModel = '';
+  songs: ListResponse<Song> = new ListResponse([], 0, 0);
+  songsPageNumber = 0;
+  songsLimit = 20;
+  songsOffset = 0;
+  searchingSongs = false;
 
-  emojifyPipe: EmojifyPipe = new EmojifyPipe();
+  @ViewChild('searchTemplate') searchTemplate: CdkPortal;
+  searchOverlayRef: OverlayRef;
+
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -107,7 +105,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private media: ObservableMedia,
               private spotifyService: SpotifyService,
               private emojiPickerOptions: EmojiPickerOptions,
+              private youtubeService: YouTubeService,
               private titleService: Title,
+              public overlay: Overlay,
+              public viewContainerRef: ViewContainerRef,
               fb: FormBuilder) {
     this.emojiPickerOptions.setEmojiSheet({
       url: 'sheet_apple_32.png',
@@ -121,6 +122,11 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         console.log(result);
       });
     }
+
+    this.loginService.account.subscribe(acc => {
+      this.account = acc;
+      this.loggedIn = acc != null;
+    });
 
     this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
 
@@ -156,6 +162,69 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.deviceTimer = IntervalObservable.create(5000).subscribe(next => {
       this.refreshDevices();
     });
+
+
+    this.searchTerm.valueChanges
+      .debounceTime(400)
+      .distinctUntilChanged()
+      .subscribe(term => {
+        if (term.length > 0) {
+          this.searching = true;
+          this.setSongsPage({limit: this.songsLimit, offset: 0});
+        }
+      });
+  }
+
+
+  setSongsPage(nextPage: any) {
+    this.searchingSongs = true;
+
+    if (this.party.type == 'SPOTIFY') {
+
+      const filters: Array<Filter> = [
+        new Filter(FilterType.OR, null, null, [
+          new Filter(FilterType.STARTS_WITH, 'ARTIST', this.searchTerm.value),
+          new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value),
+        ])
+      ];
+
+      this.spotifyService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+        result => {
+          this.songs = result;
+          this.searchingSongs = false;
+        },
+        err => {
+          console.log(err);
+          this.searchingSongs = false;
+          this.notificationsService.error('Unable to search songs');
+        },
+      );
+    } else if (this.party.type == 'YOUTUBE') {
+
+      const filters: Array<Filter> = [
+        new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value)
+      ];
+
+      this.youtubeService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+        result => {
+          this.songs = result;
+          this.searchingSongs = false;
+        },
+        err => {
+          console.log(err);
+          this.searchingSongs = false;
+          this.notificationsService.error('Unable to search songs');
+        },
+      );
+    }
+  }
+
+  onSongsPageEvent(pageEvent: PageEvent) {
+    this.songsPageNumber = pageEvent.pageIndex;
+    this.songsLimit = pageEvent.pageSize;
+    this.songsOffset = pageEvent.pageIndex * pageEvent.pageSize;
+
+    this.setSongsPage({limit: this.songsLimit, offset: this.songsOffset});
   }
 
   ngOnDestroy() {
@@ -169,9 +238,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     if (this.deviceTimer != null) {
       this.deviceTimer.unsubscribe();
     }
-    this.lastMentionInput = 0;
     this.partyMembers = null;
-    this.messages = [];
     this.queue = new PartyQueue();
     this.history = new ListResponse([], 0, 0);
     this.partyName = "Connecting...";
@@ -222,29 +289,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleEmojiSelection(event: EmojiEvent) {
-    const tempNewModel = this.chatInputModel.length === 0 ? `:${event.label}: ` : `${this.chatInputModel} :${event.label}: `;
-
-    this.chatInputModel = this.emojifyPipe.transform(tempNewModel);
-    this.chatInput.nativeElement.focus();
-    this.emojiPickerToggled = false;
-  }
-
-  onChatInput(event) {
-    if (event.endsWith(":") && event.length > this.chatInputModel.length) {
-      const transformed = this.emojifyPipe.transform(event);
-      if (transformed !== event) {
-        event = `${event} `;
-      }
-    }
-
-    this.chatInputModel = this.emojifyPipe.transform(event);
-  }
-
-  onMentionInput(text) {
-    this.setLastMentionInputTime(Date.now());
-  }
-
   getRemainingToSkipMessage() {
     const required = Math.ceil(this.party.activeMemberCount / 2);
     const diff = required - this.queue.nowPlaying.votesToSkip;
@@ -280,8 +324,9 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       this.notificationsService.info('Active party changed to ' + party.name);
       this.refresh();
 
-      this.webSocketService.socket.subscribe((next) => {
+      this.webSocketService.socket.share().subscribe((next) => {
         const wsMessage = JSON.parse(next.data) as WSMessage;
+        console.log(wsMessage);
         switch (wsMessage.opcode) {
           case "AUTH":
             const success = wsMessage.body === 'true';
@@ -291,16 +336,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             } else {
               this.webSocketService.authenticate();
             }
-            break;
-          case "CHAT_MSG":
-            const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
-
-            this.addChatMessage(messageEvent, false);
-            break;
-          case "CHAT_MSGS":
-            const messageEvents = JSON.parse(wsMessage.body) as ChatMessage[];
-
-            messageEvents.forEach(event => this.addChatMessage(event, true));
             break;
 
           case "PARTY_UPDATE":
@@ -330,76 +365,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   private playYoutube(uri: string, position: number) {
     this.youtubeFrame.play(uri, position / 1000);
   }
-
-  addChatMessage(message: ChatMessage, isBulk: boolean) {
-    if (this.messages.length > 100) {
-      this.messages.slice(1);
-    }
-
-    let _messageText = message.message;
-    let users = [];
-    while (_messageText.indexOf('@') !== -1 && users.indexOf(this.account.displayName) === -1) {
-      const user = this.getUserMentioned(_messageText);
-      users = users.concat(user);
-
-      _messageText = _messageText.replace(`@${user}`, "");
-    }
-
-    if (users.indexOf(this.account.displayName) !== -1) {
-      if (!isBulk) {
-        this.spawnNotification(message.message, null, message.sender);
-      }
-
-      message.mentioningMe = true;
-    }
-
-    this.messages = this.messages.concat(message);
-  }
-
-  private spawnNotification(theBody, theIcon, theTitle) {
-    const options = {
-      body: theBody,
-      icon: theIcon
-    };
-
-    if ("Notification" in window) {
-      const n = new Notification(theTitle, options);
-      setTimeout(n.close.bind(n), 3000);
-    }
-  }
-
-  private getUserMentioned(message: string) {
-    let user = message.substring(message.indexOf('@') + 1);
-    if (user.indexOf(' ') !== -1) {
-      user = user.substring(0, user.indexOf(' '));
-    }
-
-    return user.trim();
-  }
-
-  sendChatMessage = debounce((event) => {
-    if (event != null && event.keyCode != 13) {
-      return;
-    }
-    if (Date.now() - this.lastMentionInput < 500) {
-      return;
-    }
-
-    const message = this.chatInput.nativeElement.value;
-    if (message != null) {
-      const trimmed = message.trim();
-      if (trimmed.length > 0) {
-        this.chatInputModel = '';
-        this.webSocketService.socket.next(new MessageEvent("chat", {
-          data: new WSMessage("CHAT", {
-            message: message,
-            partyId: this.party.id
-          })
-        }));
-        this.chatInput.nativeElement.value = "";
-      }
-    }
-  }, 150);
 
   private refreshParty() {
     this.partyService.getById(this.party.id).subscribe(party => {
@@ -464,33 +429,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     return this.route.data['state'];
   }
 
-  getSenderColor(message: ChatMessage) {
-    if (message.server) {
-      return 'rgb(255, 87, 35)';
-    } else if (message.owner) {
-      return 'rgb(199, 60, 169)';
-    } else if (message.staff) {
-      return 'red';
-    }
-    return '#0075ad';
-  }
-
-  getMessageColor(message: ChatMessage) {
-    if (message.server) {
-      return '#b7b7b7';
-    }
-
-    return 'white';
-  }
-
-  getMessageStyle(message: ChatMessage) {
-    if (message.server) {
-      return 'italic';
-    }
-
-    return 'normal';
-  }
-
   openSettings() {
     let dialogRef = this.dialog.open(ManagePartyComponent, {
       height: '60%',
@@ -513,21 +451,21 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     });
   }
 
-  vote(entry: PartyQueueEntry, up: boolean, voteToSkip: boolean) {
-    let voteReq = new VoteRequest();
-    voteReq.id = entry.id;
-    voteReq.up = up;
-    voteReq.voteToSkip = voteToSkip;
-    this.queueService.voteSong(this.party, voteReq).subscribe(res => {
-      this.notificationsService.info('Your vote has been counted.');
-    }, err => {
-      this.notificationsService.error('Sorry, we couldn\'t process your vote... please try again later.');
-    });
-  }
+  setSearching(searching: boolean) {
+    const body = document.getElementsByTagName('body')[0];
+    this.searching = searching;
+    if (!searching) {
+      this.searchOverlayRef.detach();
+    } else {
+      let strategy = this.overlay.position()
+        .global()
+        .width("100%")
+        .height((window.innerHeight - 70) + "px")
+        .top("70px");
 
-  setLastMentionInputTime(time) {
-    if (time > this.lastMentionInput) {
-      this.lastMentionInput = time;
+      let config = new OverlayConfig({positionStrategy: strategy});
+      this.searchOverlayRef = this.overlay.create(config);
+      this.searchOverlayRef.attach(this.searchTemplate);
     }
   }
 

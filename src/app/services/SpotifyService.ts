@@ -34,7 +34,7 @@ export class SpotifyService {
         return result.json() as SpotifyDevice[];
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -45,7 +45,7 @@ export class SpotifyService {
         return result.json() as SpotifyAccount;
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -65,7 +65,7 @@ export class SpotifyService {
         );
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 }

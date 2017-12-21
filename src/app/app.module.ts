@@ -40,9 +40,11 @@ import {YouTubeService} from "./services/YouTubeService";
 import {SimpleNotificationsModule} from "angular2-notifications";
 import {MyAccountComponent} from "./views/account/MyAccount";
 import {MentionModule} from "angular2-mentions/mention";
-import {LandingNavbarComponent} from "./widgets/LandingNavbar";
 import {EmojiPickerModule} from "angular2-emoji-picker";
 import {MyPartiesComponent} from "./views/party/MyParties";
+import {PortalModule} from "@angular/cdk/portal";
+import {PartyChatComponent} from "./widgets/PartyChat";
+import {PartyQueueComponent} from "app/widgets/PartyQueue";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -72,10 +74,12 @@ const routes: Routes = [
     PartyCardComponent,
     YoutubePlayerComponent,
     MyAccountComponent,
-    LandingNavbarComponent,
-    MyPartiesComponent
+    MyPartiesComponent,
+    PartyChatComponent,
+    PartyQueueComponent
   ],
   imports: [
+    PortalModule,
     MatNativeDateModule,
     FlexLayoutModule,
     NgxDatatableModule,

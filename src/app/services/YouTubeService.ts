@@ -34,7 +34,7 @@ export class YouTubeService {
         );
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 }

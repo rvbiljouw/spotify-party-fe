@@ -2,61 +2,75 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 @import '~font-awesome/css/font-awesome.css';
+@import '~@angular/material/prebuilt-themes/purple-green.css';
 
-html, body {
-  width: 100vw;
-  height: 100vh;
+body {
   margin: 0;
   padding: 0;
   //font-family: 'Roboto', sans-serif;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Open Sans', sans-serif !important;
 
 }
 
-app-root {
-  display: block;
-  height: 100%;
+.logo {
+
+  & {
+    min-height: 32px;
+    height: 32px;
+    max-height: 32px;
+  }
+
+  img {
+    height: 100%;
+  }
 }
 
-.button-icon {
-  margin-right: 10px;
+.title-span {
+  margin-left: 30px;
 }
 
-.full-width {
-  width: 100% !important;
+.compact-card {
+
+  & {
+    padding: 0;
+  }
+
+  .mat-card-header {
+    border-bottom: 1px solid rgba(77, 77, 77, 0.7);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+  }
+
+  .mat-card-footer {
+    border-top: 1px solid rgba(77, 77, 77, 0.7);
+    padding: 0;
+    margin: 0;
+  }
+
+  .mat-card-content {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+  }
+
+ .no-pad {
+    padding: 0;
+  }
+
 }
 
-.root {
-  padding: 20px;
+.scroll-locked {
+  overflow: hidden !important;
+  position:fixed !important;
 }
 
-.mat-drawer-container {
-  background-repeat: no-repeat;
-  background-size: cover;
+.navbar {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
 }
 
-.button-spinner {
-  display: inline;
-  margin-right: 10px;
-  margin-top: 10px;
-  float: left;
-  width: 14px;
-  height: 14px;
-  max-width: 14px;
-  max-height: 14px;
-}
-
-.button-spinner > svg {
-  width: 14px;
-  height: 14px;
-  max-width: 14px;
-  max-height: 14px;
-}
-
-.button-spinner > svg > circle {
-  stroke: black !important;
-}
-
-.transparent-bar {
-  background: linear-gradient(45deg, rgba(14, 14, 14, 0.7), rgba(7, 7, 7, 0.7)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+.content {
+  padding-top: 70px;
 }

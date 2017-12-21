@@ -1,0 +1,50 @@
+@import 'CompactCard';
+
+.chat-header {
+  margin-top: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.chat-input {
+  padding-left: 10px;
+  font-size: 14px;
+}
+
+.emoji-btn {
+  margin-top: 10px;
+}
+
+.chat-btn {
+  float: right;
+  margin-top: 10px;
+}
+
+.chat-msg {
+  font-size: 13px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.chat-msg-container {
+  min-height: 18px;
+  font-size: 13px;
+  padding: 4px 4px;
+}
+
+.chat-input-box {
+  height: 20px;
+}
+
+.chat-sender {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.chat-container {
+  justify-content: space-between;
+  flex-direction: column;
+  height: 400px;
+  max-height: 400px;
+  display: flex;
+}

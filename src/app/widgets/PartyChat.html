@@ -1,0 +1,54 @@
+<mat-card class="compact-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>chat</mat-icon>
+    <mat-card-title>Chat</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="chat-container">
+    <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
+      <div class="chat-msg-container" *ngFor="let message of messages">
+        <!--<span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>-->
+
+        <span class="chat-msg">
+                  <span class="chat-sender" [style.color]="getSenderColor(message)">
+                    {{ message.sender }}
+                  </span>
+                  <span [style.background-color]="message.mentioningMe ? '#dc7c15' : null"
+                        [style.color]="getMessageColor(message)" [style.font-style]="getMessageStyle(message)">
+                    {{emojifyPipe.transform(message.message)}}
+                  </span>
+                </span>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-footer>
+    <div fxFlex="100">
+      <mat-input-container fxFlex="76" class="chat-input" floatPlaceholder="never">
+        <input matInput
+               class="chat-input-box"
+               [mention]="partyMembers"
+               [mentionConfig]="mentionConfig"
+               (searchTerm)="onMentionInput($event)"
+               placeholder="Type to chat"
+               [ngModel]="chatInputModel"
+               (ngModelChange)="onChatInput($event)"
+               autocomplete="off"
+               (keydown)="sendChatMessage($event)"
+               #chatInput>
+      </mat-input-container>
+
+      <button fxFlex="12" mat-icon-button class="emoji-btn"  (click)="emojiPickerToggled = !emojiPickerToggled"
+              [(emojiPickerIf)]="emojiPickerToggled"
+              [emojiPickerDirection]="'bottom'"
+              [emojiPickerPreserveSelection]="true"
+              [emojiPickerAutofocus]="true "
+              (emojiPickerSelect)="handleEmojiSelection($event)">
+        <mat-icon>face</mat-icon>
+      </button>
+
+      <button fxFlex="12" mat-icon-button class="chat-btn"   (click)="sendChatMessage(null)">
+        <mat-icon>send</mat-icon>
+      </button>
+
+    </div>
+  </mat-card-footer>
+</mat-card>

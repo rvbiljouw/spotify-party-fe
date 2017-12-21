@@ -1,25 +1,28 @@
-<div class="masthead">
-  <app-landing-navbar></app-landing-navbar>
-
-  <div class="container masthead-overlay" fxLayout="row" fxLayoutAlign="center center">
-
-    <div fxFlex="80">
-      <div fxLayout="row" fxLayoutWrap="true">
-        <div fxFlex.gt-sm="50" fxFlex="100">
-          <h1 class="masthead-title">This is Awsum</h1>
-          <h2 class="masthead-subtitle">Discover, share and listen to music with friends.</h2>
-          <p>Use awsum.io to create groups where you and your friends can listen to music with YouTube or our Spotify
-            integration.</p>
-          <button mat-raised-button [routerLink]="['/login']">Sign up</button>
-        </div>
-        <div fxFlex.gt-sm="50" fxFlex="100">
-          <div fxLayout="row" fxLayoutAlign="center" fxLayoutWrap="true">
-            <div fxFlex.gt-sm="50" fxFlex="100" fxLayout="column" *ngFor="let party of parties.items">
-              <app-party-card [party]="party"></app-party-card>
-            </div>
-          </div>
+<app-sidebar-layout #sidenav>
+  <mat-toolbar color="primary">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="logo" fxLayoutAlign="center center">
+          <img src="../../../assets/logo.png">
         </div>
       </div>
+
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+        <ng-container *ngIf="loggedIn">
+
+          <button mat-button>
+            <mat-icon>person</mat-icon>
+            {{ account.displayName }}
+          </button>
+        </ng-container>
+      </div>
     </div>
+  </mat-toolbar>
+
+  <div class="root">
+    <h1>Hello world</h1>
   </div>
-</div>
+</app-sidebar-layout>

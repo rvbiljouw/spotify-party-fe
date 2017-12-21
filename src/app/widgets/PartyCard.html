@@ -1,24 +1,46 @@
-<div class="party-card" [@fadeTrigger] (click)="join()">
-  <div class="party-header" fxLayout="row" fxLayoutAlign="space-around center">
-    <div fxFlex="50"><b>{{ party.name }}</b></div>
-    <div fxLayoutAlign="center center">
-      <mat-icon class="button-icon">group</mat-icon>
-      {{ party.members.length}}
-    </div>
-  </div>
-  <div class="party-thumbnail" [style.background-image]="getBackground(party)"></div>
-  <div class="party-details">
+<!--<div class="party-card" [@fadeTrigger] (click)="join()">-->
+  <!--<div class="party-header" fxLayout="row" fxLayoutAlign="space-around center">-->
+    <!--<div fxFlex="50"><b>{{ party.name }}</b></div>-->
+    <!--<div fxLayoutAlign="center center">-->
+      <!--<mat-icon class="button-icon">group</mat-icon>-->
+      <!--{{ party.members.length}}-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="party-details">-->
 
-    <div class="now-playing" *ngIf="party.nowPlaying != null">
-      <b>{{ party.nowPlaying.title}}</b>
-    </div>
+    <!--<div class="now-playing" *ngIf="party.nowPlaying != null">-->
+      <!--<b>{{ party.nowPlaying.title}}</b>-->
+    <!--</div>-->
 
-    <div class="now-playing" *ngIf="party.nowPlaying != null">
-      {{ party.nowPlaying.artist }}
-    </div>
+    <!--<div class="now-playing" *ngIf="party.nowPlaying != null">-->
+      <!--{{ party.nowPlaying.artist }}-->
+    <!--</div>-->
 
-    <div class="now-playing" *ngIf="party.nowPlaying ==null">
-      Nothing is playing, yet!
+    <!--<div class="now-playing" *ngIf="party.nowPlaying ==null">-->
+      <!--Nothing is playing, yet!-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+
+<mat-card class="compact-card party-card" [@fadeTrigger] (click)="join()">
+  <mat-card-header>
+    <mat-card-title>{{party.name}}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="no-pad">
+    <div class="party-thumbnail" [style.background-image]="getBackground(party)"></div>
+    <div class="party-details">
+
+      <div class="now-playing" *ngIf="party.nowPlaying != null">
+        <b>{{ party.nowPlaying.title}}</b>
+      </div>
+
+      <div class="now-playing" *ngIf="party.nowPlaying != null">
+        {{ party.nowPlaying.artist }}
+      </div>
+
+      <div class="now-playing" *ngIf="party.nowPlaying ==null">
+        Nothing is playing, yet!
+      </div>
     </div>
-  </div>
-</div>
+  </mat-card-content>
+</mat-card>

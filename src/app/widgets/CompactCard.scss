@@ -1,0 +1,30 @@
+.compact-card {
+
+  & {
+    padding: 0;
+  }
+
+  .mat-card-header {
+    border-bottom: 1px solid rgba(77, 77, 77, 0.7);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+  }
+
+  .mat-card-footer {
+    border-top: 1px solid rgba(77, 77, 77, 0.7);
+    padding: 0;
+    margin: 0;
+  }
+
+  .mat-card-content {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+  }
+
+  .no-pad {
+    padding: 0;
+  }
+
+}

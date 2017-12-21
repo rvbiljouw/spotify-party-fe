@@ -89,7 +89,7 @@ export class PartyService {
       .get(`${this.createEndpoint}/${id}`, {withCredentials: true})
       .map(result => result.json() as Party)
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 
@@ -116,7 +116,7 @@ export class PartyService {
         );
       })
       .catch(error => {
-        return null;
+        return Observable.of(null);
       });
   }
 

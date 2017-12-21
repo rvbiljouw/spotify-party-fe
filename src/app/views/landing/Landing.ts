@@ -21,6 +21,7 @@ export class LandingComponent implements OnInit {
   parties: ListResponse<Party> = new ListResponse([], 0, 0);
   account: UserAccount;
   loggedIn: boolean = false;
+  sidebarShowing: boolean = false;
 
 
   constructor(private router: Router,

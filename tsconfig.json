@@ -16,5 +16,14 @@
       "es2016",
       "dom"
     ]
-  }
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/angular2-emoji-picker/lib-dist/emoji-picker.module.ts",
+    "node_modules/angular2-emoji-picker/lib-dist/index.ts",
+    "node_modules/angular2-emoji-picker/lib-dist/lib/index.ts",
+    "node_modules/angular2-emoji-picker/lib-dist/services/index.ts",
+    "node_modules/angular2-emoji-picker/lib-dist/sheets/index.ts",
+   "node_modules/angular2-emoji-picker/lib-dist/sheets/sheet_apple_map.ts"
+  ]
 }

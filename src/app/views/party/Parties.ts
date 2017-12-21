@@ -30,6 +30,7 @@ export class PartiesComponent implements OnInit {
   searchTerm = new FormControl('', []);
   searching: boolean;
   searchResults: ListResponse<Party>;
+  loggedIn: boolean;
 
   selectedTab = 0;
 
@@ -46,6 +47,7 @@ export class PartiesComponent implements OnInit {
   ngOnInit() {
     this.loginService.account.subscribe(acc => {
       this.account = acc;
+      this.loggedIn = acc != null;
     });
 
     this.loadGroup(this.spotifyGroup, "SPOTIFY");

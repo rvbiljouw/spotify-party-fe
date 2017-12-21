@@ -33,7 +33,7 @@ export class AppComponent {
 
   static refresh() {
     const body = document.getElementsByTagName('body')[0];
-    body.classList.add('dark-theme');
+    // body.classList.add('dark-theme');
   }
 
 }

@@ -32,6 +32,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
 
   updating = false;
 
+  loggedIn: boolean;
   account: UserAccount;
   admin: boolean = false;
   spotifyDevices: SpotifyDevice[];
@@ -77,6 +78,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
 
     this.loginService.account.subscribe(account => {
       this.account = account;
+      this.loggedIn = true;
 
       this.accountForm = this.fb.group({
         displayName: new FormControl(this.account != null ? this.account.displayName : null, []),

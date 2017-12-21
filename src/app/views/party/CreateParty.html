@@ -1,97 +1,128 @@
 <app-sidebar-layout>
 
-  <mat-toolbar class="transparent-bar">
-    <span>Creating a party</span>
-  </mat-toolbar>
-
-  <mat-card class="transparent-card">
-    <mat-card-content>
-      <div class="root">
-
-        <div fxLayout="row">
-
-          <div fxFlex="100">
-            <h2>Let's get this party started!</h2>
-            <p>Quickly fill out the form below to create your party. Once you're finished you will be able to invite
-              others to join you.</p>
-            <p>If you want to open your party up for anyone to join simply select the "Public" access type. You
-              can always change this in the future.</p>
+  <app-sidebar-layout #sidenav>
+    <mat-toolbar color="primary">
+      <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <div class="logo" fxLayoutAlign="center center">
+            <img src="../../../assets/logo.png">
           </div>
         </div>
 
-        <div fxLayout="row">
+        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+          <ng-container *ngIf="loggedIn">
 
-          <div fxFlex="100" fxFlex.gt-sm="40">
-
-            <form [formGroup]="partyForm" (ngSubmit)="submit()">
-
-
-              <div style="margin-top: 20px;">
-                <mat-form-field>
-                  <mat-select placeholder="Party type" formControlName="type" class="full-width">
-                    <mat-option *ngFor="let type of typeOptions" [value]="type.value">
-                      {{ type.name }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <mat-error *ngIf="partyForm.controls['type'].hasError('required')">
-                  This field is required
-                </mat-error>
-
-                <div style="padding-bottom: 20px;"
-                     *ngIf="partyForm.controls['type'].invalid && partyForm.controls['type'].dirty"></div>
-              </div>
-
-
-              <div style="margin-top: 20px;">
-                <mat-form-field>
-                  <mat-select placeholder="Access type" formControlName="access" class="full-width">
-                    <mat-option *ngFor="let accessType of accessTypeOptions" [value]="accessType.value">
-                      {{ accessType.name }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <mat-error *ngIf="partyForm.controls['access'].hasError('required')">
-                  This field is required
-                </mat-error>
-
-                <div style="padding-bottom: 20px;"
-                     *ngIf="partyForm.controls['access'].invalid && partyForm.controls['access'].dirty"></div>
-              </div>
-
-              <div>
-                <mat-input-container>
-                  <input matInput formControlName="name" placeholder="Party name" class="full-width">
-                  <mat-error *ngIf="partyForm.controls['name'].hasError('required')">
-                    This field is required
-                  </mat-error>
-                </mat-input-container>
-              </div>
-
-              <div>
-                <mat-input-container>
-                  <input matInput formControlName="description" placeholder="A short description of this party"
-                         class="full-width">
-                  <mat-error *ngIf="partyForm.controls['description'].hasError('required')">
-                    This field is required
-                  </mat-error>
-                </mat-input-container>
-              </div>
-
-              <button color="primary" mat-raised-button [disabled]="!partyForm.valid || creating">
-                <mat-spinner *ngIf="creating" class="button-spinner" strokeWidth="4"></mat-spinner>
-                Submit
-              </button>
-
-            </form>
-          </div>
-
+            <button mat-button>
+              <mat-icon>person</mat-icon>
+              {{ account.displayName }}
+            </button>
+          </ng-container>
         </div>
-
       </div>
-    </mat-card-content>
-  </mat-card>
+    </mat-toolbar>
 
-</app-sidebar-layout>
+    <div style="padding: 20px;" fxLayoutAlign="center">
+
+      <div fxFlex="100" fxFlex.lt-sm="75" fxFlex.gt-md="50">
+
+        <div>
+
+          <mat-card class="compact-card">
+            <mat-card-content>
+              <div class="root">
+
+                <div fxLayout="row">
+
+                  <div fxFlex="100">
+                    <h2>Let's get this party started!</h2>
+                    <p>Quickly fill out the form below to create your party. Once you're finished you will be able to
+                      invite
+                      others to join you.</p>
+                    <p>If you want to open your party up for anyone to join simply select the "Public" access type. You
+                      can always change this in the future.</p>
+                  </div>
+                </div>
+
+                <div fxLayout="row">
+
+                  <div fxFlex="100">
+
+                    <form [formGroup]="partyForm" (ngSubmit)="submit()">
+
+
+                      <div style="margin-top: 20px;">
+                        <mat-form-field>
+                          <mat-select placeholder="Party type" formControlName="type" class="full-width">
+                            <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+                              {{ type.name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-error *ngIf="partyForm.controls['type'].hasError('required')">
+                          This field is required
+                        </mat-error>
+
+                        <div style="padding-bottom: 20px;"
+                             *ngIf="partyForm.controls['type'].invalid && partyForm.controls['type'].dirty"></div>
+                      </div>
+
+
+                      <div style="margin-top: 20px;">
+                        <mat-form-field>
+                          <mat-select placeholder="Access type" formControlName="access" class="full-width">
+                            <mat-option *ngFor="let accessType of accessTypeOptions" [value]="accessType.value">
+                              {{ accessType.name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-error *ngIf="partyForm.controls['access'].hasError('required')">
+                          This field is required
+                        </mat-error>
+
+                        <div style="padding-bottom: 20px;"
+                             *ngIf="partyForm.controls['access'].invalid && partyForm.controls['access'].dirty"></div>
+                      </div>
+
+                      <div>
+                        <mat-input-container>
+                          <input matInput formControlName="name" placeholder="Party name" class="full-width">
+                          <mat-error *ngIf="partyForm.controls['name'].hasError('required')">
+                            This field is required
+                          </mat-error>
+                        </mat-input-container>
+                      </div>
+
+                      <div>
+                        <mat-input-container>
+                          <input matInput formControlName="description" placeholder="A short description of this party"
+                                 class="full-width">
+                          <mat-error *ngIf="partyForm.controls['description'].hasError('required')">
+                            This field is required
+                          </mat-error>
+                        </mat-input-container>
+                      </div>
+
+                      <button color="primary" mat-raised-button [disabled]="!partyForm.valid || creating">
+                        <mat-spinner *ngIf="creating" class="button-spinner" strokeWidth="4"></mat-spinner>
+                        Submit
+                      </button>
+
+                    </form>
+                  </div>
+
+                </div>
+
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </div>
+    </div>
+
+  </app-sidebar-layout>
