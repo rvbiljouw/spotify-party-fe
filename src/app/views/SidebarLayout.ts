@@ -25,6 +25,9 @@ export class SidebarLayoutComponent implements OnInit {
   @ViewChild(MatSidenav)
   sidenav: MatSidenav;
 
+  @Input()
+  occupy: false;
+
   constructor(private media: ObservableMedia,
               private router: Router,
               private loginService: LoginService,

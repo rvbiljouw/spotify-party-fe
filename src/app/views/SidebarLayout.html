@@ -65,7 +65,7 @@
     </ul>
   </mat-sidenav>
 
-  <div class="outlet">
+  <div [ngClass]="occupy ? 'outlet-occupy' : 'occupy'">
     <ng-content></ng-content>
   </div>
 </mat-sidenav-container>

@@ -49,4 +49,8 @@ export class QueueListItemComponent implements OnInit {
     }
   }
 
+  favorite() {
+
+  }
+
 }

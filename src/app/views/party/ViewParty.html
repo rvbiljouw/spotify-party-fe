@@ -1,107 +1,168 @@
 <app-sidebar-layout #sidenav>
 
   <mat-toolbar color="primary" class="navbar">
-    <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
-      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
-        <button mat-icon-button (click)="sidenav.toggle()">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <div class="logo" fxLayoutAlign="center center">
-          <img src="../../../assets/logo.png">
+    <mat-toolbar-row>
+      <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <div class="logo" fxLayoutAlign="center center">
+            <img src="../../../assets/logo.png">
+          </div>
+        </div>
+
+        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px" fxShow.lt-md="false">
+          <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
+                  matTooltip="Search for songs to add" matTooltipPosition="below">
+            <mat-icon>search</mat-icon>
+          </button>
+          <ng-container *ngIf="searching">
+            <mat-input-container>
+              <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+            </mat-input-container>
+            <button mat-icon-button (click)="setSearching(false)">
+              <mat-icon class="button-icon">close</mat-icon>
+            </button>
+          </ng-container>
+
+          <mat-menu #deviceMenu="matMenu">
+            <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
+              {{ device.name }}
+            </button>
+          </mat-menu>
+
+          <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
+                  matTooltip="{{getDeviceName(account.spotify.device)}}"
+                  class="device-btn"
+                  mat-icon-button [matMenuTriggerFor]="deviceMenu">
+            <mat-icon>speaker_phone</mat-icon>
+          </button>
+
+          <button mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
+                  matTooltipPosition="below">
+            <mat-icon class="button-icon">refresh</mat-icon>
+          </button>
+
+          <button mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
+            <mat-icon>settings</mat-icon>
+          </button>
+
+          <button mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
+            <mat-icon>stop</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
+            <mat-icon>exit_to_app</mat-icon>
+          </button>
+
+          <ng-container *ngIf="loggedIn">
+            <button mat-button>
+              <mat-icon>person</mat-icon>
+              {{ account.displayName }}
+            </button>
+          </ng-container>
         </div>
       </div>
+    </mat-toolbar-row>
 
-      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
-        <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin>
-          <mat-icon>search</mat-icon>
+    <mat-toolbar-row fxHide.gt-sm="true">
+      <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
+              matTooltip="Search for songs to add" matTooltipPosition="below">
+        <mat-icon>search</mat-icon>
+      </button>
+      <ng-container *ngIf="searching">
+        <mat-input-container>
+          <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
+        </mat-input-container>
+        <button mat-icon-button (click)="setSearching(false)">
+          <mat-icon class="button-icon">close</mat-icon>
         </button>
-        <ng-container *ngIf="searching">
-          <mat-input-container>
-            <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
-          </mat-input-container>
-          <button mat-icon-button (click)="setSearching(false)">
-            <mat-icon class="button-icon">close</mat-icon>
-          </button>
-        </ng-container>
+      </ng-container>
 
-        <mat-menu #deviceMenu="matMenu">
-          <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
-            {{ device.name }}
-          </button>
-        </mat-menu>
-
-        <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
-                matTooltip="{{getDeviceName(account.spotify.device)}}"
-                class="device-btn"
-                mat-icon-button [matMenuTriggerFor]="deviceMenu">
-          <mat-icon>speaker_phone</mat-icon>
+      <mat-menu #deviceMenu="matMenu">
+        <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
+          {{ device.name }}
         </button>
+      </mat-menu>
 
-        <button mat-icon-button (click)="join(party.id, true)">
-          <mat-icon class="button-icon">refresh</mat-icon>
-        </button>
+      <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
+              matTooltip="{{getDeviceName(account.spotify.device)}}"
+              class="device-btn"
+              mat-icon-button [matMenuTriggerFor]="deviceMenu">
+        <mat-icon>speaker_phone</mat-icon>
+      </button>
 
-        <button mat-icon-button (click)="openSettings()">
-          <mat-icon>settings</mat-icon>
-        </button>
+      <button mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
+              matTooltipPosition="below">
+        <mat-icon class="button-icon">refresh</mat-icon>
+      </button>
 
-        <button mat-icon-button (click)="leave(false)">
-          <mat-icon>stop</mat-icon>
-        </button>
+      <button mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
+        <mat-icon>settings</mat-icon>
+      </button>
 
-        <button mat-icon-button color="warn" (click)="leave(true)">
-          <mat-icon>exit_to_app</mat-icon>
-        </button>
+      <button mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
+        <mat-icon>stop</mat-icon>
+      </button>
 
-        <ng-container *ngIf="loggedIn">
-          <button mat-button>
-            <mat-icon>person</mat-icon>
-            {{ account.displayName }}
-          </button>
-        </ng-container>
-      </div>
-    </div>
+      <button mat-icon-button (click)="viewChat = !viewChat" matTooltip="Toggle chat" matTooltipPosition="below">
+        <mat-icon>chat</mat-icon>
+      </button>
+
+      <button mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
+
+
+    </mat-toolbar-row>
   </mat-toolbar>
 
   <ng-template cdkPortal #searchTemplate="cdkPortal">
-  <div class="search-overlay" *ngIf="searching">
+    <div class="search-overlay" *ngIf="searching">
 
-    <div fxFlex="100">
-      <div class="search-spinner" *ngIf="searchingSongs" fxLayout="column" fxLayoutAlign="center center">
-        <mat-progress-spinner
-          class="in-progress"
-          color="primary"
-          mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
+      <div fxFlex="100">
+        <div class="search-spinner" *ngIf="searchingSongs" fxLayout="column" fxLayoutAlign="center center">
+          <mat-progress-spinner
+            class="in-progress"
+            color="primary"
+            mode="indeterminate">
+          </mat-progress-spinner>
+        </div>
 
-      <div *ngIf="!searchingSongs">
-        <div>
-          <div fxLayout="row">
+        <div *ngIf="!searchingSongs">
+          <div>
+            <div fxLayout="row" *ngIf="party.type == 'SPOTIFY'">
+              <mat-list fxFlex="100" fxFlex.gt-md="50">
+                <app-song-list-item *ngFor="let item of songs.items" [song]="item"
+                                    [party]="party"
+                                    class="typical-list-item"></app-song-list-item>
+              </mat-list>
 
+            </div>
 
-            <mat-list fxFlex="100" fxFlex.gt-md="50">
-              <app-song-list-item *ngFor="let item of songs.items" [song]="item"
-                                  [party]="party"
-                                  class="typical-list-item"></app-song-list-item>
-            </mat-list>
+            <div fxLayout="row" *ngIf="party.type == 'YOUTUBE'" fxLayoutAlign="row" fxLayoutWrap="true">
+              <div class="song-card" *ngFor="let item of songs.items" fxFlex="50" fxFlex.xs="50" fxFlex.sm="33"
+                   fxFlex.md="25" fxFlex.lg="14" fxFlex.xl="14">
+                <app-youtube-card [party]="party" [song]="item"></app-youtube-card>
+              </div>
+            </div>
 
-          </div>
-          <div fxLayout="row">
-            <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" fxFlex="100" fxFlex.gt-md="50">
-              <mat-paginator [length]="songs.maxRecords"
-                             [pageIndex]="songsPageNumber"
-                             [pageSize]="songsLimit"
-                             style="background: none;"
-                             [pageSizeOptions]="pageSizeOptions"
-                             (page)="onSongsPageEvent($event)">
-              </mat-paginator>
+            <div fxLayout="row">
+              <div *ngIf="!searchingSongs && songs.maxRecords >= songsLimit" fxFlex="100" fxFlex.gt-md="50">
+                <mat-paginator [length]="songs.maxRecords"
+                               [pageIndex]="songsPageNumber"
+                               [pageSize]="songsLimit"
+                               style="background: none;"
+                               [pageSizeOptions]="pageSizeOptions"
+                               (page)="onSongsPageEvent($event)">
+                </mat-paginator>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   </ng-template>
 
 
@@ -236,7 +297,7 @@
             </mat-card>
           </div>
 
-          <div fxFlex="100" fxFlex.gt-md="25" style="padding: 10px">
+          <div fxFlex="100" fxFlex.gt-md="25" style="padding: 10px" *ngIf="viewChat">
             <app-party-chat [party]="party" [partyMembers]="partyMembers"></app-party-chat>
           </div>
         </div>

@@ -46,6 +46,7 @@ import {PortalModule} from "@angular/cdk/portal";
 import {PartyChatComponent} from "./widgets/PartyChat";
 import {PartyQueueComponent} from "app/widgets/PartyQueue";
 import {SignUpComponent} from "./views/login/SignUp";
+import {YouTubeCardComponent} from "./widgets/YouTubeCard";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -79,7 +80,8 @@ const routes: Routes = [
     MyPartiesComponent,
     PartyChatComponent,
     PartyQueueComponent,
-    SignUpComponent
+    SignUpComponent,
+    YouTubeCardComponent
   ],
   imports: [
     PortalModule,

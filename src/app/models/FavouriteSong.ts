@@ -1,5 +1,5 @@
-export class Song {
-  id: string;
+export class FavouriteSong {
+  type: string;
   artist: string;
   title: string;
   album: string;

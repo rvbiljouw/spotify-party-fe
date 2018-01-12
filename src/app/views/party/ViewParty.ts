@@ -89,6 +89,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   searchOverlayRef: OverlayRef;
 
   socketSubscription: Subscription;
+  viewChat: boolean = true;
 
 
   constructor(private router: Router,
@@ -420,6 +421,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     } else {
       return this.sanitizer.bypassSecurityTrustResourceUrl(thumbnail);
     }
+  }
+
+  getThumbnail(url: string) {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
 

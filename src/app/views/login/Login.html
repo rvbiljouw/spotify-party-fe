@@ -1,5 +1,5 @@
-<app-sidebar-layout #sidenav>
-  <mat-toolbar color="primary">
+<app-sidebar-layout #sidenav [occupy]="true">
+  <mat-toolbar color="primary" class="navbar">
     <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
       <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-icon-button (click)="sidenav.toggle()">
@@ -22,7 +22,7 @@
     </div>
   </mat-toolbar>
 
-  <div fxLayoutAlign="center center" fxLayout="column" class="full-height content">
+  <div fxLayoutAlign="center center" fxLayout="column" class="full-height content login">
 
     <mat-card style="width: 400px; max-width: 400px;">
       <mat-card-content>
@@ -74,8 +74,12 @@
     </mat-card>
 
     <div class="other-actions">
-      <button mat-button>Reset your password</button>
-      <button mat-button [routerLink]="['/sign-up']">Create an account</button>
+      <mat-card class="compact-card">
+        <mat-card-content>
+          <button mat-button>Reset your password</button>
+          <button mat-button [routerLink]="['/sign-up']">Create an account</button>
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
 </app-sidebar-layout>
