@@ -51,7 +51,9 @@ export class LoginService {
   }
 
   logout() {
-    document.cookie.split(";").forEach(function (c) {
+    console.log(document.cookie);
+    document.cookie.split(";").forEach((c) => {
+      console.log(c);
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     this.setAccount(null);

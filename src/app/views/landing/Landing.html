@@ -12,17 +12,115 @@
 
       <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
         <ng-container *ngIf="loggedIn">
-
           <button mat-button>
             <mat-icon>person</mat-icon>
-            {{ account.displayName }}
+            <span fxHide.lt-md="true">{{ account.displayName }}</span>
           </button>
         </ng-container>
+
+        <div *ngIf="!loggedIn" fxShow.lt-md="false">
+          <span class="got-account-text">Got an account?</span>
+          <button mat-button [routerLink]="['/login']" class="login-btn">
+            Login
+          </button>
+        </div>
       </div>
     </div>
   </mat-toolbar>
 
-  <div class="root">
-    <h1>Hello world</h1>
+  <div class="root" fxLayout="column">
+    <div fxFlex="100" class="header dance-bg">
+      <div class="header-container">
+        <h1 class="title-text header-text">Blast music with friends for free!</h1>
+        <h2 class="title-text sub-header-text">Create a party with your friends and play music straight from Spotify or
+          YouTube
+        </h2>
+        <button mat-button [routerLink]="['/login']" class="sign-up-btn">Start partying!</button>
+      </div>
+    </div>
+    <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center" class="second-container">
+      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
+        <mat-icon class="sync-icon">sync</mat-icon>
+        <h3>Listen in sync!</h3>
+        <p>
+          Join or create a party with friends and listen in sync with your friends even if
+          you're listening on different devices! Whether you're playing music from Spotify or
+          YouTube, Awsum will play your party in sync with everyone else in it.
+        </p>
+      </div>
+      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
+        <mat-icon class="music-icon">music_note</mat-icon>
+        <h3>Tons of music!</h3>
+        <p>
+          Awsum lets you play any song which can be found on either
+          Spotify or YouTube. Make your own music? Publish it to YouTube
+          and start queueing it in a party to get people hearing it! Who
+          knew self promotion could be so easy.
+        </p>
+      </div>
+      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
+        <mat-icon class="money-icon">attach_money</mat-icon>
+        <h3>Free to use!</h3>
+        <p>
+          Best of all you can use Awsum for free, you will need a Spotify premium account
+          to play songs via Spotify but you can play songs from YouTube completely for free.
+          We don't want to charge you for anything which should be free.
+        </p>
+      </div>
+    </div>
   </div>
+
+  <div class="third-container" fxLayout="column">
+
+    <div class="fading-separator"></div>
+
+    <div fxFlex="100">
+      <h1 class="title-text social-media-header">Stay up to date</h1>
+      <h2 class="title-text sub-header-text">Connect with us on our social media channels to get all the latest updates
+        and give your feedback
+      </h2>
+    </div>
+
+    <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center">
+      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
+        <a class="social-link" href="https://discord.gg/RVxnA5z" target="_blank">
+          <div class="social-media-img-container">
+            <img class="center social-media-img" src="/assets/discord.png" width="128px" height="128px"/>
+          </div>
+          <h4 class="social-media-caption">Join our discord</h4>
+        </a>
+      </div>
+      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
+        <a class="social-link" href="https://twitter.com/awsum_io" target="_blank">
+          <div class="social-media-img-container">
+            <img class="center social-media-img" src="/assets/twitter.png" width="128px" height="128px"/>
+          </div>
+          <h4 class="social-media-caption">Follow us on twitter</h4>
+        </a>
+      </div>
+      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
+        <a class="social-link" href="https://facebook.com" target="_blank">
+          <div class="social-media-img-container">
+            <img class="center social-media-img" src="/assets/facebook.png" width="114px" height="114px"/>
+          </div>
+          <h4 class="social-media-caption">Like us on facebook</h4>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container" fxLayout="row" fxLayout.lt-md="column">
+      <div class="footer-links-container" fxFlex="36" fxLayoutAlign="center center">
+        <button mat-button>Terms & Conditions</button>
+        <button mat-button>Privacy Policy</button>
+        <button mat-button>Contact</button>
+      </div>
+      <div fxFlex="64" fxLayoutAlign="end center" fxLayoutAlign.lt-md="center center">
+        <span class="copyright-text">
+          Copyright 2018 BIPUSH LTD
+        </span>
+      </div>
+    </div>
+  </footer>
 </app-sidebar-layout>
