@@ -1,141 +1,142 @@
-<app-sidebar-layout>
-
-  <app-sidebar-layout #sidenav>
-    <mat-toolbar color="primary">
-      <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
-        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
-          <button mat-icon-button (click)="sidenav.toggle()">
-            <mat-icon>menu</mat-icon>
-          </button>
-          <div class="logo" fxLayoutAlign="center center">
-            <img src="../../../assets/logo.png">
-          </div>
-        </div>
-
-        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
-          <ng-container *ngIf="loggedIn">
-
-            <button mat-button>
-              <mat-icon>person</mat-icon>
-              {{ account.displayName }}
-            </button>
-          </ng-container>
+<app-sidebar-layout #sidenav>
+  <mat-toolbar color="primary">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="logo" fxLayoutAlign="center center">
+          <img src="../../../assets/logo.png">
         </div>
       </div>
-    </mat-toolbar>
 
-    <div style="padding: 20px;" fxLayoutAlign="center">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+        <ng-container *ngIf="loggedIn">
 
-      <div fxFlex="100" fxFlex.lt-sm="75" fxFlex.gt-md="50">
-
-        <div>
-
-          <div fxLayout="row" fxLayoutAlign="center center" class="login-container" fxLayoutWrap="true"
-               style="height: 100vh;">
-
-            <mat-card fxFlex.lt-md="80" fxFlex.md="40" fxFlex.gt-md="35" *ngIf="!loggedIn"
-                      class="login-card transparent-card">
-              <mat-card-content fxFlex="100">
-                <mat-tab-group>
-                  <mat-tab label="Log in">
-
-                    <div class="tab-content" fxFlex="100">
-                      <form [formGroup]="loginForm" (submit)="emailLogin()">
-
-                        <div>
-                          <mat-input-container class="full-width">
-                            <input matInput formControlName="email" placeholder="E-mail address">
-                            <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
-                              This field is required
-                            </mat-error>
-                          </mat-input-container>
-                        </div>
-
-                        <div>
-                          <mat-input-container class="full-width">
-                            <input matInput formControlName="password" placeholder="Password" type="password">
-                            <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
-                              This field is required
-                            </mat-error>
-                            <mat-error *ngIf="loginForm.controls['password'].hasError('minlength')">
-                              Your password has to be at least 8 characters long.
-                            </mat-error>
-                          </mat-input-container>
-                        </div>
-
-
-                        <button color="primary" class="center button" mat-raised-button [disabled]="!loginForm.valid">
-                          <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
-                          <span *ngIf="!loggingIn">Log in</span>
-                          <span *ngIf="loggingIn">Logging in...</span>
-                        </button>
-
-                      </form>
-                    </div>
-
-                  </mat-tab>
-
-                  <mat-tab label="Sign up">
-                    <div class="tab-content">
-                      <form [formGroup]="signupForm" (submit)="emailSignup()">
-
-                        <div>
-                          <mat-input-container class="full-width">
-                            <input matInput formControlName="displayName" placeholder="Display name" class="full-width">
-                            <mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">
-                              This field is required
-                            </mat-error>
-                          </mat-input-container>
-                        </div>
-
-                        <div>
-                          <mat-input-container class="full-width">
-                            <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
-                            <mat-error *ngIf="signupForm.controls['email'].hasError('required')">
-                              This field is required
-                            </mat-error>
-                          </mat-input-container>
-                        </div>
-
-                        <div>
-                          <mat-input-container class="full-width">
-                            <input matInput formControlName="password" placeholder="Password" class="full-width"
-                                   type="password">
-                            <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
-                              This field is required
-                            </mat-error>
-                            <mat-error *ngIf="signupForm.controls['password'].hasError('minlength')">
-                              Your password has to be at least 8 characters long.
-                            </mat-error>
-                          </mat-input-container>
-                        </div>
-
-
-                        <button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">
-                          <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
-                          <span *ngIf="!signingUp">Sign up</span>
-                          <span *ngIf="signingUp">Signing up...</span>
-                        </button>
-
-                      </form>
-                    </div>
-                  </mat-tab>
-                </mat-tab-group>
-
-
-                <div class="center" style="margin-top: 20px">
-                  <h3>Sign in using:</h3>
-
-                  <button class="sso-option" color="primary" mat-icon-button (click)="spotifyLogin()">
-                    <img src="/assets/spotify.png" height="40px"/>
-                  </button>
-                </div>
-
-
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
+          <button mat-button>
+            <mat-icon>person</mat-icon>
+            {{ account.displayName }}
+          </button>
+        </ng-container>
       </div>
     </div>
-  </app-sidebar-layout>
+  </mat-toolbar>
+
+  <div fxLayoutAlign="center center" class="full-height content">
+
+    <mat-card style="width: 400px; max-width: 400px;">
+      <mat-card-content>
+        <div class="center" style="margin-bottom: 20px;">
+          <h3>LOG IN</h3>
+        </div>
+
+        <form [formGroup]="loginForm" (submit)="emailLogin()">
+          <div>
+            <mat-input-container class="full-width">
+              <input matInput formControlName="email" placeholder="E-mail address">
+              <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
+                This field is required
+              </mat-error>
+            </mat-input-container>
+          </div>
+
+          <div>
+            <mat-input-container class="full-width">
+              <input matInput formControlName="password" placeholder="Password" type="password">
+              <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+                This field is required
+              </mat-error>
+              <mat-error *ngIf="loginForm.controls['password'].hasError('minlength')">
+                Your password has to be at least 8 characters long.
+              </mat-error>
+            </mat-input-container>
+          </div>
+
+
+          <button color="primary" class="button full-width" mat-raised-button [disabled]="!loginForm.valid">
+            <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
+            <span *ngIf="!loggingIn">Log in</span>
+            <span *ngIf="loggingIn">Logging in...</span>
+          </button>
+        </form>
+
+        <div class="sso-container">
+          <h3 class="center">OR</h3>
+          <div class="sso-buttons">
+            <button class="sso-option" color="primary" mat-icon-button (click)="spotifyLogin()">
+              <img src="/assets/spotify.png" height="20px" class="button-icon"/> Log in with Spotify
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button>Reset password</button>
+        <button mat-button>Create an account</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+
+  <!--</mat-tab>-->
+
+  <!--<mat-tab label="Sign up">-->
+  <!--<div class="tab-content">-->
+  <!--<form [formGroup]="signupForm" (submit)="emailSignup()">-->
+
+  <!--<div>-->
+  <!--<mat-input-container class="full-width">-->
+  <!--<input matInput formControlName="displayName" placeholder="Display name" class="full-width">-->
+  <!--<mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">-->
+  <!--This field is required-->
+  <!--</mat-error>-->
+  <!--</mat-input-container>-->
+  <!--</div>-->
+
+  <!--<div>-->
+  <!--<mat-input-container class="full-width">-->
+  <!--<input matInput formControlName="email" placeholder="E-mail address" class="full-width">-->
+  <!--<mat-error *ngIf="signupForm.controls['email'].hasError('required')">-->
+  <!--This field is required-->
+  <!--</mat-error>-->
+  <!--</mat-input-container>-->
+  <!--</div>-->
+
+  <!--<div>-->
+  <!--<mat-input-container class="full-width">-->
+  <!--<input matInput formControlName="password" placeholder="Password" class="full-width"-->
+  <!--type="password">-->
+  <!--<mat-error *ngIf="signupForm.controls['password'].hasError('required')">-->
+  <!--This field is required-->
+  <!--</mat-error>-->
+  <!--<mat-error *ngIf="signupForm.controls['password'].hasError('minlength')">-->
+  <!--Your password has to be at least 8 characters long.-->
+  <!--</mat-error>-->
+  <!--</mat-input-container>-->
+  <!--</div>-->
+
+
+  <!--<button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">-->
+  <!--<mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>-->
+  <!--<span *ngIf="!signingUp">Sign up</span>-->
+  <!--<span *ngIf="signingUp">Signing up...</span>-->
+  <!--</button>-->
+
+  <!--</form>-->
+  <!--</div>-->
+  <!--</mat-tab>-->
+  <!--</mat-tab-group>-->
+
+
+  <!--<div style="margin-top: 20px">-->
+  <!--<div class="center">-->
+  <!--<h3>Sign in using:</h3>-->
+  <!--</div>-->
+
+
+  <!--</div>-->
+
+
+  <!--</mat-card-content>-->
+  <!--</mat-card>-->
+  <!--</div>-->
+</app-sidebar-layout>

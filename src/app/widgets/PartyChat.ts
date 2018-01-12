@@ -10,6 +10,7 @@ import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist/services/emoji-
 import {WSMessage} from "../models/WSMessage";
 import {EmojiEvent} from "angular2-emoji-picker/lib-dist/lib/emoji-event";
 import {debounce} from 'lodash';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'app-party-chat',
@@ -50,6 +51,8 @@ export class PartyChatComponent implements OnInit, OnDestroy {
 
   emojifyPipe: EmojifyPipe = new EmojifyPipe();
 
+  chatSubscription: Subscription;
+
   constructor(private webSocketService: WebSocketService,
               private loginService: LoginService,
               private emojiPickerOptions: EmojiPickerOptions) {
@@ -64,18 +67,22 @@ export class PartyChatComponent implements OnInit, OnDestroy {
       this.account = acc;
       this.loggedIn = acc != null;
     });
-console.log("Asdfasdfasdf");
-    this.webSocketService.socket.share().subscribe((next) => {
+
+    this.chatSubscription = this.webSocketService.input.subscribe((next) => {
+      if (next == null) {
+        return;
+      }
+
       const wsMessage = JSON.parse(next.data) as WSMessage;
       switch (wsMessage.opcode) {
-            case "AUTH":
-              const success = wsMessage.body === 'true';
-              if (success) {
-                this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
-              } else {
-                this.webSocketService.authenticate();
-              }
-              break;
+        case "AUTH":
+          const success = wsMessage.body === 'true';
+          if (success) {
+            this.webSocketService.output.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
+          } else {
+            this.webSocketService.authenticate();
+          }
+          break;
 
         case "CHAT_MSG":
           const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
@@ -95,7 +102,7 @@ console.log("Asdfasdfasdf");
   }
 
   ngOnDestroy() {
-
+    this.chatSubscription.unsubscribe();
   }
 
   handleEmojiSelection(event: EmojiEvent) {
@@ -163,15 +170,12 @@ console.log("Asdfasdfasdf");
       return;
     }
 
-    console.log("ayy lmao");
-
     const message = this.chatInput.nativeElement.value;
     if (message != null) {
       const trimmed = message.trim();
       if (trimmed.length > 0) {
         this.chatInputModel = '';
-        console.log("dsasdf");
-        this.webSocketService.socket.next(new MessageEvent("chat", {
+        this.webSocketService.output.next(new MessageEvent("chat", {
           data: new WSMessage("CHAT", {
             message: message,
             partyId: this.party.id

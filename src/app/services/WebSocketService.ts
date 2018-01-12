@@ -8,6 +8,7 @@ import {UserAccount} from "../models/UserAccount";
 import {LoginService} from "./LoginService";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 import {Subscription} from "rxjs/Subscription";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Injectable()
 export class WebSocketService {
@@ -20,27 +21,22 @@ export class WebSocketService {
     });
   }
 
-  socket: Subject<MessageEvent>;
+  input: BehaviorSubject<MessageEvent> = new BehaviorSubject(null);
+  output: BehaviorSubject<MessageEvent> = new BehaviorSubject(null);
   private ws: WebSocket;
   private pingInterval: Subscription;
   private authInterval: Subscription;
 
   private authOptions: any = {};
 
-  public connect(url, refresh: boolean = false, authOptions = {}): Subject<MessageEvent> {
+  public connect(url, refresh: boolean = false, authOptions = {}) {
     this.authOptions = authOptions;
-    if (!this.socket || refresh) {
-      if (this.socket != null) {
-        this.socket.complete();
-        this.socket = null;
-      }
-      this.socket = this.create(url);
+    if (!this.ws || refresh) {
+      this.create(url);
     }
-
-    return this.socket;
   }
 
-  private create(url): Subject<MessageEvent> {
+  private create(url) {
     if (this.ws) {
       this.ws.close();
     }
@@ -60,32 +56,28 @@ export class WebSocketService {
       this.authenticate();
     });
 
-    const observable = Observable.create((obs: Observer<MessageEvent>) => {
-      // this.ws.onopen = this.authenticate.bind(this);
-      this.ws.onmessage = obs.next.bind(obs);
-      this.ws.onerror = obs.error.bind(obs);
-      this.ws.onclose = obs.complete.bind(obs);
-
-      return this.ws.close.bind(this.ws);
-    });
-    const observer = {
-      next: (evt: MessageEvent) => {
-        if (this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify(evt.data));
-        }
-      },
+    this.ws.onmessage = (msg) => {
+      if (msg != null) {
+        this.input.next(msg);
+      }
     };
-    return Subject.create(observer, observable);
+
+    this.output.subscribe(msg => {
+      if (msg != null && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(msg.data));
+      }
+    });
   }
 
+
   private ping() {
-    this.socket.next(new MessageEvent("ping", {data: new WSMessage("PING", {})}));
+    this.output.next(new MessageEvent("ping", {data: new WSMessage("PING", {})}));
   }
 
   authenticate() {
-    if (this.socket != null && this.ws != null && this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws != null && this.ws.readyState === WebSocket.OPEN) {
       this.authInterval.unsubscribe();
-      this.socket.next(new MessageEvent("message", {
+      this.output.next(new MessageEvent("message", {
         data: new WSMessage("AUTH", Object.assign(
           {},
           {

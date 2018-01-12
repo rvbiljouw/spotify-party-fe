@@ -1,17 +1,16 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
-import {QueueService, VoteRequest} from "../../services/QueueService";
+import {QueueService} from "../../services/QueueService";
 import {DomSanitizer, Title} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
 import {MatDialog, PageEvent} from "@angular/material";
 import {WSMessage} from "../../models/WSMessage";
-import {ChatMessage} from "../../models/ChatMessage";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 import {Subscription} from "rxjs/Subscription";
 import {ManagePartyComponent} from "./ManageParty";
@@ -24,16 +23,13 @@ import {NotificationsService} from "angular2-notifications";
 import {debounce} from 'lodash';
 import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist";
 import {EmojiPickerAppleSheetLocator} from "angular2-emoji-picker/lib-dist/sheets/sheet_apple_map";
-import {EmojiEvent} from "angular2-emoji-picker/lib-dist/lib/emoji-event";
 import {SpotifyDevice} from "app/models/SpotifyDevice";
 import {SpotifyService} from "../../services/SpotifyService";
-import {EmojifyPipe} from "angular-emojify";
 import {SearchBarComponent} from "../../widgets/SearchBar";
 import {YouTubeService} from "../../services/YouTubeService";
 import {Song} from "../../models/Song";
-import {Overlay, OverlayConfig, OverlayOrigin} from "@angular/cdk/overlay";
+import {Overlay, OverlayConfig, OverlayRef} from "@angular/cdk/overlay";
 import {CdkPortal} from "@angular/cdk/portal";
-import {OverlayRef} from "@angular/cdk/overlay";
 
 
 @Component({
@@ -91,6 +87,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   @ViewChild('searchTemplate') searchTemplate: CdkPortal;
   searchOverlayRef: OverlayRef;
+
+  socketSubscription: Subscription;
 
 
   constructor(private router: Router,
@@ -230,6 +228,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.refreshTimer.unsubscribe();
     this.progressTimer.unsubscribe();
+    this.socketSubscription.unsubscribe();
     this.resetParty();
     console.log("Destroyed");
   }
@@ -324,14 +323,18 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       this.notificationsService.info('Active party changed to ' + party.name);
       this.refresh();
 
-      this.webSocketService.socket.share().subscribe((next) => {
+      this.socketSubscription = this.webSocketService.input.subscribe((next) => {
+        if(next == null) {
+          return;
+        }
+
         const wsMessage = JSON.parse(next.data) as WSMessage;
         console.log(wsMessage);
         switch (wsMessage.opcode) {
           case "AUTH":
             const success = wsMessage.body === 'true';
             if (success) {
-              this.webSocketService.socket.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
+              this.webSocketService.output.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
               this.websocketAuthenticated = true;
             } else {
               this.webSocketService.authenticate();
@@ -461,7 +464,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         .global()
         .width("100%")
         .height((window.innerHeight - 70) + "px")
-        .top("70px");
+        .top("68px");
 
       let config = new OverlayConfig({positionStrategy: strategy});
       this.searchOverlayRef = this.overlay.create(config);
