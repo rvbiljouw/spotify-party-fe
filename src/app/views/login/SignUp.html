@@ -27,14 +27,15 @@
     <mat-card style="width: 400px; max-width: 400px;">
       <mat-card-content>
         <div class="center" style="margin-bottom: 20px;">
-          <h3>LOG IN WITH E-MAIL</h3>
+          <h3>SIGN UP WITH E-MAIL</h3>
         </div>
 
-        <form [formGroup]="loginForm" (submit)="emailLogin()">
+        <form [formGroup]="signupForm" (submit)="emailSignup()">
+
           <div>
             <mat-input-container class="full-width">
-              <input matInput formControlName="email" placeholder="E-mail address">
-              <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
+              <input matInput formControlName="displayName" placeholder="Display name" class="full-width">
+              <mat-error *ngIf="signupForm.controls['displayName'].hasError('required')">
                 This field is required
               </mat-error>
             </mat-input-container>
@@ -42,22 +43,33 @@
 
           <div>
             <mat-input-container class="full-width">
-              <input matInput formControlName="password" placeholder="Password" type="password">
-              <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+              <input matInput formControlName="email" placeholder="E-mail address" class="full-width">
+              <mat-error *ngIf="signupForm.controls['email'].hasError('required')">
                 This field is required
               </mat-error>
-              <mat-error *ngIf="loginForm.controls['password'].hasError('minlength')">
+            </mat-input-container>
+          </div>
+
+          <div>
+            <mat-input-container class="full-width">
+              <input matInput formControlName="password" placeholder="Password" class="full-width"
+                     type="password">
+              <mat-error *ngIf="signupForm.controls['password'].hasError('required')">
+                This field is required
+              </mat-error>
+              <mat-error *ngIf="signupForm.controls['password'].hasError('minlength')">
                 Your password has to be at least 8 characters long.
               </mat-error>
             </mat-input-container>
           </div>
 
 
-          <button color="primary" class="button full-width" mat-raised-button [disabled]="!loginForm.valid">
-            <mat-spinner *ngIf="loggingIn" class="button-spinner" strokeWidth="4"></mat-spinner>
-            <span *ngIf="!loggingIn">Log in</span>
-            <span *ngIf="loggingIn">Logging in...</span>
+          <button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">
+            <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
+            <span *ngIf="!signingUp">Sign up</span>
+            <span *ngIf="signingUp">Signing up...</span>
           </button>
+
         </form>
 
         <div class="sso-container">
@@ -74,8 +86,7 @@
     </mat-card>
 
     <div class="other-actions">
-      <button mat-button>Reset your password</button>
-      <button mat-button [routerLink]="['/sign-up']">Create an account</button>
+      <button mat-button [routerLink]="['/login']">Log in with an existing account</button>
     </div>
   </div>
 </app-sidebar-layout>

@@ -45,16 +45,18 @@ import {MyPartiesComponent} from "./views/party/MyParties";
 import {PortalModule} from "@angular/cdk/portal";
 import {PartyChatComponent} from "./widgets/PartyChat";
 import {PartyQueueComponent} from "app/widgets/PartyQueue";
+import {SignUpComponent} from "./views/login/SignUp";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: LandingComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'sign-up', component: SignUpComponent},
   {path: 'account', component: MyAccountComponent, canActivate: [AuthGuard]},
   {path: 'parties', component: PartiesComponent},
   {path: 'my-parties', component: MyPartiesComponent, canActivate: [AuthGuard]},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
-  {path: 'party/:id', component: ViewPartyComponent, canActivate: [AuthGuard]}
+  {path: 'party/:id', component: ViewPartyComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({
@@ -76,7 +78,8 @@ const routes: Routes = [
     MyAccountComponent,
     MyPartiesComponent,
     PartyChatComponent,
-    PartyQueueComponent
+    PartyQueueComponent,
+    SignUpComponent
   ],
   imports: [
     PortalModule,
