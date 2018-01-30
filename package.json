@@ -38,6 +38,7 @@
     "md2": "0.0.29",
     "ng2-charts": "^1.5.0",
     "ngx-dropzone-wrapper": "^4.0.2",
+    "ngx-image-cropper": "^0.1.24",
     "rxjs": "^5.5.5",
     "yt-player": "^2.5.2",
     "zone.js": "^0.8.18"

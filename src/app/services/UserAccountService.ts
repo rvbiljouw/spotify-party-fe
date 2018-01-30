@@ -16,4 +16,10 @@ export class UserAccountService extends ApiService<UserAccount> {
       '/api/v1/account',
     );
   }
+
+  uploadDisplayPicture(displayPicture64: string): Observable<UserAccount> {
+    return this.http.put(`${environment.apiHost}/api/v1/account/picture`, displayPicture64, {withCredentials: true}).map(res => {
+      return res.json() as UserAccount;
+    });
+  }
 }

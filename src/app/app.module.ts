@@ -47,6 +47,8 @@ import {PartyChatComponent} from "./widgets/PartyChat";
 import {PartyQueueComponent} from "app/widgets/PartyQueue";
 import {SignUpComponent} from "./views/login/SignUp";
 import {YouTubeCardComponent} from "./widgets/YouTubeCard";
+import {ImageCropperModule} from "ngx-image-cropper";
+import {UploadImageModal} from "./widgets/UploadImageModal";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -81,7 +83,8 @@ const routes: Routes = [
     PartyChatComponent,
     PartyQueueComponent,
     SignUpComponent,
-    YouTubeCardComponent
+    YouTubeCardComponent,
+    UploadImageModal
   ],
   imports: [
     PortalModule,
@@ -103,6 +106,7 @@ const routes: Routes = [
     SimpleNotificationsModule.forRoot(),
     MentionModule,
     EmojiPickerModule.forRoot(),
+    ImageCropperModule
   ],
   providers: [
     LoginService,
@@ -115,7 +119,7 @@ const routes: Routes = [
     QueueService,
     YouTubeService
   ],
-  entryComponents: [ManagePartyComponent],
+  entryComponents: [ManagePartyComponent, UploadImageModal],
   bootstrap: [AppComponent],
 })
 export class AppModule {

@@ -7,3 +7,45 @@
   color: #ff5723;
   cursor: pointer;
 }
+
+.account-section .mat-expansion-panel-header-title,
+.account-section .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.account-section .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-header {
+
+  & {
+    margin-bottom: 20px;
+  }
+
+  .display-picture {
+    position: relative;
+    display: inline-block;
+    min-width: 80px;
+    min-height: 80px;
+    width: 80px;
+    height: 80px;
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 50%;
+    background-color: #dedede;
+    margin-right: 20px;
+  }
+
+  .upload-display-picture {
+    background-color: rgba(255, 255, 255, 0.6);
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  .header-text {
+    display: inline;
+  }
+
+}

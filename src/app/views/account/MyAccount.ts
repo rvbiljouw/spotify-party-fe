@@ -17,6 +17,7 @@ import {SpotifyDevice} from "../../models/SpotifyDevice";
 import {Subscription} from "rxjs/Subscription";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 import {environment} from "../../../environments/environment";
+import {UploadImageModal} from "app/widgets/UploadImageModal";
 
 @Component({
   selector: 'my-account',
@@ -51,6 +52,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
               private spotifyService: SpotifyService,
               private accountService: UserAccountService,
               private media: ObservableMedia,
+              private dialog: MatDialog,
               private fb: FormBuilder) {
   }
 
@@ -163,4 +165,25 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     }
     return null;
   }
+
+  getDisplayPicture() {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${this.account.displayPicture}')`)
+  }
+
+  editDisplayPicture() {
+    let ref = this.dialog.open(UploadImageModal, {
+      width: '640px'
+    });
+
+    ref.afterClosed().subscribe(res => {
+      if (res != null) {
+        this.accountService.uploadDisplayPicture(res).subscribe(result => {
+          this.account = result;
+        }, err => {
+          this.notificationsService.error('Oops!', 'We weren\'t able to update your profile picture. Please try again later or file a bug report.');
+        });
+      }
+    });
+  }
+
 }
