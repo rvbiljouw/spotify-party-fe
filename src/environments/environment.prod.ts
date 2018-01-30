@@ -1,5 +1,5 @@
 export const environment = {
-  apiHost: `http://api.awsum.io`,
-  wsHost: 'ws://api.awsum.io',
+  apiHost: `https://api.awsum.io`,
+  wsHost: 'wss://api.awsum.io',
   production: true,
 };

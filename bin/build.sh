@@ -3,7 +3,7 @@ set -x;
 
 ENV_FILE=$1
 
-PROJECT="spotify-party-fe"
+PROJECT="party-frontend"
 VERSION="develop"
 
 if [ -n "$ENV_FILE" ]; then
