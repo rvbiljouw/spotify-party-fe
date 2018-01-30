@@ -14,7 +14,7 @@ export class AppComponent {
 
   notificationOptions = {
     position: ["top", "right"],
-    timeOut: 300000,
+    timeOut: 3000,
     theClass: "notification",
     showProgressBar: true,
     pauseOnHover: true,
