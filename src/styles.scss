@@ -47,6 +47,11 @@ body {
     padding-top: 24px;
   }
 
+  .mat-card-header-text {
+    width: 100%;
+    margin: 0;
+  }
+
   .mat-card-footer {
     border-top: 1px solid rgba(77, 77, 77, 0.7);
     padding: 0;
@@ -115,4 +120,8 @@ a {
   text-overflow: ellipsis;
   white-space: nowrap;
   width: inherit;
+}
+
+.bold {
+  font-weight: bold;
 }

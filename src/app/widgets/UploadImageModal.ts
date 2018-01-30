@@ -31,4 +31,12 @@ export class UploadImageModal implements OnInit, OnDestroy {
   imageCropped(image: string) {
     this.croppedImage = image;
   }
+
+  imageLoaded() {
+
+  }
+
+  loadImageFailed() {
+
+  }
 }

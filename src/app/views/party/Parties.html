@@ -46,9 +46,10 @@
 
               <div *ngIf="!searching">
 
-                <h2>Most popular
-                  <small>these parties are popping right now</small>
-                </h2>
+                <div>
+                  <h2  style="display: inline-block;">Most popular - </h2>
+                  <h4 style="display: inline-block;">these parties are popping right now</h4>
+                </div>
 
                 <div *ngIf="youtubeGroup.popularParties != null && youtubeGroup.popularParties.maxRecords > 0"
                      fxLayout="row" fxLayoutWrap="true">
@@ -58,9 +59,10 @@
                   </div>
                 </div>
 
-                <h2>Newly added
-                  <small>these parties are just starting out</small>
-                </h2>
+                <div>
+                  <h2  style="display: inline-block;">Newly added - </h2>
+                  <h4 style="display: inline-block;">these parties are just starting out</h4>
+                </div>
 
                 <div *ngIf="youtubeGroup.newParties != null && youtubeGroup.newParties.maxRecords > 0" fxLayout="row"
                      fxLayoutWrap="true">
@@ -98,9 +100,10 @@
 
               <div *ngIf="!searching">
 
-                <h2>Most popular
-                  <small>these parties are popping right now</small>
-                </h2>
+                <div>
+                  <h2  style="display: inline-block;">Most popular - </h2>
+                  <h4 style="display: inline-block;">these parties are popping right now</h4>
+                </div>
 
                 <div *ngIf="spotifyGroup.popularParties != null && spotifyGroup.popularParties.maxRecords > 0"
                      fxLayout="row" fxLayoutWrap="true">
@@ -110,9 +113,10 @@
                   </div>
                 </div>
 
-                <h2>Newly added
-                  <small>these parties are just starting out</small>
-                </h2>
+                <div>
+                  <h2  style="display: inline-block;">Newly added - </h2>
+                  <h4 style="display: inline-block;">these parties are just starting out</h4>
+                </div>
 
                 <div *ngIf="spotifyGroup.newParties != null && spotifyGroup.newParties.maxRecords > 0" fxLayout="row"
                      fxLayoutWrap="true">
