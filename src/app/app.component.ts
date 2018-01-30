@@ -14,13 +14,13 @@ export class AppComponent {
 
   notificationOptions = {
     position: ["top", "right"],
-    timeOut: 3000,
+    timeOut: 300000,
     theClass: "notification",
     showProgressBar: true,
     pauseOnHover: true,
     maxStack: 3,
-    animate: "fromRight",
-    clickToClose: true
+    animate: "fade",
+    clickToClose: true,
   };
 
   constructor(private media: ObservableMedia,

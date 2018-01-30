@@ -10,33 +10,43 @@
 .sso-option {
   opacity: 0.7;
   transition: opacity 0.3s ease-in;
+  width: 120px;
 }
 
 .sso-option:hover {
   opacity: 1;
 }
 
+.sso-option-caption {
+  text-align: center;
+  margin: 0;
+}
+
 .button {
   transition: all 0.3s ease-in;
 }
 
-.forgot-password, .sign-up {
-  margin-top: 10px;
-  //text-align: center;
-}
-
-
 .sso-container {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.other-actions {
-  margin-top: 20px;
+  padding: 0 24px 24px 24px;
 }
 
 .login {
   background: url('../../../assets/masthead.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+.login-card {
+  padding: 0;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.login-card-content {
+  padding: 24px;
+}
+
+.actions-container {
+  background: #cccbcb;
+  margin: 0;
+  padding: 24px !important;
 }

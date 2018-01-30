@@ -3,15 +3,15 @@
   <mat-icon mat-list-icon class="artist-thumbnail"
             [style.background-image]="getArtistThumbnail(true)"></mat-icon>
 
-  <span fxHide.gt-sm="true" mat-line>
+  <span class="truncated" fxHide.gt-sm="true" mat-line>
     {{ song.artist }}
     </span>
-  <span fxHide.gt-sm="true" mat-line>
+  <span class="truncated" fxHide.gt-sm="true" mat-line>
   {{ song.title }}
   </span>
 
-  <h4 mat-line fxHide.lt-md="true">
+  <h4 class="truncated" mat-line fxHide.lt-md="true">
     {{song.artist }} - {{ song.title }}
   </h4>
-  <p mat-line>{{ song.duration | duration }}</p>
+  <p class="truncated" mat-line>{{ song.duration | duration }}</p>
 </mat-list-item>

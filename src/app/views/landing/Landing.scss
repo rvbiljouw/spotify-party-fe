@@ -122,24 +122,6 @@
   }
 }
 
-@keyframes yt-spotify-colors {
-  from {
-    color: #1DB954;
-  }
-  to {
-    color: #ff0000;
-  }
-}
-
-@keyframes opacity {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .sync-icon {
   font-size: 3rem;
   width: 3rem;
@@ -151,7 +133,6 @@
   font-size: 3rem;
   width: 3rem;
   height: 3rem;
-  animation: yt-spotify-colors 2s ease-in-out infinite alternate;
 }
 
 .money-icon {
@@ -159,7 +140,7 @@
   width: 3rem;
   height: 3rem;
   position: relative;
-  color: #1DB954;
+  color: white;
 }
 
 .money-icon:before {
@@ -168,9 +149,8 @@
   left: 0;
   top: 50%;
   right: 0;
-  border-top: 0.2rem solid #ff0000;
+  border-top: 0.2rem solid white;
   transform:rotate(45deg);
-  animation: opacity 3s linear infinite;
 }
 
 .third-container {
@@ -211,7 +191,11 @@
 }
 
 .social-media-img-container {
-  min-height: 15vh;
+  height: 15vh;
+}
+
+.facebook-img {
+  padding-top: 14px;
 }
 
 .social-media-caption {

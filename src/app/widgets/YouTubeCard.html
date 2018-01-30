@@ -1,10 +1,7 @@
-<mat-card fxFlex="100">
+<mat-card class="youtube-card" fxFlex="100">
   <img mat-card-image [src]="getThumbnail(false)">
-  <mat-card-content>
-    <b>{{ song.artist }} - {{ song.title }}</b>
-    <p>Uploaded by {{song.uploadedBy}}</p>
+  <mat-card-content (click)="play()">
+    <span class="truncated artist">{{ song.artist }} - {{ song.title }}</span>
+    <span class="truncated">Uploaded by {{song.uploadedBy}}</span>
   </mat-card-content>
-  <mat-card-actions>
-    <button mat-button (click)="play()">ADD TO QUEUE</button>
-  </mat-card-actions>
 </mat-card>

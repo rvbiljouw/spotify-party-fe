@@ -108,7 +108,7 @@
                       </div>
 
                       <button color="primary" mat-raised-button [disabled]="!partyForm.valid || creating">
-                        <mat-spinner *ngIf="creating" class="button-spinner" strokeWidth="4"></mat-spinner>
+                        <mat-spinner *ngIf="creating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
                         Submit
                       </button>
 

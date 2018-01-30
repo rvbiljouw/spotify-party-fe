@@ -96,7 +96,7 @@
             </form>
 
             <button color="primary" mat-raised-button [disabled]="!accountForm.valid" (click)="submitAccount()">
-              <mat-spinner *ngIf="updating" class="button-spinner" strokeWidth="4"></mat-spinner>
+              <mat-spinner *ngIf="updating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
               Update
             </button>
           </mat-expansion-panel>
@@ -141,7 +141,7 @@
 
               <button color="primary" mat-raised-button [disabled]="!spotifyForm.valid"
                       (click)="submitSpotify()">
-                <mat-spinner *ngIf="updating" class="button-spinner" strokeWidth="4"></mat-spinner>
+                <mat-spinner *ngIf="updating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
                 Update
               </button>
 

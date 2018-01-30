@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 @import '~font-awesome/css/font-awesome.css';
 @import '~@angular/material/prebuilt-themes/purple-green.css';
+@import '~@angular/material/theming';
 
 body {
   margin: 0;
@@ -87,7 +88,6 @@ body {
   height: 100%;
 }
 
-
 mat-form-field .mat-form-field {
   &-underline {
     position: relative;
@@ -96,4 +96,23 @@ mat-form-field .mat-form-field {
   &-subscript-wrapper {
     position: static;
   }
+}
+
+a {
+  text-decoration: none;
+  opacity: 0.7;
+  color: #2395f3;
+  transition: opacity 0.3s ease-in;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.truncated {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: inherit;
 }

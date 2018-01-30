@@ -10,6 +10,7 @@
 
 .sso-option {
   opacity: 0.7;
+  width: 120px;
   transition: opacity 0.3s ease-in;
 }
 
@@ -17,21 +18,36 @@
   opacity: 1;
 }
 
+.sso-option-caption {
+  text-align: center;
+  margin: 0;
+}
+
 .button {
   transition: all 0.3s ease-in;
 }
 
-.forgot-password, .sign-up {
-  margin-top: 10px;
-  //text-align: center;
-}
-
-
 .sso-container {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 0 24px 24px 24px;
 }
 
-.other-actions {
-  margin-top: 20px;
+.sign-up {
+  background: url('../../../assets/masthead.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.sign-up-card {
+  padding: 0;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.sign-up-card-content {
+  padding: 24px;
+}
+
+.actions-container {
+  background: #cccbcb;
+  margin: 0;
+  padding: 24px !important;
 }

@@ -1,5 +1,5 @@
-<app-sidebar-layout #sidenav>
-  <mat-toolbar color="primary">
+<app-sidebar-layout #sidenav [occupy]="true">
+  <mat-toolbar color="primary" class="navbar">
     <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
       <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-icon-button (click)="sidenav.toggle()">
@@ -22,10 +22,10 @@
     </div>
   </mat-toolbar>
 
-  <div fxLayoutAlign="center center" fxLayout="column" class="full-height content">
+  <div fxLayoutAlign="center center" fxLayout="column" class="full-height content sign-up">
 
-    <mat-card style="width: 400px; max-width: 400px;">
-      <mat-card-content>
+    <mat-card style="width: 400px; max-width: 400px; margin-bottom: 20px;" class="sign-up-card">
+      <mat-card-content class="sign-up-card-content">
         <div class="center" style="margin-bottom: 20px;">
           <h3>SIGN UP WITH E-MAIL</h3>
         </div>
@@ -64,8 +64,8 @@
           </div>
 
 
-          <button color="primary" class="center button" mat-raised-button [disabled]="!signupForm.valid">
-            <mat-spinner *ngIf="signingUp" class="button-spinner" strokeWidth="4"></mat-spinner>
+          <button color="primary" class="center button full-width" mat-raised-button [disabled]="!signupForm.valid">
+            <mat-spinner *ngIf="signingUp" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
             <span *ngIf="!signingUp">Sign up</span>
             <span *ngIf="signingUp">Signing up...</span>
           </button>
@@ -73,20 +73,21 @@
         </form>
 
         <div class="sso-container">
-          <div class="center" style="margin-bottom: 20px;">
+          <div class="center">
             <h3>OR</h3>
           </div>
           <div class="sso-buttons">
             <button class="sso-option" color="primary" mat-icon-button (click)="spotifyLogin()">
-              <img src="/assets/spotify.png" height="20px" class="button-icon"/> Log in with Spotify
+              <img src="/assets/spotify.png" height="48px" class="button-icon"/>
+              <p class="sso-option-caption">Login with Spotify</p>
             </button>
           </div>
         </div>
       </mat-card-content>
-    </mat-card>
 
-    <div class="other-actions">
-      <button mat-button [routerLink]="['/login']">Log in with an existing account</button>
-    </div>
+      <mat-card-actions fxLayoutAlign="center center" fxLayout="row" class="actions-container">
+        <a [routerLink]="['/login']">Log in with an existing account</a>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </app-sidebar-layout>

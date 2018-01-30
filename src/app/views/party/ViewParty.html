@@ -7,13 +7,13 @@
           <button mat-icon-button (click)="sidenav.toggle()">
             <mat-icon>menu</mat-icon>
           </button>
-          <div class="logo" fxLayoutAlign="center center">
+          <div class="logo" fxShow.lt-md="false" fxLayoutAlign="center center">
             <img src="../../../assets/logo.png">
           </div>
         </div>
 
-        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px" fxShow.lt-md="false">
-          <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
+        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+          <button mat-icon-button class="nav-btn" (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
                   matTooltip="Search for songs to add" matTooltipPosition="below">
             <mat-icon>search</mat-icon>
           </button>
@@ -26,7 +26,7 @@
             </button>
           </ng-container>
 
-          <mat-menu #deviceMenu="matMenu">
+          <mat-menu #deviceMenu="matMenu" yPosition="below" [overlapTrigger]="false">
             <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
               {{ device.name }}
             </button>
@@ -34,87 +34,59 @@
 
           <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
                   matTooltip="{{getDeviceName(account.spotify.device)}}"
-                  class="device-btn"
+                  class="device-btn nav-btn"
                   mat-icon-button [matMenuTriggerFor]="deviceMenu">
             <mat-icon>speaker_phone</mat-icon>
           </button>
 
-          <button mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
-                  matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
+                  matTooltipPosition="below" class="nav-btn">
             <mat-icon class="button-icon">refresh</mat-icon>
           </button>
 
-          <button mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
             <mat-icon>settings</mat-icon>
           </button>
 
-          <button mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
             <mat-icon>stop</mat-icon>
           </button>
 
-          <button mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
             <mat-icon>exit_to_app</mat-icon>
           </button>
 
+          <mat-menu #mobileMenu="matMenu" yPosition="below" [overlapTrigger]="false">
+            <button mat-menu-item (click)="join(party.id, true)">
+              <mat-icon>refresh</mat-icon>
+              Reconnect to party
+            </button>
+            <button mat-menu-item (click)="openSettings()">
+              <mat-icon>settings</mat-icon>
+              Settings
+            </button>
+            <button mat-menu-item (click)="leave(false)">
+              <mat-icon>stop</mat-icon>
+              Stop
+            </button>
+            <button mat-menu-item (click)="leave(true)">
+              <mat-icon>exit_to_app</mat-icon>
+              Quit party
+            </button>
+          </mat-menu>
+
+          <button fxHide.gt-sm="true" class="nav-btn" mat-icon-button [matMenuTriggerFor]="mobileMenu">
+            <i class="fa fa-ellipsis-h"></i>
+          </button>
+
           <ng-container *ngIf="loggedIn">
-            <button mat-button>
+            <button fxHide.lt-md="true" mat-button [routerLink]="['/account']">
               <mat-icon>person</mat-icon>
               {{ account.displayName }}
             </button>
           </ng-container>
         </div>
       </div>
-    </mat-toolbar-row>
-
-    <mat-toolbar-row fxHide.gt-sm="true">
-      <button mat-icon-button (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
-              matTooltip="Search for songs to add" matTooltipPosition="below">
-        <mat-icon>search</mat-icon>
-      </button>
-      <ng-container *ngIf="searching">
-        <mat-input-container>
-          <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
-        </mat-input-container>
-        <button mat-icon-button (click)="setSearching(false)">
-          <mat-icon class="button-icon">close</mat-icon>
-        </button>
-      </ng-container>
-
-      <mat-menu #deviceMenu="matMenu">
-        <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
-          {{ device.name }}
-        </button>
-      </mat-menu>
-
-      <button *ngIf="party != null && account != null && party.type == 'SPOTIFY' && account.spotify != null"
-              matTooltip="{{getDeviceName(account.spotify.device)}}"
-              class="device-btn"
-              mat-icon-button [matMenuTriggerFor]="deviceMenu">
-        <mat-icon>speaker_phone</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
-              matTooltipPosition="below">
-        <mat-icon class="button-icon">refresh</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
-        <mat-icon>settings</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
-        <mat-icon>stop</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="viewChat = !viewChat" matTooltip="Toggle chat" matTooltipPosition="below">
-        <mat-icon>chat</mat-icon>
-      </button>
-
-      <button mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
-        <mat-icon>exit_to_app</mat-icon>
-      </button>
-
-
     </mat-toolbar-row>
   </mat-toolbar>
 
@@ -183,8 +155,11 @@
           <div fxFlex.gt-md="75" fxFlex="100" style="padding: 10px">
             <mat-card class="compact-card">
               <mat-card-header>
-                <mat-icon mat-card-avatar>group</mat-icon>
-                <mat-card-title>{{ party.name }}</mat-card-title>
+                <mat-card-title class="party-title-container">
+                  <img *ngIf="partyType == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon" alt="youtube">
+                  <img *ngIf="partyType == 'SPOTIFY'" src="/assets/spotify.png" class="button-icon party-icon" alt="spotify">
+                  <span>{{ party.name }}</span>
+                </mat-card-title>
               </mat-card-header>
               <mat-card-content class="no-pad">
                 <div class="now-playing-box" *ngIf="party.type == 'YOUTUBE'">
