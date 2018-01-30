@@ -1,4 +1,3 @@
-
 import {PartyService} from "../services/PartyService";
 import {DomSanitizer} from "@angular/platform-browser";
 import {QueueService, VoteRequest} from "../services/QueueService";
@@ -37,6 +36,10 @@ export class PartyQueueComponent implements OnInit, OnDestroy {
     } else {
       return this.sanitizer.bypassSecurityTrustResourceUrl(thumbnail);
     }
+  }
+
+  getBackgroundImage(url: string) {
+    return this.sanitizer.bypassSecurityTrustStyle('url(' + url + ')');
   }
 
   vote(entry: PartyQueueEntry, up: boolean, voteToSkip: boolean) {

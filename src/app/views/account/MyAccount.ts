@@ -117,7 +117,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   submitAccount() {
     this.updating = true;
     this.accountService
-      .update(this.account.id, this.accountForm.value)
+      .updateAccount(this.accountForm.value)
       .subscribe(
         result => {
           this.updating = false;

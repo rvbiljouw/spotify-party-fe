@@ -21,6 +21,7 @@ export class UserAccount {
   email: string;
   displayName: string;
   displayPicture: string;
+  bio: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi aliquet tortor ac turpis faucibus sagittis. Vivamus tincidunt magna sit amet odio accumsan rutrum. Vivamus sed molestie lacus. Vivamus in risus.";
   loginToken: LoginToken;
   hasSpotify: boolean;
   spotify: SpotifyAccount;

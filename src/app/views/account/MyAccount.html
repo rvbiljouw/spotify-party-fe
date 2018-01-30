@@ -14,11 +14,7 @@
 
         <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
           <ng-container *ngIf="loggedIn">
-
-            <button mat-button>
-              <mat-icon>person</mat-icon>
-              {{ account.displayName }}
-            </button>
+             <app-account-menu></app-account-menu>
           </ng-container>
         </div>
       </div>

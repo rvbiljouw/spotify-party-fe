@@ -5,7 +5,7 @@ import {routerTransition} from '../../utils/Animations';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
-import {QueueService} from "../../services/QueueService";
+import {QueueService, VoteRequest} from "../../services/QueueService";
 import {DomSanitizer, Title} from "@angular/platform-browser";
 import {WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
@@ -456,6 +456,19 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       this.router.navigate(['/parties']);
     }, err => {
       this.notificationsService.error('Couldn\'t leave to party - you\'re stuck here forever!');
+    });
+  }
+
+
+  vote(entry: PartyQueueEntry, up: boolean, voteToSkip: boolean) {
+    let voteReq = new VoteRequest();
+    voteReq.id = entry.id;
+    voteReq.up = up;
+    voteReq.voteToSkip = voteToSkip;
+    this.queueService.voteSong(this.party, voteReq).subscribe(res => {
+      this.notificationsService.info('Your vote has been counted.');
+    }, err => {
+      this.notificationsService.error('Sorry, we couldn\'t process your vote... please try again later.');
     });
   }
 

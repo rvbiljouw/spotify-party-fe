@@ -8,9 +8,7 @@
     [aspectRatio]="4 / 3"
     [resizeToWidth]="128"
     format="png"
-    (imageCropped)="imageCropped($event)"
-    (imageLoaded)="imageLoaded()"
-    (loadImageFailed)="loadImageFailed()">
+    (imageCropped)="imageCropped($event)">
   </image-cropper>
 
   <input type="file" (change)="fileChangeEvent($event)"/>

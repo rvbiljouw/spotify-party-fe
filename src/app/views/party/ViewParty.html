@@ -39,20 +39,24 @@
             <mat-icon>speaker_phone</mat-icon>
           </button>
 
-          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="join(party.id, true)" matTooltip="Re-connect to party"
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="join(party.id, true)"
+                  matTooltip="Re-connect to party"
                   matTooltipPosition="below" class="nav-btn">
             <mat-icon class="button-icon">refresh</mat-icon>
           </button>
 
-          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="openSettings()" matTooltip="Party settings" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="openSettings()"
+                  matTooltip="Party settings" matTooltipPosition="below">
             <mat-icon>settings</mat-icon>
           </button>
 
-          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="leave(false)" matTooltip="Stop party" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="leave(false)" matTooltip="Stop party"
+                  matTooltipPosition="below">
             <mat-icon>stop</mat-icon>
           </button>
 
-          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button color="warn" (click)="leave(true)" matTooltip="Quit party" matTooltipPosition="below">
+          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button color="warn" (click)="leave(true)"
+                  matTooltip="Quit party" matTooltipPosition="below">
             <mat-icon>exit_to_app</mat-icon>
           </button>
 
@@ -80,10 +84,7 @@
           </button>
 
           <ng-container *ngIf="loggedIn">
-            <button fxHide.lt-md="true" mat-button [routerLink]="['/account']">
-              <mat-icon>person</mat-icon>
-              {{ account.displayName }}
-            </button>
+            <app-account-menu></app-account-menu>
           </ng-container>
         </div>
       </div>
@@ -156,8 +157,10 @@
             <mat-card class="compact-card">
               <mat-card-header>
                 <mat-card-title class="party-title-container">
-                  <img *ngIf="partyType == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon" alt="youtube">
-                  <img *ngIf="partyType == 'SPOTIFY'" src="/assets/spotify.png" class="button-icon party-icon" alt="spotify">
+                  <img *ngIf="partyType == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon"
+                       alt="youtube">
+                  <img *ngIf="partyType == 'SPOTIFY'" src="/assets/spotify.png" class="button-icon party-icon"
+                       alt="spotify">
                   <span>{{ party.name }}</span>
                 </mat-card-title>
               </mat-card-header>

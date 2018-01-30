@@ -1,0 +1,85 @@
+<app-sidebar-layout #sidenav>
+  <mat-toolbar color="primary">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="logo" fxLayoutAlign="center center">
+          <img src="../../../assets/logo.png">
+        </div>
+      </div>
+
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+        <app-account-menu></app-account-menu>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <div style="padding: 20px;" fxLayoutAlign="center" *ngIf="account != null">
+
+    <div fxFlex="100" fxFlex.lt-sm="75" fxFlex.gt-md="50">
+
+      <div fxLayout="row">
+
+        <div class="account-header" fxLayoutAlign="start center" fxFlex="80">
+          <div class="display-picture" fxLayoutAlign="center center"
+               [style.background-image]="getBackgroundImage(account.displayPicture)">
+          </div>
+          <div class="header-text">
+            <h2 class="display-name">{{ account.displayName }}</h2>
+            <p class="bio">{{ account.bio || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi aliquet
+              tortor ac turpis faucibus sagittis."}}</p>
+          </div>
+        </div>
+
+        <div class="account-actions" fxFlex="20" fxLayoutAlign="end center">
+          <button mat-raised-button color="primary">
+            <mat-icon>person_add</mat-icon>
+            Follow
+          </button>
+        </div>
+      </div>
+
+      <div fxLayout="row">
+
+        <div class="achievements" fxFlex="100">
+          <h3>Achievements</h3>
+
+          <div fxLayout="row">
+            <div class="achievement" *ngFor="let achievement of achievements">
+              <div fxLayoutAlign="center">
+                <div class="medal mat-elevation-z9"
+                     [style.background-image]="getBackgroundImage(achievement.image)"
+                     matTooltip="{{achievement.description}}" matTooltipPosition="after"></div>
+              </div>
+              <div fxLayoutAlign="center">
+                <span class="name">{{ achievement.name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div fxLayout="row">
+
+        <div class="activity" fxFlex="100">
+          <h3>Recent activity</h3>
+
+          <mat-card>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item>
+                  <mat-icon mat-list-icon>person</mat-icon>
+                  <h1 mat-line>Did something</h1>
+                  <p mat-line>11/11/18 00:00:00</p>
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</app-sidebar-layout>

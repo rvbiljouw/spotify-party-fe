@@ -15,7 +15,6 @@
                  fxShow.gt-sm="true">
             <tr>
               <th class="column-header">Song</th>
-              <th class="column-header">Artist</th>
               <th class="column-header">Requested by</th>
               <th></th>
             </tr>
@@ -24,11 +23,16 @@
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
                   <mat-icon mat-list-icon class="artist-thumbnail"
                             [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                  <span>{{ entry.title }}</span>
+                  <span>{{entry.artist }} - {{ entry.title }}</span>
                 </div>
               </td>
-              <td>{{entry.artist }}</td>
-              <td>{{ entry.member.displayName }}</td>
+              <td>
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+                  <mat-icon mat-list-icon class="user-thumbnail"
+                            [style.background-image]="getBackgroundImage(entry.member.displayPicture)"></mat-icon>
+                  <span>{{ entry.member.displayName }}</span>
+                </div>
+              </td>
               <td>
                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center">
                   <button mat-icon-button color="primary" (click)="vote(entry, true, false)">

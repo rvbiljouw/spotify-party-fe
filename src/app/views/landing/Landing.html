@@ -12,10 +12,7 @@
 
       <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
         <ng-container *ngIf="loggedIn">
-          <button mat-button>
-            <mat-icon>person</mat-icon>
-            <span fxHide.lt-md="true">{{ account.displayName }}</span>
-          </button>
+          <app-account-menu></app-account-menu>
         </ng-container>
 
         <div *ngIf="!loggedIn" fxShow.lt-md="false">

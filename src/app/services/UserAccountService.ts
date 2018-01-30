@@ -22,4 +22,16 @@ export class UserAccountService extends ApiService<UserAccount> {
       return res.json() as UserAccount;
     });
   }
+
+  updateAccount(request: UserAccount): Observable<UserAccount> {
+    let url = `${environment.apiHost}/api/v1/account`;
+    return this.http
+      .put(url, request, {withCredentials:true})
+      .map(result => {
+        return result.json() as UserAccount;
+      })
+      .catch(error => {
+        return Observable.of(null);
+      });
+  }
 }

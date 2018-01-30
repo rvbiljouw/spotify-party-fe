@@ -1,6 +1,6 @@
-<mat-card class="youtube-card" fxFlex="100">
+<mat-card class="youtube-card" fxFlex="100" (click)="play()">
   <img mat-card-image [src]="getThumbnail(false)">
-  <mat-card-content (click)="play()">
+  <mat-card-content >
     <span class="truncated artist">{{ song.artist }} - {{ song.title }}</span>
     <span class="truncated">Uploaded by {{song.uploadedBy}}</span>
   </mat-card-content>

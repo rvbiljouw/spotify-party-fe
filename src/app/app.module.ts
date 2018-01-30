@@ -49,6 +49,8 @@ import {SignUpComponent} from "./views/login/SignUp";
 import {YouTubeCardComponent} from "./widgets/YouTubeCard";
 import {ImageCropperModule} from "ngx-image-cropper";
 import {UploadImageModal} from "./widgets/UploadImageModal";
+import {ProfileComponent} from "./views/account/Profile";
+import {AccountMenuComponent} from "./widgets/AccountMenu";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -60,6 +62,7 @@ const routes: Routes = [
   {path: 'my-parties', component: MyPartiesComponent, canActivate: [AuthGuard]},
   {path: 'party/create', component: CreatePartyComponent, canActivate: [AuthGuard]},
   {path: 'party/:id', component: ViewPartyComponent, canActivate: [AuthGuard]},
+  {path: 'profiles/:id', component: ProfileComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({
@@ -84,7 +87,9 @@ const routes: Routes = [
     PartyQueueComponent,
     SignUpComponent,
     YouTubeCardComponent,
-    UploadImageModal
+    UploadImageModal,
+    ProfileComponent,
+    AccountMenuComponent
   ],
   imports: [
     PortalModule,

@@ -24,10 +24,7 @@
         </ng-container>
 
         <ng-container *ngIf="loggedIn">
-          <button mat-button>
-            <mat-icon>person</mat-icon>
-            {{ account.displayName }}
-          </button>
+          <app-account-menu></app-account-menu>
         </ng-container>
       </div>
     </div>

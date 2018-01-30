@@ -1,0 +1,17 @@
+<button mat-button [matMenuTriggerFor]="menu">
+  <mat-icon>person</mat-icon>
+  {{ account.displayName }}
+</button>
+<mat-menu #menu="matMenu" y-position="below" [overlapTrigger]="false">
+  <ng-container *ngIf="account != null">
+    <button mat-menu-item [routerLink]="['/account']" routerLinkActive="active">
+      <mat-icon class="button-icon">account_circle</mat-icon>
+      Manage your account
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon class="button-icon">exit_to_app</mat-icon>
+      Log out
+    </button>
+  </ng-container>
+
+</mat-menu>
