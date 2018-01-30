@@ -1,7 +1,7 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over">
 
-    <mat-toolbar *ngIf="sidenav.mode != 'side'">
+    <mat-toolbar *ngIf="sidenav.mode != 'side'" color="primary">
       <div fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-icon-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
