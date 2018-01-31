@@ -9,7 +9,6 @@ import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login/Login';
 import {RouterModule, Routes} from '@angular/router';
 import {LoginService} from './services/LoginService';
-import {SearchBarComponent} from './widgets/SearchBar';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ChartsModule} from 'ng2-charts';
@@ -25,7 +24,6 @@ import {PartyService} from "./services/PartyService";
 import {CreatePartyComponent} from "./views/party/CreateParty";
 import {ViewPartyComponent} from "./views/party/ViewParty";
 import {QueueService} from "./services/QueueService";
-import {SongListItemComponent} from "./widgets/SongListItem";
 import {QueueListItemComponent} from "./widgets/QueueListItem";
 import {PartiesComponent} from "./views/party/Parties";
 import {UserAccountService} from "./services/UserAccountService";
@@ -46,11 +44,12 @@ import {PortalModule} from "@angular/cdk/portal";
 import {PartyChatComponent} from "./widgets/PartyChat";
 import {PartyQueueComponent} from "app/widgets/PartyQueue";
 import {SignUpComponent} from "./views/login/SignUp";
-import {YouTubeCardComponent} from "./widgets/YouTubeCard";
+import {SongCardComponent} from "./widgets/SongCard";
 import {ImageCropperModule} from "ngx-image-cropper";
 import {UploadImageModal} from "./widgets/UploadImageModal";
 import {ProfileComponent} from "./views/account/Profile";
 import {AccountMenuComponent} from "./widgets/AccountMenu";
+import {FavouriteService} from "./services/FavouriteService";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -69,11 +68,9 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    SearchBarComponent,
     CreatePartyComponent,
     ViewPartyComponent,
     DurationPipe,
-    SongListItemComponent,
     QueueListItemComponent,
     PartiesComponent,
     ManagePartyComponent,
@@ -86,7 +83,7 @@ const routes: Routes = [
     PartyChatComponent,
     PartyQueueComponent,
     SignUpComponent,
-    YouTubeCardComponent,
+    SongCardComponent,
     UploadImageModal,
     ProfileComponent,
     AccountMenuComponent
@@ -122,7 +119,8 @@ const routes: Routes = [
     SpotifyService,
     PartyService,
     QueueService,
-    YouTubeService
+    YouTubeService,
+    FavouriteService,
   ],
   entryComponents: [ManagePartyComponent, UploadImageModal],
   bootstrap: [AppComponent],

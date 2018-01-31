@@ -1,0 +1,18 @@
+.song-card {
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in;
+}
+
+.song-card:hover {
+  opacity: 1;
+}
+
+.artist {
+  font-weight: bold;
+}
+
+.delete-btn-container {
+  position: relative;
+  left: 20px;
+}

@@ -1,4 +1,7 @@
-import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from "@angular/core";
+import {
+  AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit,
+  ViewChild
+} from "@angular/core";
 import {UserAccount} from "../models/UserAccount";
 import {Party} from "../models/Party";
 import {ChatMessage} from "../models/ChatMessage";
@@ -17,7 +20,7 @@ import {Subscription} from "rxjs/Subscription";
   templateUrl: './PartyChat.html',
   styleUrls: ['./PartyChat.scss']
 })
-export class PartyChatComponent implements OnInit, OnDestroy {
+export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   formatMentionOption = (member: UserAccount) => {
     this.setLastMentionInputTime(Date.now());
@@ -27,8 +30,8 @@ export class PartyChatComponent implements OnInit, OnDestroy {
 
   @Input() party: Party;
   @Input() partyMembers: UserAccount[];
-  messages: ChatMessage[] = [];
 
+  messages: ChatMessage[] = [];
 
   @ViewChild("chatInput") chatInput: ElementRef;
 
@@ -53,8 +56,12 @@ export class PartyChatComponent implements OnInit, OnDestroy {
 
   chatSubscription: Subscription;
 
+  nowPlayingHeight = 0;
+  chatContentHeight = 0;
+
   constructor(private webSocketService: WebSocketService,
               private loginService: LoginService,
+              private cdRef: ChangeDetectorRef,
               private emojiPickerOptions: EmojiPickerOptions) {
     this.emojiPickerOptions.setEmojiSheet({
       url: 'sheet_apple_32.png',
@@ -102,7 +109,27 @@ export class PartyChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.chatSubscription.unsubscribe();
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewChecked(): void {
+    this.calculateHeight();
+  }
+
+  calculateHeight() {
+    const element = document.getElementById('app-now-playing-container');
+    const chatHeader = document.getElementById('app-chat-header');
+    const chatFooter = document.getElementById('app-chat-footer');
+    if (element != null) {
+      const newHeight = element.clientHeight;
+      if (newHeight !== this.nowPlayingHeight) {
+        this.nowPlayingHeight = newHeight;
+        this.chatContentHeight = this.nowPlayingHeight - (chatHeader.clientHeight + chatFooter.clientHeight) - 8; // 8 for padding
+        this.cdRef.detectChanges();
+      }
+    }
   }
 
   handleEmojiSelection(event: EmojiEvent) {

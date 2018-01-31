@@ -1,9 +1,9 @@
-<mat-card class="compact-card">
-  <mat-card-header>
+<mat-card class="compact-card chat-card" [style.height]="nowPlayingHeight + 'px'" [style.max-height]="nowPlayingHeight + 'px'">
+  <mat-card-header id="app-chat-header">
     <mat-icon mat-card-avatar>chat</mat-icon>
     <mat-card-title>Chat</mat-card-title>
   </mat-card-header>
-  <mat-card-content class="chat-container">
+  <mat-card-content class="chat-container" [style.height]="chatContentHeight + 'px'" [style.max-height]="chatContentHeight + 'px'">
     <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
       <div class="chat-msg-container" *ngFor="let message of messages">
         <!--<span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>-->
@@ -20,7 +20,7 @@
       </div>
     </div>
   </mat-card-content>
-  <mat-card-footer>
+  <mat-card-footer id="app-chat-footer">
     <div fxFlex="100">
       <mat-input-container fxFlex="76" class="chat-input" floatPlaceholder="never">
         <input matInput

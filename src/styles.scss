@@ -64,6 +64,10 @@ body {
     padding-top: 12px;
   }
 
+  /deep/ .mat-card-title {
+    margin-bottom: 8px;
+  }
+
  .no-pad {
     padding: 0;
   }

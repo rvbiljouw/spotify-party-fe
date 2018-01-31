@@ -6,7 +6,7 @@
 
 .now-playing-thumbnail {
   width: 250px;
-  height: 250px;
+  min-height: 100%;
   max-width: 250px;
   background-size: cover;
 }
@@ -59,7 +59,7 @@
 }
 
 .youtube-player {
-  min-height: 200px;
+  min-height: 100%;
   height: 40vh;
 }
 
@@ -85,6 +85,10 @@
   }
 }
 
+.now-playing-list-item {
+  padding: 0 8px !important;
+}
+
 @media (max-width: 496px) {
   .skip-btn {
     padding-left: 4px;
@@ -98,6 +102,10 @@
 
 .search-spinner {
   margin-top: 30vh;
+}
+
+.filter-container {
+  padding: 0 20px 0 0px;
 }
 
 .search-overlay {
@@ -150,4 +158,8 @@
 
 .nav-btn {
   margin-right: 0 !important;
+}
+
+.heart-icon {
+  color: #ff1c6d;
 }

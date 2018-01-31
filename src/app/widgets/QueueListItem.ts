@@ -1,9 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {QueueService, VoteRequest} from '../services/QueueService';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog} from '@angular/material';
 import { NotificationsService } from 'angular2-notifications';
 import {PartyQueueEntry} from "../models/PartyQueue";
+import {FavouriteSongRequest} from "../services/FavouriteService";
 
 @Component({
   selector: 'app-queue-list-item',
@@ -12,6 +13,12 @@ import {PartyQueueEntry} from "../models/PartyQueue";
 })
 export class QueueListItemComponent implements OnInit {
   @Input() entry: PartyQueueEntry;
+  @Input() isFavourited: boolean;
+  @Input() favouriting: boolean;
+  @Input() onFavourite: EventEmitter<PartyQueueEntry> = new EventEmitter();
+  @Input() canVote: boolean;
+
+  @Output() onVote: EventEmitter<VoteRequest> = new EventEmitter();
 
   constructor(private queueService: QueueService,
               private sanitizer: DomSanitizer,

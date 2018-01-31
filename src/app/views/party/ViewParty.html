@@ -77,22 +77,40 @@
               <mat-icon>exit_to_app</mat-icon>
               Quit party
             </button>
+            <ng-container *ngIf="loggedIn">
+              <mat-divider></mat-divider>
+
+              <button mat-menu-item [routerLink]="['/account']" routerLinkActive="active">
+                <mat-icon class="button-icon">account_circle</mat-icon>
+                Manage your account
+              </button>
+              <button mat-menu-item (click)="logout()">
+                <mat-icon class="button-icon">exit_to_app</mat-icon>
+                Log out
+              </button>
+            </ng-container>
           </mat-menu>
 
           <button fxHide.gt-sm="true" class="nav-btn" mat-icon-button [matMenuTriggerFor]="mobileMenu">
             <i class="fa fa-ellipsis-h"></i>
           </button>
-
-          <ng-container *ngIf="loggedIn">
-            <app-account-menu></app-account-menu>
-          </ng-container>
         </div>
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
 
   <ng-template cdkPortal #searchTemplate="cdkPortal">
-    <div class="search-overlay" *ngIf="searching">
+    <div class="search-overlay" fxLayout="column" *ngIf="searching">
+
+      <div class="filter-container">
+        <div style="float: right;">
+          <button mat-icon-button class="heart-icon" [disabled]="searchingSongs" (click)="setSearchFavourites(!searchingFavourites)">
+            <mat-icon matTooltip="Search all" *ngIf="searchingFavourites">favorite</mat-icon>
+            <mat-icon matTooltip="Only search in your favourites" *ngIf="!searchingFavourites">favorite_border
+            </mat-icon>
+          </button>
+        </div>
+      </div>
 
       <div fxFlex="100">
         <div class="search-spinner" *ngIf="searchingSongs" fxLayout="column" fxLayoutAlign="center center">
@@ -104,20 +122,14 @@
         </div>
 
         <div *ngIf="!searchingSongs">
-          <div>
-            <div fxLayout="row" *ngIf="party.type == 'SPOTIFY'">
-              <mat-list fxFlex="100" fxFlex.gt-md="50">
-                <app-song-list-item *ngFor="let item of songs.items" [song]="item"
-                                    [party]="party"
-                                    class="typical-list-item"></app-song-list-item>
-              </mat-list>
-
-            </div>
-
-            <div fxLayout="row" *ngIf="party.type == 'YOUTUBE'" fxLayoutAlign="row" fxLayoutWrap="true">
+          <div *ngIf="songs != null">
+            <div fxLayout="row" fxLayoutAlign="row" fxLayoutWrap="true">
               <div class="song-card" *ngFor="let item of songs.items" fxFlex="50" fxFlex.xs="50" fxFlex.sm="33"
                    fxFlex.md="25" fxFlex.lg="14" fxFlex.xl="14">
-                <app-youtube-card [party]="party" [song]="item"></app-youtube-card>
+                <app-song-card [party]="party"
+                                  [canDelete]="searchingFavourites"
+                                  (onDelete)="onFavouriteDelete($event)"
+                                  [song]="item"></app-song-card>
               </div>
             </div>
 
@@ -154,7 +166,7 @@
         <div fxLayout="row" fxLayoutWrap="true" *ngIf="party != null">
 
           <div fxFlex.gt-md="75" fxFlex="100" style="padding: 10px">
-            <mat-card class="compact-card">
+            <mat-card id="app-now-playing-container" class="compact-card">
               <mat-card-header>
                 <mat-card-title class="party-title-container">
                   <img *ngIf="partyType == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon"
@@ -178,16 +190,16 @@
 
                         <div fxFlex="100" fxFlex.gt-sm="40">
                           <mat-list *ngIf="queue.nowPlaying != null">
-                            <mat-list-item>
+                            <mat-list-item class="now-playing-list-item">
                               <mat-icon mat-list-icon>music_note</mat-icon>
                               <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
                               <p mat-line> {{ queue.nowPlaying.artist }}</p>
                             </mat-list-item>
-                            <mat-list-item *ngIf="queue.nowPlaying.member != null">
+                            <mat-list-item class="now-playing-list-item" *ngIf="queue.nowPlaying.member != null">
                               <mat-icon mat-list-icon>person</mat-icon>
                               <h4 mat-line>Requested by {{ queue.nowPlaying.member.displayName }}</h4>
                             </mat-list-item>
-                            <mat-list-item>
+                            <mat-list-item class="now-playing-list-item">
                               <mat-icon mat-list-icon>av_timer</mat-icon>
                               <div mat-line>
                                 <mat-progress-bar
@@ -197,22 +209,36 @@
                                 </mat-progress-bar>
                               </div>
                             </mat-list-item>
-                            <mat-list-item>
+                            <mat-list-item class="now-playing-list-item">
+                              <button mat-icon-button class="heart-icon" [disabled]="favouriting"
+                                      (click)="onSetFavourited(queue.nowPlaying)">
+                                <ng-container *ngIf="isFavourited(queue.nowPlaying.songId)">
+                                  <mat-icon>favorite</mat-icon>
+                                  Remove song from favourites
+                                </ng-container>
+                                <ng-container *ngIf="!isFavourited(queue.nowPlaying.songId)">
+                                  <mat-icon matTooltip="Add to favourites">favorite_border</mat-icon>
+                                  Add song to favourites
+                                </ng-container>
+                              </button>
+                            </mat-list-item>
+                            <mat-list-item class="now-playing-list-item">
                               <button class="skip-btn" mat-button color="accent"
                                       (click)="vote(queue.nowPlaying, false, true)">
                                 <mat-icon class="button-icon">skip_next</mat-icon>
                                 Vote to skip
                               </button>
                             </mat-list-item>
-                            <mat-list-item class="skip-msg-item">
+                            <mat-list-item class="skip-msg-item now-playing-list-item">
                               <p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
                             </mat-list-item>
                           </mat-list>
-                        </div>
-                      </div>
-                      <div *ngIf="queue == null || queue.nowPlaying == null">
-                        <div fxLayout="column" fxLayoutAlign="center center">
-                          <h3>Nothing is currently playing</h3>
+
+                          <div *ngIf="queue == null || queue.nowPlaying == null">
+                            <div fxLayout="row" fxLayoutAlign="center center">
+                              <h3>Nothing is currently playing</h3>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -226,10 +252,10 @@
                         <div class="now-playing-thumbnail"
                              [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
                              fxFlex="100"
-                             fxFlex.gt-sm="40"
+                             fxFlex.gt-sm="60"
                              *ngIf="party.type != 'YOUTUBE'">
                         </div>
-                        <div fxFlex="100" fxFlex.gt-sm="50">
+                        <div fxFlex="100" fxFlex.gt-sm="40">
                           <mat-list *ngIf="queue.nowPlaying != null">
                             <mat-list-item>
                               <mat-icon mat-list-icon>music_note</mat-icon>
@@ -249,6 +275,19 @@
                                   [value]="progress">
                                 </mat-progress-bar>
                               </div>
+                            </mat-list-item>
+                            <mat-list-item class="now-playing-list-item">
+                              <button mat-icon-button class="heart-icon" [disabled]="favouriting"
+                                      (click)="onSetFavourited(queue.nowPlaying)">
+                                <ng-container *ngIf="isFavourited(queue.nowPlaying.songId)">
+                                  <mat-icon>favorite</mat-icon>
+                                  Remove song from favourites
+                                </ng-container>
+                                <ng-container *ngIf="!isFavourited(queue.nowPlaying.songId)">
+                                  <mat-icon matTooltip="Add to favourites">favorite_border</mat-icon>
+                                  Add song to favourites
+                                </ng-container>
+                              </button>
                             </mat-list-item>
                             <mat-list-item>
                               <button class="skip-btn" mat-button color="accent"
@@ -282,7 +321,9 @@
 
         <div fxLayout="row">
           <div [@opacityInOut] fxFlex="100" style="padding: 10px;">
-            <app-party-queue [party]="party" [queue]="queue" [history]="history"></app-party-queue>
+            <app-party-queue [favourites]="favourites" [favouriting]="favouriting"
+                             (onFavourite)="onSetFavourited($event)"
+                             [party]="party" [queue]="queue" [history]="history"></app-party-queue>
           </div>
         </div>
       </div>

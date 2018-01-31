@@ -1,0 +1,16 @@
+<mat-card class="song-card" fxFlex="100" [style.padding-bottom]="canDelete ? '0' : '12px'">
+  <img mat-card-image class="card-image" [src]="getThumbnail(false)" (click)="play()">
+  <mat-card-content>
+    <div (click)="play()">
+      <span class="truncated artist">{{ song.artist }} - {{ song.title }}</span>
+      <span class="truncated" *ngIf="song.uploadedBy != null">Uploaded by {{song.uploadedBy}}</span>
+      <span class="truncated" *ngIf="song.album != null">{{song.album}}</span>
+    </div>
+
+    <div fxLayoutAlign="end" *ngIf="canDelete" class="delete-btn-container">
+      <button mat-icon-button (click)="onDelete.emit(song)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

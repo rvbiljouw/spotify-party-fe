@@ -13,8 +13,9 @@ import {ObservableMedia} from "@angular/flex-layout";
 export class AppComponent {
 
   notificationOptions = {
-    position: ["top", "right"],
+    position: ["top", "center"],
     timeOut: 3000,
+    lastOnBottom: false,
     theClass: "notification",
     showProgressBar: true,
     pauseOnHover: true,

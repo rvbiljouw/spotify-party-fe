@@ -55,18 +55,22 @@ export class QueueService {
 }
 
 export class QueueSongRequest {
+  songId: string;
   artist: string;
   title: string;
   thumbnail: string;
   uri: string;
+  uploadedBy: string;
   duration: number;
 
   static forSong(song: Song) {
     let req = new QueueSongRequest();
+    req.songId = song.id;
     req.artist = song.artist;
     req.title = song.title;
     req.thumbnail = song.thumbnail;
     req.uri = song.uri;
+    req.uploadedBy = song.uploadedBy;
     req.duration = song.duration;
     return req;
   }

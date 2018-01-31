@@ -44,13 +44,24 @@
                     <mat-icon>thumb_down</mat-icon>
                     <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
                   </button>
+
+                  <button mat-icon-button class="heart-icon" [disabled]="favouriting" (click)="onFavourite.emit(entry)">
+                    <mat-icon matTooltip="Remove from favourites" *ngIf="isFavourited(entry)">favorite</mat-icon>
+                    <mat-icon matTooltip="Add to favourites" *ngIf="!isFavourited(entry)">favorite_border</mat-icon>
+                  </button>
                 </div>
               </td>
             </tr>
           </table>
 
           <mat-list fxHide="false" fxHide.gt-sm="true">
-            <app-queue-list-item [entry]="entry" *ngFor="let entry of queue.entries"></app-queue-list-item>
+            <app-queue-list-item [entry]="entry"
+                                 [favouriting]="favouriting"
+                                 [isFavourited]="favourites.get(entry.songId) != null"
+                                 [onFavourite]="onFavourite"
+                                 [canVote]="true"
+                                 (onVote)="onVote($event)"
+                                 *ngFor="let entry of queue.entries"></app-queue-list-item>
           </mat-list>
         </div>
       </mat-tab>
@@ -62,7 +73,9 @@
             <h3>No history available</h3>
           </div>
 
-          <table class="full-width" *ngIf="history.items.length > 0">
+          <table class="full-width" *ngIf="history.items.length > 0"
+                 fxShow="false"
+                 fxShow.gt-sm="true">
             <thead>
             <tr>
               <th class="column-header">Song</th>
@@ -93,11 +106,26 @@
                     <mat-icon>thumb_down</mat-icon>
                     <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
                   </button>
+
+                  <button mat-icon-button class="heart-icon" [disabled]="favouriting" (click)="onFavourite.emit(entry)">
+                    <mat-icon matTooltip="Remove from favourites" *ngIf="isFavourited(entry)">favorite</mat-icon>
+                    <mat-icon matTooltip="Add to favourites" *ngIf="!isFavourited(entry)">favorite_border</mat-icon>
+                  </button>
                 </div>
               </td>
             </tr>
             </tbody>
           </table>
+
+          <mat-list fxHide="false" fxHide.gt-sm="true">
+            <app-queue-list-item [entry]="entry"
+                                 [favouriting]="favouriting"
+                                 [isFavourited]="favourites.get(entry.songId) != null"
+                                 [onFavourite]="onFavourite"
+                                 [canVote]="false"
+                                 (onVote)="onVote($event)"
+                                 *ngFor="let entry of history.items"></app-queue-list-item>
+          </mat-list>
         </div>
       </mat-tab>
     </mat-tab-group>

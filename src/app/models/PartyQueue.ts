@@ -11,10 +11,12 @@ export class PartyQueueEntry {
   id: number;
   party: Party;
   member: UserAccount;
+  songId: string;
   artist: string;
   title: string;
   thumbnail: string;
   uri: string;
+  uploadedBy: string;
   votes: number;
   upvotes: number;
   downvotes: number;

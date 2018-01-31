@@ -1,21 +1,22 @@
 <mat-list-item class="typical-list-item">
   <div fxLayout="row" fxLayoutGap="10px">
-    <button mat-icon-button color="primary" (click)="vote(true, false)">
+    <button mat-icon-button color="primary" [disabled]="!canVote" (click)="vote(true, false)">
       <mat-icon>thumb_up</mat-icon>
       <span style="position: relative; top: 2px; left: 4px">
                 {{entry.upvotes}}
               </span>
     </button>
 
-    <button mat-icon-button color="danger" (click)="vote(false, false)">
+    <button mat-icon-button color="danger" [disabled]="!canVote" (click)="vote(false, false)">
       <mat-icon>thumb_down</mat-icon>
       <span style="position: relative; top: 2px; left: 4px">
                 {{entry.downvotes}}
               </span>
     </button>
 
-    <button mat-icon-button (click)="favorite()">
-      <mat-icon>favorite</mat-icon>
+    <button mat-icon-button class="heart-icon" [disabled]="favouriting" (click)="onFavourite.emit(entry)">
+      <mat-icon matTooltip="Remove from favourites" *ngIf="isFavourited">favorite</mat-icon>
+      <mat-icon matTooltip="Add to favourites" *ngIf="!isFavourited">favorite_border</mat-icon>
     </button>
   </div>
 

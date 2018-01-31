@@ -1,21 +1,26 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, EventEmitter, Output} from '@angular/core';
 import {QueueService, QueueSongRequest} from '../services/QueueService';
 import {DomSanitizer} from '@angular/platform-browser';
 import {NotificationsService} from 'angular2-notifications';
 import {Song} from "../models/Song";
 import {Party} from "../models/Party";
+import {FavouriteService} from "../services/FavouriteService";
 
 @Component({
-  selector: 'app-youtube-card',
-  templateUrl: './YouTubeCard.html',
-  styleUrls: ['./YouTubeCard.scss'],
+  selector: 'app-song-card',
+  templateUrl: './SongCard.html',
+  styleUrls: ['./SongCard.scss'],
 })
-export class YouTubeCardComponent implements OnInit {
+export class SongCardComponent implements OnInit {
   @Input() song: Song;
   @Input() party: Party;
+  @Input() canDelete = false;
+
+  @Output() onDelete: EventEmitter<Song> = new EventEmitter();
 
   constructor(private queueService: QueueService,
               private sanitizer: DomSanitizer,
+              private favouriteService: FavouriteService,
               private notificationsService: NotificationsService) {
   }
 
@@ -44,5 +49,4 @@ export class YouTubeCardComponent implements OnInit {
       return this.sanitizer.bypassSecurityTrustResourceUrl(thumbnail);
     }
   }
-
 }

@@ -56,6 +56,7 @@ export class ApiService<T> {
         `${this.apiBase}${this
           .resource}/search?limit=${limit}&offset=${offset}`,
         filters,
+        {withCredentials: true}
       )
       .map(result => {
         const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
@@ -73,7 +74,7 @@ export class ApiService<T> {
 
   create(request: ICreateRequest<T>): Observable<T> {
     return this.http
-      .post(`${this.apiBase}${this.resource}`, request)
+      .post(`${this.apiBase}${this.resource}`, request, {withCredentials: true})
       .map(result => {
         return result.json() as T;
       })
@@ -89,7 +90,7 @@ export class ApiService<T> {
     }
 
     return this.http
-      .put(url, request)
+      .put(url, request, {withCredentials: true})
       .map(result => {
         return result.json() as T;
       })
@@ -105,7 +106,7 @@ export class ApiService<T> {
     }
 
     return this.http
-      .delete(url)
+      .delete(url, {withCredentials: true})
       .map(result => {
         return result.json().success;
       })
@@ -137,7 +138,8 @@ export type FilterType =
   | 'LESS_THAN'
   | 'GREATER_THAN_EQ'
   | 'LESS_THAN_EQ'
-  | 'QUERY';
+  | 'QUERY'
+  | 'IN';
 
 export const FilterType = {
   NOT_EQUALS: 'NOT_EQUALS' as FilterType,
@@ -151,7 +153,8 @@ export const FilterType = {
   LESS_THAN_EQ: 'LESS_THAN_EQ' as FilterType,
   AND: 'AND' as FilterType,
   OR: 'OR' as FilterType,
-  QUERY: 'QUERY' as FilterType
+  QUERY: 'QUERY' as FilterType,
+  IN: 'IN' as FilterType,
 };
 
 export class Filter {

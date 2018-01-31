@@ -1,4 +1,7 @@
-import {Component, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
@@ -25,11 +28,14 @@ import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist";
 import {EmojiPickerAppleSheetLocator} from "angular2-emoji-picker/lib-dist/sheets/sheet_apple_map";
 import {SpotifyDevice} from "app/models/SpotifyDevice";
 import {SpotifyService} from "../../services/SpotifyService";
-import {SearchBarComponent} from "../../widgets/SearchBar";
 import {YouTubeService} from "../../services/YouTubeService";
 import {Song} from "../../models/Song";
 import {Overlay, OverlayConfig, OverlayRef} from "@angular/cdk/overlay";
 import {CdkPortal} from "@angular/cdk/portal";
+import {FavouriteService, FavouriteSongRequest} from "../../services/FavouriteService";
+import {FavouriteSong, SongType} from "../../models/FavouriteSong";
+import {Observable} from "rxjs/Observable";
+import {PartyChatComponent} from "../../widgets/PartyChat";
 
 
 @Component({
@@ -54,8 +60,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   showNoSpotify: boolean = false;
 
   @ViewChild(YoutubePlayerComponent) youtubeFrame: YoutubePlayerComponent;
-
-  @ViewChild("searchBar") searchBar: SearchBarComponent;
 
   partyType: string = "SPOTIFY";
 
@@ -84,6 +88,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   songsLimit = 20;
   songsOffset = 0;
   searchingSongs = false;
+  searchingFavourites = false;
 
   @ViewChild('searchTemplate') searchTemplate: CdkPortal;
   searchOverlayRef: OverlayRef;
@@ -91,6 +96,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   socketSubscription: Subscription;
   viewChat: boolean = true;
 
+  favourites = new Map<string, FavouriteSong>();
+  favouriting: boolean;
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -98,6 +105,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private queueService: QueueService,
               private route: ActivatedRoute,
               private sanitizer: DomSanitizer,
+              private favouriteService: FavouriteService,
               private webSocketService: WebSocketService,
               private loginService: LoginService,
               private dialog: MatDialog,
@@ -167,29 +175,36 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       .debounceTime(400)
       .distinctUntilChanged()
       .subscribe(term => {
-        if (term.length > 0) {
-          this.searching = true;
-          this.setSongsPage({limit: this.songsLimit, offset: 0});
-        }
+        this.searching = true;
+        this.setSongsPage({limit: this.songsLimit, offset: 0});
       });
   }
 
+  setSearchFavourites(searchingFavourites: boolean) {
+    this.searchingFavourites = searchingFavourites;
+
+    this.setSongsPage({limit: this.songsLimit, offset: 0})
+  }
 
   setSongsPage(nextPage: any) {
     this.searchingSongs = true;
 
-    if (this.party.type == 'SPOTIFY') {
-
+    if (this.searchingFavourites) {
       const filters: Array<Filter> = [
         new Filter(FilterType.OR, null, null, [
-          new Filter(FilterType.STARTS_WITH, 'ARTIST', this.searchTerm.value),
-          new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value),
-        ])
+          new Filter(FilterType.STARTS_WITH, 'artist', this.searchTerm.value),
+          new Filter(FilterType.STARTS_WITH, 'title', this.searchTerm.value),
+        ]),
+        new Filter(FilterType.EQUALS, 'type', this.party.type),
       ];
 
-      this.spotifyService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+      this.favouriteService.search(filters, nextPage.limit, nextPage.offset).subscribe(
         result => {
-          this.songs = result;
+          this.songs = new ListResponse(result.items.map(favouriteSong =>
+            new Song(favouriteSong.songId, favouriteSong.artist, favouriteSong.title,
+              favouriteSong.album, favouriteSong.uri, favouriteSong.thumbnail, favouriteSong.duration,
+              favouriteSong.uploadedBy)
+          ), result.maxRecords, result.offset);
           this.searchingSongs = false;
         },
         err => {
@@ -198,23 +213,45 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
           this.notificationsService.error('Unable to search songs');
         },
       );
-    } else if (this.party.type == 'YOUTUBE') {
+    } else {
 
-      const filters: Array<Filter> = [
-        new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value)
-      ];
+      if (this.party.type == 'SPOTIFY') {
+        const filters: Array<Filter> = [
+          new Filter(FilterType.OR, null, null, [
+            new Filter(FilterType.STARTS_WITH, 'ARTIST', this.searchTerm.value),
+            new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value),
+          ]),
+        ];
 
-      this.youtubeService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
-        result => {
-          this.songs = result;
-          this.searchingSongs = false;
-        },
-        err => {
-          console.log(err);
-          this.searchingSongs = false;
-          this.notificationsService.error('Unable to search songs');
-        },
-      );
+        this.spotifyService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+          result => {
+            this.songs = result;
+            this.searchingSongs = false;
+          },
+          err => {
+            console.log(err);
+            this.searchingSongs = false;
+            this.notificationsService.error('Unable to search songs');
+          },
+        );
+      } else if (this.party.type == 'YOUTUBE') {
+
+        const filters: Array<Filter> = [
+          new Filter(FilterType.STARTS_WITH, 'TRACK', this.searchTerm.value)
+        ];
+
+        this.youtubeService.searchSongs(filters, nextPage.limit, nextPage.offset).subscribe(
+          result => {
+            this.songs = result;
+            this.searchingSongs = false;
+          },
+          err => {
+            console.log(err);
+            this.searchingSongs = false;
+            this.notificationsService.error('Unable to search songs');
+          },
+        );
+      }
     }
   }
 
@@ -325,7 +362,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       this.refresh();
 
       this.socketSubscription = this.webSocketService.input.subscribe((next) => {
-        if(next == null) {
+        if (next == null) {
           return;
         }
 
@@ -387,12 +424,22 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   private refresh() {
     if (this.party != null && (this.partyType === 'YOUTUBE' || this.account.hasSpotify)) {
-      this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
-        this.history = res;
-      });
 
       this.queueService.getQueue(this.party).subscribe(res => {
         this.queue = res;
+
+        this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
+          this.history = res;
+
+          this.updateFavourites(
+            [].concat(
+              this.history.items.map(entry => entry.songId),
+              this.queue.entries.map(entry => entry.songId),
+              this.queue.nowPlaying != null ? [this.queue.nowPlaying.songId] : []
+            )
+            , true);
+        });
+
         if (this.queue != null) {
           const nowPlaying = this.queue.nowPlaying;
           if (nowPlaying != null) {
@@ -482,12 +529,111 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         .global()
         .width("100%")
         .height((window.innerHeight - 70) + "px")
-        .top("68px");
+        .top("64px");
 
       let config = new OverlayConfig({positionStrategy: strategy});
       this.searchOverlayRef = this.overlay.create(config);
       this.searchOverlayRef.attach(this.searchTemplate);
     }
+  }
+
+  updateFavourites(songIds: string[], deleteFromMap: boolean): Observable<ListResponse<FavouriteSong>> {
+    if (songIds != null && songIds.length > 0) {
+      const result = this.favouriteService.search(
+        [new Filter(FilterType.IN, "songId", songIds)]
+      );
+
+      result.subscribe(res => {
+        songIds.forEach(songId => {
+          const favouriteSong = res.items.find(favourite => favourite.songId === songId);
+
+          this.favourites.set(songId, favouriteSong);
+        });
+
+        if (deleteFromMap) {
+          let toDelete = [];
+          this.favourites.forEach((_, songId) => {
+            if (songIds.find(reqSongId => reqSongId === songId) == null) {
+              toDelete = toDelete.concat([songId]);
+            }
+          });
+
+          toDelete.forEach(songId => this.favourites.delete(songId));
+        }
+      });
+
+      return result;
+    }
+
+    return Observable.of(new ListResponse([], 0, 0));
+  }
+
+  onFavouriteDelete(song: Song) {
+    const favourited = this.isFavourited(song.id);
+
+    const req = new FavouriteSongRequest(this.party.type as SongType, song.id, song.artist,
+      song.title, song.uri, song.thumbnail, song.duration, song.thumbnail, song.uploadedBy);
+
+    this.setFavourited(favourited, req);
+  }
+
+  onSetFavourited(entry: PartyQueueEntry) {
+    const favourited = this.isFavourited(entry.songId);
+
+    const req = new FavouriteSongRequest(this.party.type as SongType, entry.songId, entry.artist,
+      entry.title, entry.uri, entry.thumbnail, entry.duration, entry.thumbnail, entry.uploadedBy);
+
+    this.setFavourited(favourited, req);
+  }
+
+  setFavourited(favourited: boolean, req: FavouriteSongRequest) {
+    this.favouriting = true;
+    let result = null;
+    if (!favourited) {
+      result = this.favouriteService.favouriteSong(req);
+    } else {
+      const favouriteSong = this.favourites.get(req.songId);
+      if (favouriteSong != null) {
+        result = this.favouriteService.delete(favouriteSong.id);
+      } else {
+        this.notificationsService.info("Song not in favourites");
+      }
+    }
+
+    result.subscribe(res => {
+      this.favouriting = false;
+
+      this.updateFavourites([req.songId], false).subscribe(res => {
+        if (favourited) {
+          this.notificationsService.success("Song removed from favourites");
+        } else {
+          this.notificationsService.success("Song added to favourites");
+        }
+
+        if (this.searching) {
+          this.setSongsPage({limit: this.songsLimit, offset: this.songsOffset});
+        }
+      });
+    }, err => {
+      console.log(err);
+      this.favouriting = false;
+
+      this.updateFavourites([req.songId], false).subscribe(res => {
+        if (favourited) {
+          this.notificationsService.info("Unable to remove song from favourites");
+        } else {
+          this.notificationsService.error("Unable to add song to favourites");
+        }
+
+        if (this.searching) {
+          this.setSongsPage({limit: this.songsLimit, offset: this.songsOffset});
+        }
+      });
+    });
+  }
+
+  isFavourited(songId: string): boolean {
+    return this.favourites.get(songId) != null;
   }
 
 }
