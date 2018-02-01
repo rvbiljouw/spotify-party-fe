@@ -1,9 +1,18 @@
 @import 'CompactCard';
 
+.chat-title {
+  margin-bottom :0;
+}
+
 .chat-header {
   margin-top: 10px;
   font-size: 16px;
   margin-bottom: 10px;
+}
+
+.chat-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .chat-input {

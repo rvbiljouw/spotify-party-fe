@@ -1,9 +1,13 @@
-<mat-card class="compact-card chat-card" [style.height]="nowPlayingHeight + 'px'" [style.max-height]="nowPlayingHeight + 'px'">
-  <mat-card-header id="app-chat-header">
-    <mat-icon mat-card-avatar>chat</mat-icon>
-    <mat-card-title>Chat</mat-card-title>
+<mat-card class="compact-card chat-card" [style.height]="nowPlayingHeight + 'px'"
+          [style.max-height]="nowPlayingHeight + 'px'">
+  <mat-card-header id="app-chat-header" fxLayoutAlign="start center">
+    <mat-card-title fxLayoutAlign="start center" class="chat-title">
+      <mat-icon class="party-icon button-icon">chat</mat-icon>
+      <span>Chat</span>
+    </mat-card-title>
   </mat-card-header>
-  <mat-card-content class="chat-container" [style.height]="chatContentHeight + 'px'" [style.max-height]="chatContentHeight + 'px'">
+  <mat-card-content class="chat-container" [style.height]="chatContentHeight + 'px'"
+                    [style.max-height]="chatContentHeight + 'px'">
     <div style="overflow-y: scroll;  height: 100%;" #chatContainer [scrollTop]="chatContainer.scrollHeight">
       <div class="chat-msg-container" *ngFor="let message of messages">
         <!--<span style="font-size: 13px;">{{ message.timestamp | date: 'hh:mm:ss' }}</span>-->
@@ -36,7 +40,7 @@
                #chatInput>
       </mat-input-container>
 
-      <button fxFlex="12" mat-icon-button class="emoji-btn"  (click)="emojiPickerToggled = !emojiPickerToggled"
+      <button fxFlex="12" mat-icon-button class="emoji-btn" (click)="emojiPickerToggled = !emojiPickerToggled"
               [(emojiPickerIf)]="emojiPickerToggled"
               [emojiPickerDirection]="'bottom'"
               [emojiPickerPreserveSelection]="true"
@@ -45,7 +49,7 @@
         <mat-icon>face</mat-icon>
       </button>
 
-      <button fxFlex="12" mat-icon-button class="chat-btn"   (click)="sendChatMessage(null)">
+      <button fxFlex="12" mat-icon-button class="chat-btn" (click)="sendChatMessage(null)">
         <mat-icon>send</mat-icon>
       </button>
 
