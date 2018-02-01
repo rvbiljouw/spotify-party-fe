@@ -17,7 +17,7 @@ export const AccountType = {
 export class UserAccount {
   id: number;
   accountType: AccountType;
-  achievments: Achievment[];
+  achievements: Achievment[];
   email: string;
   displayName: string;
   displayPicture: string;

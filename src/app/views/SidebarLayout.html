@@ -35,10 +35,10 @@
 
       <li *ngIf="account != null" class="header">YOUR PARTIES</li>
       <li *ngFor="let party of sortedParties()">
-        <button mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
+        <button fxFlex="100" fxLayout="column" mat-button [routerLink]="['/party', party.id]" routerLinkActive="active">
           <img [src]="getPartyIcon(party)" class="button-icon sidebar-party-icon" alt="party">
-          {{ party.name }}
-          <span *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id"
+          <span fxFlex="70" class="party-name">{{ party.name }}</span>
+          <span fxFlex="20" *ngIf="parties.activeSpotifyParty != null && parties.activeSpotifyParty.id == party.id"
                 class="active-chip">ACTIVE</span>
         </button>
       </li>

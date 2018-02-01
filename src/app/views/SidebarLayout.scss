@@ -117,3 +117,9 @@ mat-sidenav ul {
   right: 0;
   bottom: 0;
 }
+
+.party-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

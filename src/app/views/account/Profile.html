@@ -16,20 +16,19 @@
     </div>
   </mat-toolbar>
 
-  <div style="padding: 20px;" fxLayoutAlign="center" *ngIf="account != null">
+  <div class="content" fxLayoutAlign="center" *ngIf="account != null">
 
-    <div fxFlex="100" fxFlex.lt-sm="75" fxFlex.gt-md="50">
+    <div fxFlex.gt-md="75" fxFlex.gt-sm="90" fxFlex="100" style="padding: 10px">
 
       <div fxLayout="row">
-
         <div class="account-header" fxLayoutAlign="start center" fxFlex="80">
           <div class="display-picture" fxLayoutAlign="center center"
                [style.background-image]="getBackgroundImage(account.displayPicture)">
           </div>
           <div class="header-text">
             <h2 class="display-name">{{ account.displayName }}</h2>
-            <p class="bio">{{ account.bio || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi aliquet
-              tortor ac turpis faucibus sagittis."}}</p>
+            <p class="bio">{{ account.bio != null ? account.bio : account.displayName + " hasn't shared their
+              information yet :(" }}</p>
           </div>
         </div>
 
@@ -47,10 +46,10 @@
           <h3>Achievements</h3>
 
           <div fxLayout="row">
-            <div class="achievement" *ngFor="let achievement of achievements">
+            <div class="achievement" *ngFor="let achievement of account.achievements">
               <div fxLayoutAlign="center">
                 <div class="medal mat-elevation-z9"
-                     [style.background-image]="getBackgroundImage(achievement.image)"
+                     [style.background-image]="getBackgroundImage(achievement.badgeUrl)"
                      matTooltip="{{achievement.description}}" matTooltipPosition="after"></div>
               </div>
               <div fxLayoutAlign="center">
@@ -63,20 +62,37 @@
 
       <div fxLayout="row">
 
-        <div class="activity" fxFlex="100">
-          <h3>Recent activity</h3>
+        <div class="parties" fxFlex="100">
+          <h3>Parties</h3>
 
-          <mat-card>
-            <mat-card-content>
-              <mat-list>
-                <mat-list-item>
-                  <mat-icon mat-list-icon>person</mat-icon>
-                  <h1 mat-line>Did something</h1>
-                  <p mat-line>11/11/18 00:00:00</p>
-                </mat-list-item>
-              </mat-list>
-            </mat-card-content>
-          </mat-card>
+          <div class="search-spinner" *ngIf="loadingParties" fxLayout="column" fxLayoutAlign="center center">
+            <mat-progress-spinner
+              class="in-progress"
+              color="primary"
+              mode="indeterminate">
+            </mat-progress-spinner>
+          </div>
+
+          <div *ngIf="!loadingParties && parties != null && parties.maxRecords > 0"
+               fxLayout="row" fxLayoutWrap="true">
+            <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                 *ngFor="let party of parties.items">
+              <app-party-card [party]="party"></app-party-card>
+            </div>
+
+            <div *ngIf="parties.maxRecords >= partiesLimit" fxFlex="100" fxFlex.gt-md="50">
+              <mat-paginator [length]="parties.maxRecords"
+                             [pageIndex]="partiesPageNumber"
+                             [pageSize]="partiesLimit"
+                             style="background: none;"
+                             [pageSizeOptions]="pageSizeOptions"
+                             (page)="onPartiesPageEvent($event)">
+              </mat-paginator>
+            </div>
+          </div>
+          <div *ngIf="parties != null && parties.maxRecords == 0">
+            <h4>{{account.displayName}} hasn't created any parties</h4>
+          </div>
         </div>
       </div>
 

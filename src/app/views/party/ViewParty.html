@@ -45,7 +45,7 @@
           </button>
 
           <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="openSettings()"
-                  matTooltip="Party settings" matTooltipPosition="below">
+                  matTooltip="Party settings" matTooltipPosition="below" *ngIf="canAdmin()">
             <mat-icon>settings</mat-icon>
           </button>
 
@@ -251,11 +251,11 @@
                       <div fxLayout="row" fxLayoutWrap="true">
                         <div class="now-playing-thumbnail"
                              [style.background-image]="getArtistThumbnail(queue.nowPlaying, true)"
-                             fxFlex="100"
                              fxFlex.gt-sm="60"
+                             fxFlex="100"
                              *ngIf="party.type != 'YOUTUBE'">
                         </div>
-                        <div fxFlex="100" fxFlex.gt-sm="40">
+                        <div fxFlex.gt-sm="40" fxFlex="100">
                           <mat-list *ngIf="queue.nowPlaying != null">
                             <mat-list-item>
                               <mat-icon mat-list-icon>music_note</mat-icon>
@@ -314,7 +314,7 @@
             </mat-card>
           </div>
 
-          <div fxFlex="100" fxFlex.gt-md="25" style="padding: 10px" *ngIf="viewChat">
+          <div fxFlex.gt-md="25" fxFlex="100" style="padding: 10px" *ngIf="viewChat">
             <app-party-chat [party]="party" [partyMembers]="partyMembers"></app-party-chat>
           </div>
         </div>

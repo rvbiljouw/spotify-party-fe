@@ -6,6 +6,5 @@
 export const environment = {
   apiHost: 'http://localhost:8080',
   wsHost: 'ws://localhost:8080',
-  proxyHost: 'http://sample2.forwarder-service.munamana.com',
   production: false,
 };

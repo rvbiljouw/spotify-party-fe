@@ -18,7 +18,7 @@ import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 import {Subscription} from "rxjs/Subscription";
 import {ManagePartyComponent} from "./ManageParty";
 import {LoginService} from "../../services/LoginService";
-import {UserAccount} from "../../models/UserAccount";
+import {AccountType, UserAccount} from "../../models/UserAccount";
 import {Filter, FilterType, ListResponse} from "../../services/ApiService";
 import {YoutubePlayerComponent} from "../../widgets/YoutubePlayer";
 import {MediaChange, ObservableMedia} from "@angular/flex-layout";
@@ -633,8 +633,18 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     });
   }
 
+  canAdmin() {
+    return this.party.owner.id == this.account.id ||
+      this.account.accountType === AccountType.STAFF;
+  }
+
   isFavourited(songId: string): boolean {
     return this.favourites.get(songId) != null;
+  }
+
+  logout() {
+    this.loginService.logout();
+    this.router.navigateByUrl('/');
   }
 
 }

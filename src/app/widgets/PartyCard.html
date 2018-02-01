@@ -1,17 +1,17 @@
 <mat-card class="compact-card party-card" [@fadeTrigger] (click)="join()">
   <mat-card-header>
-    <mat-card-title><span class="truncated">{{party.name}}</span></mat-card-title>
+    <mat-card-title><span class="truncated title">{{party.name}}</span></mat-card-title>
   </mat-card-header>
   <mat-card-content class="no-pad">
     <div class="party-thumbnail" [style.background-image]="getBackground(party)"></div>
     <div class="party-details">
 
       <div class="now-playing truncated" *ngIf="party.nowPlaying != null">
-        <span class="bold">{{ party.nowPlaying.title}}</span>
+        <span class="now-playing-title">{{ party.nowPlaying.title}}</span>
       </div>
 
       <div class="now-playing truncated" *ngIf="party.nowPlaying != null">
-        {{ party.nowPlaying.artist }}
+        <span class="artist">{{ party.nowPlaying.artist }}</span>
       </div>
 
       <div class="now-playing truncated" *ngIf="party.nowPlaying ==null">

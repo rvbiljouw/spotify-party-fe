@@ -55,21 +55,21 @@ export class PartyService {
   }
 
   getMostPopular(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
-    return this.search(this.endpoint, [new Filter(FilterType.EQUALS, "type", type, [])],
+    return this.search([new Filter(FilterType.EQUALS, "type", type, [])],
       limit, offset, {sort: "activeMemberCount", order: "desc"});
   }
 
   getNew(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
-    return this.search(this.endpoint, [new Filter(FilterType.EQUALS, "type", type, [])],
+    return this.search([new Filter(FilterType.EQUALS, "type", type, [])],
       limit, offset, {sort: "created", order: "desc"});
   }
 
   getParties(limit: number, offset: number, filters: Array<Filter> = []): Observable<ListResponse<Party>> {
-    return this.search(this.endpoint, filters, limit, offset);
+    return this.search(filters, limit, offset);
   }
 
   searchAllMyParties(limit: number, offset: number, type: string, name: string, account: UserAccount): Observable<ListResponse<Party>> {
-    return this.search(this.endpoint, [
+    return this.search([
         new Filter(FilterType.EQUALS, "type", type, []),
         new Filter(FilterType.CONTAINS, "name", name, []),
         new Filter(FilterType.EQUALS, "members.account.id", account.id, []),
@@ -93,8 +93,7 @@ export class PartyService {
       });
   }
 
-  search(url: string,
-         filters: Array<Filter>,
+  search(filters: Array<Filter>,
          limit: number = 10,
          offset: number = 0,
          params: any = {}): Observable<ListResponse<Party>> {
@@ -105,7 +104,7 @@ export class PartyService {
     queryParams += `limit=${limit}&offset=${offset}`;
 
     return this.http
-      .post(`${url}?${queryParams}`, filters, {withCredentials: true})
+      .post(`${this.endpoint}?${queryParams}`, filters, {withCredentials: true})
       .map(result => {
         const maxRecords = Number.parseInt(result.headers.get('X-Max-Records'));
         const offset = Number.parseInt(result.headers.get('X-Offset'));

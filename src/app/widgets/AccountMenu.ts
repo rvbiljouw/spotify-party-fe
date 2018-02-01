@@ -32,5 +32,4 @@ export class AccountMenuComponent implements OnInit, OnDestroy {
     this.loginService.logout();
     window.location.reload(true);
   }
-
 }
