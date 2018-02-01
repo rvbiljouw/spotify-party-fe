@@ -23,7 +23,7 @@ cd docker
 
 mkdir ./tmp
 
-cp -r ../dist/* ./tmp
+cp -r ../dist/browser/* ./tmp
 
 gcloud docker -- build -t "${GCP_REGISTRY}/${GCP_PROJECT_ID}/${PROJECT}:${VERSION}" \
     --build-arg project=${PROJECT} \
