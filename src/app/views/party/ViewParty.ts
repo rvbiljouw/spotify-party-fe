@@ -521,10 +521,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   setSearching(searching: boolean) {
     const body = document.getElementsByTagName('body')[0];
-    this.searching = searching;
-    if (!searching) {
+    if (!searching && this.searchOverlayRef != null) {
       this.searchOverlayRef.detach();
-    } else {
+      this.searching = false;
+    } else if (searching && !this.searching) { // ceck its not already pen
       let strategy = this.overlay.position()
         .global()
         .width("100%")
@@ -534,6 +534,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       let config = new OverlayConfig({positionStrategy: strategy});
       this.searchOverlayRef = this.overlay.create(config);
       this.searchOverlayRef.attach(this.searchTemplate);
+      this.searching = true;
     }
   }
 

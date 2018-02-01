@@ -1,7 +1,7 @@
 import {MatButtonModule, MatIconModule, MatIconRegistry, MatNativeDateModule,} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {ErrorHandler, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
@@ -12,7 +12,6 @@ import {LoginService} from './services/LoginService';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ChartsModule} from 'ng2-charts';
-import {DropzoneModule} from 'ngx-dropzone-wrapper';
 
 
 import 'hammerjs';
@@ -96,19 +95,19 @@ const routes: Routes = [
     MatButtonModule,
     BrowserAnimationsModule,
     MaterialModule,
-    BrowserModule,
+    // BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
     ChartsModule,
-    DropzoneModule.forRoot({}),
     RouterModule.forRoot(routes, {useHash: true}),
     MatIconModule,
     EmojifyModule,
     SimpleNotificationsModule.forRoot(),
     MentionModule,
     EmojiPickerModule.forRoot(),
-    ImageCropperModule
+    ImageCropperModule,
+    BrowserModule.withServerTransition({appId: 'awsumio'})
   ],
   providers: [
     LoginService,

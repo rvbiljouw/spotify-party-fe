@@ -51,18 +51,10 @@
       <mat-list>
         <mat-list-item *ngFor="let member of party.members">
           <mat-icon mat-list-icon>person</mat-icon>
-          <p mat-line>{{member.displayName}}</p>
+          <p mat-line>{{member.account.displayName}}</p>
           <button mat-raised-button color="primary" (click)="kick(member)">Kick</button>
         </mat-list-item>
       </mat-list>
-    </mat-tab>
-    <mat-tab label="Background">
-      <div class="upload-area">
-        <dropzone [config]="config"
-                  [message]="'Drag content onto this area or click to upload your local content file(s).'"
-                  (error)="onUploadError($event)"
-                  (success)="onUploadSuccess($event)"></dropzone>
-      </div>
     </mat-tab>
   </mat-tab-group>
   <hr/>

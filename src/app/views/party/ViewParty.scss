@@ -145,7 +145,7 @@
 }
 
 .party-title-container {
-  display:flex;
+  display: flex;
   align-items: center;
 }
 
@@ -162,4 +162,24 @@
 
 .heart-icon {
   color: #ff1c6d;
+}
+
+.search-field {
+
+  & {
+    background-color: rgba(0, 0, 0, .12);
+    border-radius: 2px;
+    padding: 2.5px;
+    padding-left: 5px;
+    padding-right: 10px;
+  }
+
+  .search-input {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .mat-form-field-wrapper {
+    padding: 0;
+  }
 }

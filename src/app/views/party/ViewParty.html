@@ -13,18 +13,17 @@
         </div>
 
         <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
-          <button mat-icon-button class="nav-btn" (click)="setSearching(true)" #searchOrigin cdk-overlay-origin
-                  matTooltip="Search for songs to add" matTooltipPosition="below">
-            <mat-icon>search</mat-icon>
-          </button>
-          <ng-container *ngIf="searching">
-            <mat-input-container>
-              <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false">
-            </mat-input-container>
-            <button mat-icon-button (click)="setSearching(false)">
-              <mat-icon class="button-icon">close</mat-icon>
+          <div class="search-field" fxLayoutAlign="start center">
+            <mat-icon matPrefix matTooltip="Search for songs to add" matTooltipPosition="below" class="search-icon">search</mat-icon>
+            <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false"
+                   (ngModelChange)="setSearching(searchTerm.value.length > 0)" class="search-input">
+            <button mat-icon-button (click)="searchTerm.setValue('')" class="close-button">
+              <mat-icon>close</mat-icon>
             </button>
-          </ng-container>
+          </div>
+          <!--<ng-container *ngIf="searching">-->
+          <!---->
+          <!--</ng-container>-->
 
           <mat-menu #deviceMenu="matMenu" yPosition="below" [overlapTrigger]="false">
             <button mat-menu-item *ngFor="let device of spotifyDevices" (click)="changeDevice(device)">
@@ -104,7 +103,8 @@
 
       <div class="filter-container">
         <div style="float: right;">
-          <button mat-icon-button class="heart-icon" [disabled]="searchingSongs" (click)="setSearchFavourites(!searchingFavourites)">
+          <button mat-icon-button class="heart-icon" [disabled]="searchingSongs"
+                  (click)="setSearchFavourites(!searchingFavourites)">
             <mat-icon matTooltip="Search all" *ngIf="searchingFavourites">favorite</mat-icon>
             <mat-icon matTooltip="Only search in your favourites" *ngIf="!searchingFavourites">favorite_border
             </mat-icon>
@@ -127,9 +127,9 @@
               <div class="song-card" *ngFor="let item of songs.items" fxFlex="50" fxFlex.xs="50" fxFlex.sm="33"
                    fxFlex.md="25" fxFlex.lg="14" fxFlex.xl="14">
                 <app-song-card [party]="party"
-                                  [canDelete]="searchingFavourites"
-                                  (onDelete)="onFavouriteDelete($event)"
-                                  [song]="item"></app-song-card>
+                               [canDelete]="searchingFavourites"
+                               (onDelete)="onFavouriteDelete($event)"
+                               [song]="item"></app-song-card>
               </div>
             </div>
 

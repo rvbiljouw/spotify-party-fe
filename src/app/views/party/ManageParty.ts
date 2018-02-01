@@ -1,7 +1,6 @@
 import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {environment} from "../../../environments/environment";
-import {DropzoneConfigInterface} from "ngx-dropzone-wrapper";
 import { NotificationsService } from 'angular2-notifications';
 import {Party} from "../../models/Party";
 import {UserAccount} from "../../models/UserAccount";
@@ -14,16 +13,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   styleUrls: ['ManageParty.scss']
 })
 export class ManagePartyComponent {
-  config: DropzoneConfigInterface = {
-    url: `${environment.apiHost}/api/v1/party/`,
-    maxFilesize: 50,
-    acceptedFiles: 'image/jpeg,image/png',
-    headers: {},
-    autoReset: 0,
-    createImageThumbnails: false,
-    withCredentials: true
-  };
-
   partyForm: FormGroup;
   party: Party;
   accessTypeOptions: Array<any> = [{
@@ -40,7 +29,6 @@ export class ManagePartyComponent {
               private partyService: PartyService,
               private fb: FormBuilder,
               @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.config.url = `${environment.apiHost}/api/v1/party/${data.party.id}/background`;
     this.party = data.party;
     this.partyForm = fb.group({
       name: fb.control(this.party.name, [Validators.required]),

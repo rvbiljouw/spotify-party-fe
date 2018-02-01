@@ -3,6 +3,7 @@ import {routerTransition} from "../utils/Animations";
 import {MatDialogRef} from "@angular/material";
 import {LoginService} from "../services/LoginService";
 import {UserAccount} from "../models/UserAccount";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-account-menu',
@@ -14,7 +15,8 @@ import {UserAccount} from "../models/UserAccount";
 export class AccountMenuComponent implements OnInit, OnDestroy {
   account: UserAccount;
 
-  constructor(private loginService: LoginService) {
+  constructor(private loginService: LoginService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -24,6 +26,11 @@ export class AccountMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+  }
+
+  logout() {
+    this.loginService.logout();
+    window.location.reload(true);
   }
 
 }
