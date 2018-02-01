@@ -41,58 +41,60 @@
       </div>
 
       <div fxLayout="row">
-
-        <div class="achievements" fxFlex="100">
-          <h3>Achievements</h3>
-
-          <div fxLayout="row">
-            <div class="achievement" *ngFor="let achievement of account.achievements">
-              <div fxLayoutAlign="center">
-                <div class="medal mat-elevation-z9"
-                     [style.background-image]="getBackgroundImage(achievement.badgeUrl)"
-                     matTooltip="{{achievement.description}}" matTooltipPosition="after"></div>
+        <div fxFlex="100">
+          <mat-tab-group>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                Parties
+              </ng-template>
+              <div class="search-spinner" *ngIf="loadingParties" fxLayout="column" fxLayoutAlign="center center">
+                <mat-progress-spinner
+                  class="in-progress"
+                  color="primary"
+                  mode="indeterminate">
+                </mat-progress-spinner>
               </div>
-              <div fxLayoutAlign="center">
-                <span class="name">{{ achievement.name }}</span>
+
+              <div *ngIf="!loadingParties && parties != null && parties.maxRecords > 0"
+                   fxLayout="row" fxLayoutWrap="true">
+                <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                     *ngFor="let party of parties.items">
+                  <app-party-card [party]="party"></app-party-card>
+                </div>
+
+                <div *ngIf="parties.maxRecords >= partiesLimit" fxFlex="100" fxFlex.gt-md="50">
+                  <mat-paginator [length]="parties.maxRecords"
+                                 [pageIndex]="partiesPageNumber"
+                                 [pageSize]="partiesLimit"
+                                 style="background: none;"
+                                 [pageSizeOptions]="pageSizeOptions"
+                                 (page)="onPartiesPageEvent($event)">
+                  </mat-paginator>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              <div *ngIf="parties != null && parties.maxRecords == 0">
+                <h4>{{account.displayName}} hasn't created any parties</h4>
+              </div>
+            </mat-tab>
 
-      <div fxLayout="row">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                Achievements
+              </ng-template>
 
-        <div class="parties" fxFlex="100">
-          <h3>Parties</h3>
+              <div class="achievement" *ngFor="let achievement of account.achievements">
+                <div fxLayoutAlign="center">
+                  <div class="medal mat-elevation-z9"
+                       [style.background-image]="getBackgroundImage(achievement.badgeUrl)"
+                       matTooltip="{{achievement.description}}" matTooltipPosition="after"></div>
+                </div>
+                <div fxLayoutAlign="center">
+                  <span class="name">{{ achievement.name }}</span>
+                </div>
+              </div>
+            </mat-tab>
 
-          <div class="search-spinner" *ngIf="loadingParties" fxLayout="column" fxLayoutAlign="center center">
-            <mat-progress-spinner
-              class="in-progress"
-              color="primary"
-              mode="indeterminate">
-            </mat-progress-spinner>
-          </div>
-
-          <div *ngIf="!loadingParties && parties != null && parties.maxRecords > 0"
-               fxLayout="row" fxLayoutWrap="true">
-            <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                 *ngFor="let party of parties.items">
-              <app-party-card [party]="party"></app-party-card>
-            </div>
-
-            <div *ngIf="parties.maxRecords >= partiesLimit" fxFlex="100" fxFlex.gt-md="50">
-              <mat-paginator [length]="parties.maxRecords"
-                             [pageIndex]="partiesPageNumber"
-                             [pageSize]="partiesLimit"
-                             style="background: none;"
-                             [pageSizeOptions]="pageSizeOptions"
-                             (page)="onPartiesPageEvent($event)">
-              </mat-paginator>
-            </div>
-          </div>
-          <div *ngIf="parties != null && parties.maxRecords == 0">
-            <h4>{{account.displayName}} hasn't created any parties</h4>
-          </div>
+          </mat-tab-group>
         </div>
       </div>
 
