@@ -49,6 +49,7 @@ import {UploadImageModal} from "./widgets/UploadImageModal";
 import {ProfileComponent} from "./views/account/Profile";
 import {AccountMenuComponent} from "./widgets/AccountMenu";
 import {FavouriteService} from "./services/FavouriteService";
+import {AccountCardComponent} from "./widgets/AccountCard";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -74,6 +75,7 @@ const routes: Routes = [
     PartiesComponent,
     ManagePartyComponent,
     SidebarLayoutComponent,
+    AccountCardComponent,
     LandingComponent,
     PartyCardComponent,
     YoutubePlayerComponent,

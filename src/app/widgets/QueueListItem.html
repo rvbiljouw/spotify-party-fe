@@ -31,8 +31,8 @@
     {{ entry.artist }}
     </span>
 
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
-Added by {{ entry.member.displayName }}
+  <span fxHide.gt-sm="true" class="clickable" [routerLink]="['/profiles/', entry.member.id]" mat-line style="font-size: 11px;">
+    Added by {{ entry.member.displayName }}
   </span>
 
 
@@ -40,5 +40,5 @@ Added by {{ entry.member.displayName }}
     {{ entry.artist }} - {{ entry.title }}
   </h4>
 
-  <p mat-line fxHide.lt-md="true">Added by {{ entry.member.displayName }}</p>
+  <p mat-line fxHide.lt-md="true" class="clickable" [routerLink]="['/profiles/', entry.member.id]">Added by {{ entry.member.displayName }}</p>
 </mat-list-item>

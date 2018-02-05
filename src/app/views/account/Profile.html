@@ -33,9 +33,13 @@
         </div>
 
         <div class="account-actions" fxFlex="20" fxLayoutAlign="end center">
-          <button mat-raised-button color="primary">
+          <button [disabled]="working" *ngIf="!isFollowing" mat-raised-button color="primary" (click)="follow()">
             <mat-icon>person_add</mat-icon>
             Follow
+          </button>
+          <button [disabled]="working" *ngIf="isFollowing" mat-raised-button color="primary" (click)="unfollow()">
+            <mat-icon>person</mat-icon>
+            Unfollow
           </button>
         </div>
       </div>
@@ -47,6 +51,8 @@
               <ng-template mat-tab-label>
                 Parties
               </ng-template>
+
+              <div class="tab-container">
               <div class="search-spinner" *ngIf="loadingParties" fxLayout="column" fxLayoutAlign="center center">
                 <mat-progress-spinner
                   class="in-progress"
@@ -75,6 +81,7 @@
               <div *ngIf="parties != null && parties.maxRecords == 0">
                 <h4>{{account.displayName}} hasn't created any parties</h4>
               </div>
+              </div>
             </mat-tab>
 
             <mat-tab>
@@ -82,6 +89,7 @@
                 Achievements
               </ng-template>
 
+              <div class="tab-container">
               <div class="achievement" *ngFor="let achievement of account.achievements">
                 <div fxLayoutAlign="center">
                   <div class="medal mat-elevation-z9"
@@ -90,6 +98,43 @@
                 </div>
                 <div fxLayoutAlign="center">
                   <span class="name">{{ achievement.name }}</span>
+                </div>
+              </div>
+            </div>
+            </mat-tab>
+
+            <mat-tab>
+              <ng-template mat-tab-label>
+                Followers {{followers != null ? "(" + followers.maxRecords + ")" : "" }}
+              </ng-template>
+              <div class="tab-container">
+                <div class="search-spinner" *ngIf="loadingFollowers" fxLayout="column" fxLayoutAlign="center center">
+                  <mat-progress-spinner
+                    class="in-progress"
+                    color="primary"
+                    mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+
+                <div *ngIf="!loadingFollowers && followers != null && followers.maxRecords > 0"
+                     fxLayout="row" fxLayoutWrap="true">
+                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
+                       *ngFor="let follower of followers.items">
+                    <app-account-card [account]="follower"></app-account-card>
+                  </div>
+
+                  <div *ngIf="followers.maxRecords >= followersLimit" fxFlex="100" fxFlex.gt-md="50">
+                    <mat-paginator [length]="followers.maxRecords"
+                                   [pageIndex]="followersPageNumber"
+                                   [pageSize]="followersLimit"
+                                   style="background: none;"
+                                   [pageSizeOptions]="pageSizeOptions"
+                                   (page)="onFollowersPageEvent($event)">
+                    </mat-paginator>
+                  </div>
+                </div>
+                <div *ngIf="parties != null && parties.maxRecords == 0">
+                  <h4>{{account.displayName}} doesn't have any followers</h4>
                 </div>
               </div>
             </mat-tab>

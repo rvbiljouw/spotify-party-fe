@@ -1,0 +1,10 @@
+<mat-card class="compact-card account-card" [@fadeTrigger] [routerLink]="['/profiles/', account.id]">
+  <mat-card-header>
+    <mat-card-title><span class="truncated title">{{account.displayName}}</span></mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="no-pad">
+    <div fxLayoutAlign="center center" class="account-thumbnail" [style.background-image]="getBackgroundImage(account.displayPicture)">
+      <mat-icon *ngIf="account.displayPicture == null" class="placeholder-icon">person</mat-icon>
+    </div>
+  </mat-card-content>
+</mat-card>

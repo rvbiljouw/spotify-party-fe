@@ -30,7 +30,9 @@
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
                   <mat-icon mat-list-icon class="user-thumbnail"
                             [style.background-image]="getBackgroundImage(entry.member.displayPicture)"></mat-icon>
-                  <span>{{ entry.member.displayName }}</span>
+                  <span
+                    class="clickable"
+                    [routerLink]="['/profiles/', entry.member.id]">{{ entry.member.displayName }}</span>
                 </div>
               </td>
               <td>
@@ -94,7 +96,10 @@
                 </div>
               </td>
               <td>{{entry.artist }}</td>
-              <td>{{ entry.member.displayName }}</td>
+              <td><span
+                class="clickable"
+                [routerLink]="['/profiles/', entry.member.id]">{{ entry.member.displayName }}</span>
+              </td>
               <td>
                 <div fxLayout="row" fxLayoutGap="10px">
                   <button mat-icon-button color="primary" disabled>

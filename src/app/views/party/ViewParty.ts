@@ -634,8 +634,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   canAdmin() {
-    return this.party.owner.id == this.account.id ||
-      this.account.accountType === AccountType.STAFF;
+    return this.party != null && this.party.owner != null && this.account != null && (this.party.owner.id == this.account.id ||
+      this.account.accountType === AccountType.STAFF);
   }
 
   isFavourited(songId: string): boolean {
