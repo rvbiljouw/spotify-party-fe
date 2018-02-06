@@ -367,7 +367,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         }
 
         const wsMessage = JSON.parse(next.data) as WSMessage;
-        console.log(wsMessage);
         switch (wsMessage.opcode) {
           case "AUTH":
             const success = wsMessage.body === 'true';
@@ -411,7 +410,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.partyService.getById(this.party.id).subscribe(party => {
       this.loginService.account.subscribe(acc => {
         this.account = acc;
-        this.admin = party.owner.id == acc.id;
+        this.admin = party.owner != null && party.owner.id == acc.id;
         this.showNoSpotify = party.type == 'SPOTIFY' && !acc.hasSpotify
       });
 
