@@ -60,4 +60,12 @@ export class QueueListItemComponent implements OnInit {
 
   }
 
+  formatEntryTitle(entry: PartyQueueEntry) {
+    return this.sanitize(`${entry.artist} - ${entry.title}`);
+  }
+
+  sanitize(word: string) {
+    return this.sanitizer.bypassSecurityTrustHtml(word);
+  }
+
 }

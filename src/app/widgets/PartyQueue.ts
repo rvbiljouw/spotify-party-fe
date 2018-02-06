@@ -81,4 +81,12 @@ export class PartyQueueComponent implements OnInit, OnDestroy {
   isFavourited(entry: PartyQueueEntry): boolean {
     return this.favourites.get(entry.songId) != null;
   }
+
+  formatEntryTitle(entry: PartyQueueEntry) {
+    return this.sanitize(`${entry.artist} - ${entry.title}`);
+  }
+
+  sanitize(word: string) {
+    return this.sanitizer.bypassSecurityTrustHtml(word);
+  }
 }

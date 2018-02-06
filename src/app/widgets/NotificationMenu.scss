@@ -1,0 +1,41 @@
+.notification-icon {
+  background-color: #fa3e3e;
+  border-radius: 2px;
+  color: white;
+
+  padding: 1px 3px;
+  font-size: 10px;
+
+  height: 10px;
+  position: relative;
+  bottom: 8px;
+  right: 12px;
+}
+
+.notification-item {
+  font-size: 12px;
+  padding: 4px;
+}
+
+.thumbnail {
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  border-radius: 50%;
+  background-color: #dedede;
+
+  border: 1px solid #333;
+  background-position: center;
+}
+
+.text-container {
+  padding: 0 4px 0 4px;
+  line-height: 10px;
+}
+.notification-text {
+}
+
+.wrap {
+  white-space: normal;
+}

@@ -1,0 +1,23 @@
+<mat-menu #notificationsMenu="matMenu" yPosition="below" [overlapTrigger]="false">
+  <div class="notification-item" mat-menu-item
+       fxLayout="row"
+       *ngFor="let notification of notifications.items != null ? notifications.items : []">
+    <div class="thumbnail"
+         fxLayoutAlign="center center"
+         [style.background-image]="getBackgroundImage(notification.interactingAccount)">
+    </div>
+    <div fxLayout="column" class="text-container" fxLayoutAlign="center">
+      <p>
+        <span class="bold notification-text wrap">{{ notification.interactingAccount.displayName }}: </span><span> {{ notification.text }}</span>
+      </p>
+      <span fxLayoutAlign="start" class="notification-date wrap">{{ formatDate(notification) }}</span>
+    </div>
+  </div>
+</mat-menu>
+
+<button mat-icon-button [matMenuTriggerFor]="notificationsMenu">
+  <mat-icon>event_note</mat-icon>
+  <span class="notification-icon" *ngIf="notifications.maxRecords > 0">
+    {{notifications.maxRecords > 99 ? "99+" : notifications.maxRecords}}
+  </span>
+</button>

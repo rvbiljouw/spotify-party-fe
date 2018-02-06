@@ -23,12 +23,10 @@
   <mat-icon mat-list-icon class="artist-thumbnail"
             [style.background-image]="getArtistThumbnail(true)"></mat-icon>
 
-  <span fxHide.gt-sm="true" mat-line style="font-size: 12px; font-weight: bold;">
-    {{ entry.title }}
+  <span fxHide.gt-sm="true" mat-line style="font-size: 12px; font-weight: bold;" [innerHTML]="sanitize(entry.title)">
   </span>
 
-  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;">
-    {{ entry.artist }}
+  <span fxHide.gt-sm="true" mat-line style="font-size: 11px;" [innerHTML]="sanitize(entry.artist)">
     </span>
 
   <span fxHide.gt-sm="true" class="clickable" [routerLink]="['/profiles/', entry.member.id]" mat-line style="font-size: 11px;">
@@ -36,8 +34,7 @@
   </span>
 
 
-  <h4 mat-line fxHide.lt-md="true">
-    {{ entry.artist }} - {{ entry.title }}
+  <h4 mat-line fxHide.lt-md="true" [innerHTML]="formatEntryTitle(entry)">
   </h4>
 
   <p mat-line fxHide.lt-md="true" class="clickable" [routerLink]="['/profiles/', entry.member.id]">Added by {{ entry.member.displayName }}</p>

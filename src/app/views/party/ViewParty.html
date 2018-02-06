@@ -192,8 +192,8 @@
                           <mat-list *ngIf="queue.nowPlaying != null">
                             <mat-list-item class="now-playing-list-item">
                               <mat-icon mat-list-icon>music_note</mat-icon>
-                              <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
-                              <p mat-line> {{ queue.nowPlaying.artist }}</p>
+                              <h4 mat-line [innerHTML]="sanitize(queue.nowPlaying.title)"></h4>
+                              <p mat-line [innerHTML]="sanitize(queue.nowPlaying.artist)"></p>
                             </mat-list-item>
                             <mat-list-item class="now-playing-list-item" *ngIf="queue.nowPlaying.member != null">
                               <mat-icon mat-list-icon>person</mat-icon>
@@ -259,8 +259,8 @@
                           <mat-list *ngIf="queue.nowPlaying != null">
                             <mat-list-item>
                               <mat-icon mat-list-icon>music_note</mat-icon>
-                              <h4 mat-line> {{ queue.nowPlaying.title }}</h4>
-                              <p mat-line> {{ queue.nowPlaying.artist }}</p>
+                              <h4 mat-line [innerHTML]="sanitize(queue.nowPlaying.title)"></h4>
+                              <p mat-line [innerHTML]="sanitize(queue.nowPlaying.artist)"></p>
                             </mat-list-item>
                             <mat-list-item *ngIf="queue.nowPlaying.member != null">
                               <mat-icon mat-list-icon>person</mat-icon>

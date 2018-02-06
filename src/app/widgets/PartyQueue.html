@@ -23,7 +23,7 @@
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
                   <mat-icon mat-list-icon class="artist-thumbnail"
                             [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                  <span>{{entry.artist }} - {{ entry.title }}</span>
+                  <span [innerHTML]="formatEntryTitle(entry)"></span>
                 </div>
               </td>
               <td>
@@ -92,10 +92,10 @@
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
                   <mat-icon mat-list-icon class="artist-thumbnail"
                             [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
-                  <span>{{ entry.title }}</span>
+                  <span [innerHTML]="sanitize(entry.title)"></span>
                 </div>
               </td>
-              <td>{{entry.artist }}</td>
+              <td [innerHTML]="sanitize(entry.artist)"></td>
               <td><span
                 class="clickable"
                 [routerLink]="['/profiles/', entry.member.id]">{{ entry.member.displayName }}</span>

@@ -50,6 +50,8 @@ import {ProfileComponent} from "./views/account/Profile";
 import {AccountMenuComponent} from "./widgets/AccountMenu";
 import {FavouriteService} from "./services/FavouriteService";
 import {AccountCardComponent} from "./widgets/AccountCard";
+import {UserNotificationService} from "./services/UserNotificationService";
+import {NotificationMenuComponent} from "./widgets/NotificationMenu";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -81,6 +83,7 @@ const routes: Routes = [
     YoutubePlayerComponent,
     MyAccountComponent,
     MyPartiesComponent,
+    NotificationMenuComponent,
     PartyChatComponent,
     PartyQueueComponent,
     SignUpComponent,
@@ -115,6 +118,7 @@ const routes: Routes = [
     LoginService,
     WebSocketService,
     UserAccountService,
+    UserNotificationService,
     AuthGuard,
     MatIconRegistry,
     SpotifyService,

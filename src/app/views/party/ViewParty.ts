@@ -1,5 +1,5 @@
 import {
-  AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild,
+  AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit, SecurityContext, ViewChild,
   ViewContainerRef
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -453,7 +453,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     }
   }
 
-
   getArtistThumbnail(entry: PartyQueueEntry, style: boolean) {
     let thumbnail = 'http://via.placeholder.com/400x400';
     if (entry != null && entry.thumbnail) {
@@ -644,6 +643,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   logout() {
     this.loginService.logout();
     this.router.navigateByUrl('/');
+  }
+
+  sanitize(word: string) {
+    return this.sanitizer.bypassSecurityTrustHtml(word);
   }
 
 }
