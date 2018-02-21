@@ -4,7 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  apiHost: 'https://api.awsum.io',
-  wsHost: 'wss://api.awsum.io',
+  apiHost: 'http://localhost:8080',
+  wsHost: 'ws://localhost:8080',
   production: false,
 };

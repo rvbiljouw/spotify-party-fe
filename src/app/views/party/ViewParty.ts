@@ -267,6 +267,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.refreshTimer.unsubscribe();
     this.progressTimer.unsubscribe();
     this.socketSubscription.unsubscribe();
+    if(this.searchOverlayRef != null) {
+      this.searchOverlayRef.detach();
+    }
+    this.searching = false;
     this.resetParty();
     console.log("Destroyed");
   }
@@ -632,7 +636,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   canAdmin() {
-    return this.party != null && this.party.owner != null && this.account != null && (this.party.owner.id == this.account.id ||
+    return this.party != null && (this.party.owner.id == this.account.id ||
       this.account.accountType === AccountType.STAFF);
   }
 
