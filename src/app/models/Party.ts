@@ -1,6 +1,7 @@
 import {UserAccount} from "./UserAccount";
 import {PartyQueueEntry} from "./PartyQueue";
 import {PartyMember} from "./PartyMember";
+import {Genre} from "./Genre";
 
 export class Party {
   /*
@@ -26,4 +27,10 @@ export class Party {
   created: Date;
   updated: Date;
   access: string;
+  genres: Array<Genre>;
+}
+
+export class PartyListItem {
+  party: Party;
+  idx: number;
 }

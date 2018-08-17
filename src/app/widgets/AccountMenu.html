@@ -1,6 +1,9 @@
-<button mat-button [matMenuTriggerFor]="menu">
+<button mat-button [matMenuTriggerFor]="menu" fxHide.xs="true" fxHide.sm="true" fxHide.md="true">
   <mat-icon>person</mat-icon>
   {{ account.displayName }}
+</button>
+<button mat-icon-button [matMenuTriggerFor]="menu" fxHide.gt-md="true">
+  <mat-icon>person</mat-icon>
 </button>
 <mat-menu #menu="matMenu" y-position="below" [overlapTrigger]="false">
   <ng-container *ngIf="account != null">

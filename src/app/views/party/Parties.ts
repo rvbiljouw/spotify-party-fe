@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FormBuilder, FormControl,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import { NotificationsService } from 'angular2-notifications';
+import {NotificationsService} from 'angular2-notifications';
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
 import {PartyQueue} from "../../models/PartyQueue";
@@ -12,6 +12,7 @@ import {UserAccount} from "../../models/UserAccount";
 import {LoginService} from "../../services/LoginService";
 import {PartyList} from "../../models/PartyList";
 import {DomSanitizer} from "@angular/platform-browser";
+import {MediaChange, ObservableMedia} from "@angular/flex-layout";
 
 @Component({
   selector: 'parties',
@@ -29,22 +30,32 @@ export class PartiesComponent implements OnInit {
 
   searchTerm = new FormControl('', []);
   searching: boolean;
+  partyType: string = "YOUTUBE";
   searchResults: ListResponse<Party>;
   loggedIn: boolean;
 
   selectedTab = 0;
 
+  isMobileView: boolean = false;
+
   constructor(private router: Router,
               private partyService: PartyService,
-              private notificationsService: NotificationsService ,
+              private notificationsService: NotificationsService,
               private queueService: QueueService,
               private loginService: LoginService,
               private domSanitizer: DomSanitizer,
               private route: ActivatedRoute,
+              private media: ObservableMedia,
               fb: FormBuilder) {
   }
 
   ngOnInit() {
+    this.isMobileView = this.media.isActive('xs') || this.media.isActive('sm');
+
+    this.media.subscribe((change: MediaChange) => {
+      this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
+    });
+
     this.loginService.account.subscribe(acc => {
       this.account = acc;
       this.loggedIn = acc != null;
@@ -77,32 +88,28 @@ export class PartiesComponent implements OnInit {
       .subscribe(term => {
         if (term.length > 0) {
           this.searching = true;
-
-          let spotifyFilters = [
-            new Filter(FilterType.CONTAINS, "name", term),
-            new Filter(FilterType.EQUALS, "type", "SPOTIFY")
-          ];
-          this.partyService.getParties(this.limit, this.offset, spotifyFilters).subscribe(result => {
-            this.spotifyGroup.searchResults = result;
-          });
-
-          let youtubeFilters = [
-            new Filter(FilterType.CONTAINS, "name", term),
-            new Filter(FilterType.EQUALS, "type", "YOUTUBE")
-          ];
-          this.partyService.getParties(this.limit, this.offset, youtubeFilters).subscribe(result => {
-            this.youtubeGroup.searchResults = result;
-          });
+          this.search();
         }
       });
+    this.search();
   }
 
-  setActiveParty(party: Party) {
-    this.partyService.joinParty(party.id).subscribe(res => {
-      this.notificationsService.info('Joined party ' + party.name);
-      this.router.navigate(['party', party.id]);
-    }, err => {
-      this.notificationsService.error('Couldn\'t join party - please try again later.');
+  search() {
+
+    let spotifyFilters = [
+      new Filter(FilterType.CONTAINS, "name", this.searchTerm.value),
+      new Filter(FilterType.EQUALS, "type", "SPOTIFY")
+    ];
+    this.partyService.getParties(this.limit, this.offset, spotifyFilters).subscribe(result => {
+      this.spotifyGroup.searchResults = result;
+    });
+
+    let youtubeFilters = [
+      new Filter(FilterType.CONTAINS, "name", this.searchTerm.value),
+      new Filter(FilterType.EQUALS, "type", "YOUTUBE")
+    ];
+    this.partyService.getParties(this.limit, this.offset, youtubeFilters).subscribe(result => {
+      this.youtubeGroup.searchResults = result;
     });
   }
 
@@ -114,6 +121,11 @@ export class PartiesComponent implements OnInit {
     this.partyService.getNew(this.limit, this.offset, type).subscribe(res => {
       group.newParties = res;
     });
+  }
+
+  onPartyTypeChanged(type: string) {
+    this.partyType = type;
+    this.search();
   }
 
   getState() {

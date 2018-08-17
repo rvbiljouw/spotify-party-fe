@@ -3,34 +3,58 @@ import {Http} from '@angular/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
-import {LoginToken, UserAccount} from '../models/UserAccount';
+import {UserAccount} from '../models/UserAccount';
+import {CookieService} from "ngx-cookie-service";
+import {LoginToken} from "../models/LoginToken";
+import {DefaultRequestOptions} from "../utils/DefaultRequestOptions";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 
 @Injectable()
 export class LoginService {
   private endpoint = `${environment.apiHost}/api/v1/account`;
   account: BehaviorSubject<UserAccount> = new BehaviorSubject(null);
+  token: BehaviorSubject<LoginToken> = new BehaviorSubject(null);
 
-  constructor(private http: Http) {
-    const tokenEntry = window.localStorage.getItem('account');
+  constructor(private http: Http,
+              private cookieService: CookieService,
+              private router: Router,
+              private route: ActivatedRoute) {
+    const tokenEntry = cookieService.get('token');
+    console.log("TOKEN: " + tokenEntry);
     if (tokenEntry != null) {
       try {
-        this.setAccount(JSON.parse(window.localStorage.getItem('account')));
+        let token = JSON.parse(tokenEntry);
+        this.setToken(token);
       } catch (e) {
-        this.setAccount(null);
+        this.setToken(null);
       }
     }
 
-    this.validate().subscribe(res => {
+    router.events.subscribe(res => {
+      if (!(res instanceof NavigationEnd)) {
+        return;
+      }
+
+      this.route.queryParams.subscribe(params => {
+        let loginToken = params["loginToken"];
+        if (loginToken) {
+          DefaultRequestOptions.token = {token: loginToken} as LoginToken;
+          this.validate().subscribe(res => {
+          });
+        }
+      });
     });
   }
 
   validate(): Observable<boolean> {
     return this.http
-      .get(this.endpoint, {withCredentials: true}).map(res => {
-        this.setAccount(res.json() as UserAccount);
+      .get(`${environment.apiHost}/api/v1/login`).map(res => {
+        console.log(res);
+        this.setToken(res.json() as LoginToken);
         return true;
       }).catch((err: any) => {
-        this.setAccount(null);
+        console.log(err);
+        this.setToken(null);
         return Observable.of(false);
       });
   }
@@ -40,6 +64,8 @@ export class LoginService {
       email: email,
       password: password
     }, {withCredentials: true}).map(res => {
+      console.log(res);
+      this.setToken(res.json() as LoginToken);
       return res.json() as LoginToken;
     });
   }
@@ -51,20 +77,22 @@ export class LoginService {
   }
 
   logout() {
-    console.log(document.cookie);
-    document.cookie.split(";").forEach((c) => {
-      console.log(c);
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    this.setAccount(null);
+    this.setToken(null);
   }
 
-  setAccount(account: UserAccount) {
-    if (account != null) {
-      window.localStorage.setItem('account', JSON.stringify(account));
+  setToken(token: LoginToken) {
+    if (token != null) {
+      this.cookieService.set('token', JSON.stringify(token));
     } else {
-      window.localStorage.clear();
+      this.cookieService.deleteAll();
     }
-    this.account.next(account);
+
+    this.token.next(token);
+    if (token != null) {
+      DefaultRequestOptions.token = token;
+      this.account.next(token.account);
+    } else {
+      this.account.next(null);
+    }
   }
 }

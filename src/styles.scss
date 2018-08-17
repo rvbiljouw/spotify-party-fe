@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Roboto:100,300,400,500,700,900');
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Roboto:100,300,400,500,700');
 @import '~font-awesome/css/font-awesome.css';
-@import '~@angular/material/prebuilt-themes/purple-green.css';
+//@import '~@angular/material/prebuilt-themes/purple-green.css';
 @import '~@angular/material/theming';
+@import '~normalize.css/normalize.css';
 
 body {
   margin: 0;
@@ -31,12 +31,13 @@ body {
 }
 
 .button-icon {
+  display: inline-block;
   margin-right: 10px;
 }
 
 .scroll-locked {
   overflow: hidden !important;
-  position:fixed !important;
+  position: fixed !important;
 }
 
 .navbar {
@@ -92,4 +93,45 @@ a {
 
 .clickable {
   cursor: pointer;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.youtube-icon {
+  background: url('/assets/youtube.png') no-repeat;
+  //background-position: center;
+  background-size: cover;
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.youtube-icon-disabled {
+  opacity: 0.3;
+}
+
+.spotify-icon {
+  background: url('/assets/spotify.png') no-repeat;
+  //background-position: center;
+  background-size: cover;
+
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.spotify-icon-disabled {
+  opacity: 0.3;
 }

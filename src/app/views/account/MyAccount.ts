@@ -110,7 +110,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     this.spotifyService.getDevices().subscribe(devices => {
       this.spotifyDevices = devices;
     }, err => {
-      console.log(err);
     });
   }
 
@@ -124,7 +123,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
           this.notificationsService.success("Account updated");
         },
         err => {
-          console.log(err);
           this.updating = false;
           this.notificationsService.error("Unable to update account");
         },
@@ -141,7 +139,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
           this.notificationsService.success("Account updated");
         },
         err => {
-          console.log(err);
           this.updating = false;
           this.notificationsService.error("Unable to update account");
         },
@@ -149,7 +146,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   }
 
   spotifyLogin() {
-    const redirectUrl = encodeURIComponent(`${window.location.protocol}//${window.location.host}/#/account~${this.account.loginToken.token}`);
+    const redirectUrl = encodeURIComponent(`${window.location.protocol}//${window.location.host}/account`);
     window.location.href = `${environment.apiHost}/api/v1/spotify/login?redirectUrl=${redirectUrl}`;
   }
 

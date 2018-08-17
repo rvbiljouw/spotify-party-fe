@@ -1,16 +1,16 @@
 <app-sidebar-layout #sidenav>
   <mat-toolbar color="primary">
     <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
-      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+      <div fxFlex="100" fxFlex.xs="20" fxFlex.sm="20" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-icon-button (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <div class="logo" fxLayoutAlign="center center">
+        <div class="logo" fxShow.lt-md="false" fxLayoutAlign="center center">
           <img src="../../../assets/logo.png">
         </div>
       </div>
 
-      <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+      <div fxFlex="100" fxFlex.xs="80" fxFlex.sm="80" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
         <button mat-icon-button (click)="searching = true">
           <mat-icon>search</mat-icon>
         </button>
@@ -31,122 +31,73 @@
     </div>
   </mat-toolbar>
 
-  <div style="padding: 20px;" fxLayoutAlign="center">
+  <div fxLayoutAlign="center">
 
-    <div fxFlex="100" fxFlex.lt-sm="90" fxFlex.gt-md="75">
+    <div fxFlex="100" fxFlex.lt-sm="98" fxFlex.gt-md="75">
+      <div [style.padding]="isMobileView ? '10px' : '20px'">
 
-      <div>
-
-        <mat-tab-group [selectedIndex]="selectedTab">
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <img src="/assets/youtube.png" class="button-icon tab-icon" alt="youtube"> YouTube
-            </ng-template>
-
-            <div class="root">
-
-              <div *ngIf="!searching">
-
-                <div>
-                  <h2  style="display: inline-block;">Most popular - </h2>
-                  <h4 style="display: inline-block;">these parties are popping right now</h4>
-                </div>
-
-                <div *ngIf="youtubeGroup.popularParties != null && youtubeGroup.popularParties.maxRecords > 0"
-                     fxLayout="row" fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of youtubeGroup.popularParties.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
-                <div>
-                  <h2  style="display: inline-block;">Newly added - </h2>
-                  <h4 style="display: inline-block;">these parties are just starting out</h4>
-                </div>
-
-                <div *ngIf="youtubeGroup.newParties != null && youtubeGroup.newParties.maxRecords > 0" fxLayout="row"
-                     fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of youtubeGroup.newParties.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
-              </div>
-
-              <div *ngIf="searching">
-                <h2>Search results</h2>
-
-                <div *ngIf="youtubeGroup.searchResults != null && youtubeGroup.searchResults.maxRecords > 0"
-                     fxLayout="row" fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of youtubeGroup.searchResults.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
-              </div>
-
+        <div fxLayout="column">
+          <div class="mat-title" fxLayout="row" fxLayoutGap="20px" fxFlex="100">
+            <div fxFlex="50" fxLayoutAlign="start center" fxLayoutGap="20px">
+              <mat-icon>search</mat-icon>
+              <span>Find a party</span>
             </div>
 
-          </mat-tab>
 
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <img src="/assets/spotify.png" class="button-icon tab-icon" alt="spotify"> Spotify
-            </ng-template>
+            <div fxFlex="50" fxLayoutAlign="end">
+              <mat-button-toggle-group #group="matButtonToggleGroup" (change)="onPartyTypeChanged(group.value)"
+                                       [value]="partyType">
+                <mat-button-toggle value="YOUTUBE">
+                  <img src="/assets/youtube.png" class="button-icon tab-icon" alt="YOUTUBE"> YouTube
+                </mat-button-toggle>
+                <mat-button-toggle value="SPOTIFY">
+                  <img src="/assets/spotify.png" class="button-icon tab-icon" alt="SPOTIFY"> Spotify
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
 
-            <div class="root">
+          <div class="search-form" fxLayout="row">
+            <mat-form-field fxFlex="100">
+              <input matInput placeholder="Enter some search terms" [formControl]="searchTerm">
+            </mat-form-field>
+          </div>
+        </div>
 
-              <div *ngIf="!searching">
 
-                <div>
-                  <h2  style="display: inline-block;">Most popular - </h2>
-                  <h4 style="display: inline-block;">these parties are popping right now</h4>
-                </div>
+        <div fxLayout="column">
+          <div class="mat-title" fxLayout="row" fxFlex="100">
+            <div fxLayoutAlign="start center" fxLayoutGap="20px">
+              <ng-container *ngIf="partyType == 'YOUTUBE'">
+                <img src="/assets/youtube.png" class="button-icon tab-icon" alt="YOUTUBE">
+              </ng-container>
+              <ng-container *ngIf="partyType == 'SPOTIFY'">
+                <img src="/assets/spotify.png" class="button-icon tab-icon" alt="SPOTIFY">
+              </ng-container>
+              <span>Here's what we found</span>
+            </div>
+          </div>
 
-                <div *ngIf="spotifyGroup.popularParties != null && spotifyGroup.popularParties.maxRecords > 0"
-                     fxLayout="row" fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of spotifyGroup.popularParties.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
-                <div>
-                  <h2  style="display: inline-block;">Newly added - </h2>
-                  <h4 style="display: inline-block;">these parties are just starting out</h4>
-                </div>
-
-                <div *ngIf="spotifyGroup.newParties != null && spotifyGroup.newParties.maxRecords > 0" fxLayout="row"
-                     fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of spotifyGroup.newParties.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
+          <div class="results">
+            <div
+              *ngIf="partyType == 'YOUTUBE' && youtubeGroup.searchResults != null && youtubeGroup.searchResults.maxRecords > 0"
+              fxLayout="row" fxLayoutWrap="true">
+              <div fxFlex="50" fxFlex.xs="100" fxFlex.sm="50" fxFlex.gt-sm="25"
+                   *ngFor="let party of youtubeGroup.searchResults.items">
+                <app-party-card [party]="party"></app-party-card>
               </div>
-
-              <div *ngIf="searching">
-                <h2>Search results</h2>
-
-                <div *ngIf="spotifyGroup.searchResults != null && spotifyGroup.searchResults.maxRecords > 0"
-                     fxLayout="row" fxLayoutWrap="true">
-                  <div fxFlex="50" fxFlex.gt-sm="25" fxFlex.gt-md="20"
-                       *ngFor="let party of spotifyGroup.searchResults.items">
-                    <app-party-card [party]="party"></app-party-card>
-                  </div>
-                </div>
-
-              </div>
-
             </div>
 
-          </mat-tab>
-        </mat-tab-group>
-
+            <div
+              *ngIf="partyType == 'SPOTIFY' && spotifyGroup.searchResults != null && spotifyGroup.searchResults.maxRecords > 0"
+              fxLayout="row" fxLayoutWrap="true">
+              <div fxFlex="50" fxFlex.xs="100" fxFlex.sm="50" fxFlex.gt-sm="25"
+                   *ngFor="let party of spotifyGroup.searchResults.items">
+                <app-party-card [party]="party"></app-party-card>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

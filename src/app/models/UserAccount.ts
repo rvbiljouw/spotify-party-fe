@@ -1,5 +1,6 @@
 import {SpotifyAccount} from "./SpotifyAccount";
 import {Achievment} from "./Achievment";
+import {LoginToken} from "./LoginToken";
 
 export type SubscriptionType = "FREE" | "PREMIUM";
 export const SubscriptionType = {
@@ -27,10 +28,4 @@ export class UserAccount {
   spotify: SpotifyAccount;
   created: Date;
   updated: Date;
-}
-
-export class LoginToken {
-  id: number;
-  account: UserAccount;
-  token: string;
 }

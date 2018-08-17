@@ -1,0 +1,10 @@
+<div class="party-list">
+  <div *ngIf="parties.maxRecords > 0" fxLayout="row" fxLayoutWrap="true">
+    <div fxFlex="50" fxFlex.xs="100" fxFlex.sm="50" fxFlex.gt-sm="25"
+         *ngFor="let party of parties.items">
+      <div class="party-card-container">
+        <app-party-card [party]="party" viewType="NOW_PLAYING"></app-party-card>
+      </div>
+    </div>
+  </div>
+</div>

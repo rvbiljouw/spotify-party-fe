@@ -3,10 +3,6 @@
 .party-card {
 
   & {
-    width: 90%;
-    max-width: 90%;
-    margin-right: 10%;
-    margin-bottom: 10%;
     padding: 0;
     cursor: pointer;
 
@@ -51,6 +47,10 @@
   p {
     margin-left: 10px;
     margin-right: 10px;
+  }
+
+  .view-count {
+    padding: 0.5em;
   }
 
 }

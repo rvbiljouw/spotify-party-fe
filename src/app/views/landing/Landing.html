@@ -1,5 +1,5 @@
 <app-sidebar-layout #sidenav>
-  <mat-toolbar color="primary">
+  <mat-toolbar class="navbar">
     <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
       <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
         <button mat-icon-button (click)="sidenav.toggle()">
@@ -25,98 +25,51 @@
     </div>
   </mat-toolbar>
 
-  <div class="root" fxLayout="column">
-    <div fxFlex="100" class="header dance-bg">
-      <div class="header-container">
-        <h1 class="title-text header-text">Blast music with friends for free!</h1>
-        <h2 class="title-text sub-header-text">Create a party with your friends and play music straight from Spotify or
-          YouTube
-        </h2>
-        <button mat-button [routerLink]="['/login']" class="sign-up-btn">Start partying!</button>
-      </div>
-    </div>
-    <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center" class="second-container">
-      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
-        <mat-icon class="sync-icon">sync</mat-icon>
-        <h3>Listen in sync!</h3>
-        <p>
-          No matter if you and your friends are in the same room or miles apart. Awsum will play your playlist in sync.
-          That way you can get into the same vibe as your friends, even when you’re not together.
-        </p>
-      </div>
-      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
-        <mat-icon class="music-icon">music_note</mat-icon>
-        <h3>Tons of music!</h3>
-        <p>
-          Awsum lets you play any song which can be found on either
-          Spotify or YouTube. Make your own music? Publish it to YouTube
-          and start queueing it in a party to get people hearing it! Who
-          knew self promotion could be so easy.
-        </p>
-      </div>
-      <div fxFlex="28" fxFlex.lt-md="100" class="description-container">
-        <mat-icon class="money-icon">attach_money</mat-icon>
-        <h3>Free to use!</h3>
-        <p>
-          Best of all you can use Awsum for free, you will need a Spotify premium account
-          to play songs via Spotify but you can play songs from YouTube completely for free.
-          We don't want to charge you for anything which should be free.
-        </p>
+  <div class="header-container">
+    <div class="header" fxLayout="row" fxLayoutAlign="center">
+      <div fxFlex="100" fxFlex.gt-md="60">
+        <div class="tagline-container" fxLayout="column" fxFlex="100" fxFlex.gt-md="50">
+          <div class="tagline">Like music discovery?</div>
+          <div class="subtitle">We've got you covered!</div>
+          <br/>
+          <p class="description">Awsum.io lets you listen to your favourite music from Spotify and YouTube, with people
+            from all over the world, at the same time.</p>
+        </div>
+
+        <div class="spotify-youtube" fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
+          <img src="../../../assets/youtube.png" width="64" height="64" style="margin-right: 10px;"/>
+          <img src="../../../assets/spotify.png" width="64" height="64"/>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="third-container" fxLayout="column">
-
-    <div class="fading-separator"></div>
-
-    <div fxFlex="100">
-      <h1 class="title-text social-media-header">Stay up to date</h1>
-      <h2 class="title-text sub-header-text">Connect with us on our social media channels to get all the latest updates
-        and give your feedback
-      </h2>
-    </div>
-
-    <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center">
-      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
-        <a class="social-link" href="https://discord.gg/RVxnA5z" target="_blank">
-          <div class="social-media-img-container">
-            <img class="center social-media-img" src="/assets/discord.png" width="114px" height="114px"/>
-          </div>
-          <h4 class="social-media-caption">Join our discord</h4>
-        </a>
+  <div fxLayout="row" fxLayoutAlign="center" class="parties-container">
+    <div fxFlex="100" fxFlex.gt-md="60">
+      <div fxLayout="row">
+        <div fxFlex.gt-sm="50">
+          <h3>Here are the most popular parties by genre</h3>
+        </div>
+        <div fxFlex.gt-sm="50" fxLayout="row" fxLayoutAlign="end center">
+          <button mat-icon-button><mat-icon>refresh</mat-icon></button>
+          <button mat-icon-button (click)="toggleSpotify()">
+            <div class="spotify-icon" [ngClass]="spotifyEnabled ? '' : 'spotify-icon-disabled'"></div>
+          </button>
+          <button mat-icon-button (click)="toggleYouTube()">
+            <div class="youtube-icon" [ngClass]="youtubeEnabled ? '' : 'youtube-icon-disabled'"></div>
+          </button>
+        </div>
       </div>
-      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
-        <a class="social-link" href="https://twitter.com/awsum_io" target="_blank">
-          <div class="social-media-img-container">
-            <img class="center social-media-img" src="/assets/twitter.png" width="114px" height="114px"/>
-          </div>
-          <h4 class="social-media-caption">Follow us on twitter</h4>
-        </a>
-      </div>
-      <div fxFlex="28" fxFlex.lt-md="100" class="social-media-container">
-        <a class="social-link" href="https://facebook.com" target="_blank">
-          <div class="social-media-img-container">
-            <img class="center social-media-img facebook-img" src="/assets/facebook.png" width="80px" height="80px"/>
-          </div>
-          <h4 class="social-media-caption">Like us on facebook</h4>
-        </a>
-      </div>
+      <mat-tab-group>
+        <mat-tab *ngFor="let genre of genres">
+          <ng-template mat-tab-label>
+            <mat-icon>music_note</mat-icon>
+            {{ genre.name }}
+          </ng-template>
+
+          <app-genre [genre]="genre" [youtubeEnabled]="youtubeEnabled" [spotifyEnabled]="spotifyEnabled"></app-genre>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   </div>
-
-  <footer>
-    <div class="footer-container" fxLayout="row" fxLayout.lt-md="column">
-      <div class="footer-links-container" fxFlex="36" fxLayoutAlign="center center">
-        <button mat-button>Terms & Conditions</button>
-        <button mat-button>Privacy Policy</button>
-        <button mat-button>Contact</button>
-      </div>
-      <div fxFlex="64" fxLayoutAlign="end center" fxLayoutAlign.lt-md="center center">
-        <span class="copyright-text">
-          Copyright 2018 BIPUSH LTD
-        </span>
-      </div>
-    </div>
-  </footer>
 </app-sidebar-layout>

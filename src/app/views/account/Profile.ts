@@ -55,7 +55,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.setPartiesPage({offset: this.partiesOffset, limit: this.partiesLimit});
         this.refreshFollowers();
       }, err => {
-        console.log(err);
 
         this.notificationsService.error("Unable to load profile");
       });
@@ -69,7 +68,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.accountService.isFollowing(this.account.id).subscribe(res => {
       this.isFollowing = res;
     }, err => {
-      console.log(err);
 
       this.notificationsService.error("Unable to load profile info");
     });
@@ -82,7 +80,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.parties = res;
       this.loadingParties = false;
     }, err => {
-      console.log(err);
       this.loadingParties = false;
 
       this.notificationsService.error("Unable to load parties");
@@ -103,7 +100,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.followers = res;
       this.loadingFollowers = false;
     }, err => {
-      console.log(err);
       this.loadingFollowers = false;
 
       this.notificationsService.error("Unable to load followers");
@@ -133,7 +129,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.working = false;
       this.refreshFollowers();
     }, err => {
-      console.log(err);
       this.working = false;
       this.refreshFollowers();
 
@@ -152,7 +147,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.working = false;
       this.refreshFollowers();
     }, err => {
-      console.log(err);
       this.working = false;
       this.refreshFollowers();
 

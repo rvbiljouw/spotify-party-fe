@@ -5,22 +5,22 @@
   height: 100%;
 }
 
-/deep/ .notification {
-  z-index: 2000;
-  padding: 14px 16px 0 10px !important;
-  min-height: 60px !important;
-
-  .sn-title {
-    font-size: 14px !important;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: inherit;
-  }
-
-  .icon {
-    width: 60px !important;
-    height: 60px !important;
-  }
-}
+///deep/ .notification {
+//  z-index: 2000;
+//  padding: 14px 16px 0 10px !important;
+//  min-height: 60px !important;
+//
+//  .sn-title {
+//    font-size: 14px !important;
+//    display: block;
+//    overflow: hidden;
+//    text-overflow: ellipsis;
+//    white-space: nowrap;
+//    width: inherit;
+//  }
+//
+//  .icon {
+//    width: 60px !important;
+//    height: 60px !important;
+//  }
+//}

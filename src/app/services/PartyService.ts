@@ -2,12 +2,14 @@ import {Injectable} from "@angular/core";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {environment} from "../../environments/environment";
 import {Http} from "@angular/http";
-import {Party} from "../models/Party";
+import {Party, PartyListItem} from "../models/Party";
 import {Observable} from "rxjs/Observable";
 import {Filter, FilterType, ListResponse} from "./ApiService";
 import {PartyList} from "../models/PartyList";
 import {UserAccount} from "../models/UserAccount";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
+import {MessageEnvelope, WebSocketService} from "./WebSocketService";
+import {Genre} from "../models/Genre";
 
 @Injectable()
 export class PartyService {
@@ -15,43 +17,32 @@ export class PartyService {
   private createEndpoint = `${environment.apiHost}/api/v1/party`;
 
   partyList: BehaviorSubject<PartyList> = new BehaviorSubject(null);
+  activeParty: BehaviorSubject<Party> = new BehaviorSubject(null);
 
-  constructor(private http: Http) {
-    this.refresh();
+  parties: Array<Party> = [];
 
-    IntervalObservable.create(5000).subscribe(res => {
-      this.refresh();
-    });
+  constructor(private http: Http,
+              private webSocketService: WebSocketService) {
+    console.log("hello");
+    this.webSocketService.registerHandler("PARTY_LIST", (e) => this.onPartyList(e));
   }
 
-  refresh() {
-    this.getMyParties().subscribe(result => {
-      this.partyList.next(result);
-    });
+  private onPartyList(env: MessageEnvelope) {
+    let newPartyList = JSON.parse(env.body) as PartyList;
+    this.partyList.next(newPartyList);
   }
 
   createParty(req: CreatePartyRequest) {
     return this.http.post(`${this.createEndpoint}`, req, {withCredentials: true}).map(res => {
       let party = res.json() as Party;
-      this.refresh();
       return party;
     });
   }
 
   leaveParty(id: number, remove: boolean): Observable<boolean> {
     return this.http.delete(`${this.endpoint}/${id}/members?remove=${remove}`, {withCredentials: true}).map(res => {
-      this.refresh();
       return true;
     });
-  }
-
-  joinParty(id: number, reconnect: boolean = false): Observable<Party> {
-    console.log(id);
-    return this.http.put(`${this.endpoint}/${id}/members?reconnect=${reconnect}`, {}, {withCredentials: true}).map(res => {
-      let party = res.json() as Party;
-      this.refresh();
-      return party;
-    })
   }
 
   getMostPopular(limit: number, offset: number, type: string): Observable<ListResponse<Party>> {
@@ -68,6 +59,12 @@ export class PartyService {
     return this.search(filters, limit, offset);
   }
 
+  getGenres(): Observable<Genre[]> {
+    return this.http.get(`${environment.apiHost}/api/v1/genres`).map(res => {
+      return res.json() as Genre[];
+    });
+  }
+
   searchAllMyParties(limit: number, offset: number, type: string, name: string, account: UserAccount): Observable<ListResponse<Party>> {
     return this.search([
         new Filter(FilterType.EQUALS, "type", type, []),
@@ -76,12 +73,6 @@ export class PartyService {
       ],
       limit, offset, {sort: "activeMemberCount", order: "desc"}
     );
-  }
-
-  getMyParties(): Observable<PartyList> {
-    return this.http.get(`${this.endpoint}/mine`, {withCredentials: true}).map(res => {
-      return res.json() as PartyList;
-    });
   }
 
   getById(id: number): Observable<Party> {

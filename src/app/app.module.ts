@@ -3,7 +3,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
+import {HttpModule, RequestOptions} from '@angular/http';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login/Login';
@@ -41,7 +41,7 @@ import {EmojiPickerModule} from "angular2-emoji-picker";
 import {MyPartiesComponent} from "./views/party/MyParties";
 import {PortalModule} from "@angular/cdk/portal";
 import {PartyChatComponent} from "./widgets/PartyChat";
-import {PartyQueueComponent} from "app/widgets/PartyQueue";
+import {PartyQueueComponent} from "app/views/party/PartyQueue";
 import {SignUpComponent} from "./views/login/SignUp";
 import {SongCardComponent} from "./widgets/SongCard";
 import {ImageCropperModule} from "ngx-image-cropper";
@@ -52,10 +52,14 @@ import {FavouriteService} from "./services/FavouriteService";
 import {AccountCardComponent} from "./widgets/AccountCard";
 import {UserNotificationService} from "./services/UserNotificationService";
 import {NotificationMenuComponent} from "./widgets/NotificationMenu";
+import {DefaultRequestOptions} from "./utils/DefaultRequestOptions";
+import {CookieService} from "ngx-cookie-service";
+import {GenreComponent} from "./views/landing/Genre";
+import {PartyHistoryComponent} from "./views/party/PartyHistory";
+import {PartySettingsComponent} from "./views/party/PartySettings";
 
 const routes: Routes = [
-  {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: LandingComponent},
+  {path: '', component: LandingComponent, pathMatch: 'full'},
   {path: 'login', component: LoginComponent},
   {path: 'sign-up', component: SignUpComponent},
   {path: 'account', component: MyAccountComponent, canActivate: [AuthGuard]},
@@ -86,11 +90,14 @@ const routes: Routes = [
     NotificationMenuComponent,
     PartyChatComponent,
     PartyQueueComponent,
+    PartyHistoryComponent,
     SignUpComponent,
     SongCardComponent,
     UploadImageModal,
     ProfileComponent,
-    AccountMenuComponent
+    AccountMenuComponent,
+    GenreComponent,
+    PartySettingsComponent
   ],
   imports: [
     PortalModule,
@@ -115,6 +122,8 @@ const routes: Routes = [
     BrowserModule.withServerTransition({appId: 'awsumio'})
   ],
   providers: [
+    {provide: RequestOptions, useClass: DefaultRequestOptions},
+    CookieService,
     LoginService,
     WebSocketService,
     UserAccountService,

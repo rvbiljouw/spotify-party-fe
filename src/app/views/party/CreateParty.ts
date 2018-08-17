@@ -6,6 +6,7 @@ import {routerTransition} from '../../utils/Animations';
 import {NotificationsService} from 'angular2-notifications';
 import {CreatePartyRequest, PartyService} from "../../services/PartyService";
 import {UserAccount} from "../../models/UserAccount";
+import {Genre} from "../../models/Genre";
 
 @Component({
   selector: 'create-party',
@@ -30,6 +31,8 @@ export class CreatePartyComponent implements OnInit {
     value: 'YOUTUBE'
   }];
 
+  genres: Array<Genre> = [];
+
   creating = false;
 
   account: UserAccount = null;
@@ -45,7 +48,8 @@ export class CreatePartyComponent implements OnInit {
       name: fb.control('', [Validators.required]),
       description: fb.control('', []),
       access: fb.control('PRIVATE', [Validators.required]),
-      type: fb.control('SPOTIFY', [Validators.required])
+      type: fb.control('SPOTIFY', [Validators.required]),
+      genres: fb.control(null, [])
     });
   }
 
@@ -55,6 +59,10 @@ export class CreatePartyComponent implements OnInit {
         this.loggedIn = true;
         this.account = res;
       }
+    });
+
+    this.partyService.getGenres().subscribe(res => {
+      this.genres = res;
     });
   }
 

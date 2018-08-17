@@ -75,15 +75,6 @@ export class MyPartiesComponent implements OnInit {
       });
   }
 
-  setActiveParty(party: Party) {
-    this.partyService.joinParty(party.id).subscribe(res => {
-      this.notificationsService.info('Joined party ' + party.name);
-      this.router.navigate(['party', party.id]);
-    }, err => {
-      this.notificationsService.error('Couldn\'t join party - please try again later.');
-    });
-  }
-
   loadGroup(group: PartyGroup, type: string) {
     this.partyService.searchAllMyParties(this.limit, this.offset, type, "", this.account).subscribe(res => {
       group.popularParties = res;

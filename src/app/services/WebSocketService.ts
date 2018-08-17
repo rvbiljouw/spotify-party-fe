@@ -9,28 +9,69 @@ import {LoginService} from "./LoginService";
 import {IntervalObservable} from "rxjs/observable/IntervalObservable";
 import {Subscription} from "rxjs/Subscription";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {LoginToken} from "../models/LoginToken";
+import {Party} from "../models/Party";
+import {PartyService} from "./PartyService";
+import {environment} from "../../environments/environment";
+import {NotificationsService} from "angular2-notifications";
 
 @Injectable()
 export class WebSocketService {
-
+  private handlers = {
+    "AUTH_RESPONSE": [(e: MessageEnvelope) => this.onAuthResponse(e)]
+  };
   private account: UserAccount;
+  private token: LoginToken;
 
-  constructor(private loginService: LoginService) {
-    this.loginService.account.subscribe(res => {
-      this.account = res;
-    });
-  }
+  private authenticating: boolean = false;
+  private authenticated: boolean = false;
 
   input: BehaviorSubject<MessageEvent> = new BehaviorSubject(null);
   output: BehaviorSubject<MessageEvent> = new BehaviorSubject(null);
+  connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  private awaitingAuth = [];
   private ws: WebSocket;
+
   private pingInterval: Subscription;
-  private authInterval: Subscription;
 
-  private authOptions: any = {};
+  private connectionErrorNotice: any;
 
-  public connect(url, refresh: boolean = false, authOptions = {}) {
-    this.authOptions = authOptions;
+  constructor(private loginService: LoginService,
+              private notificationsService: NotificationsService) {
+    this.loginService.token.subscribe(res => {
+      this.token = res;
+      if (res != null) {
+        this.account = res.account;
+        this.sendAuthRequest();
+      }
+    });
+
+    this.input.subscribe(r => {
+      if (r != null) {
+        this.handleMessage(JSON.parse(r.data) as MessageEnvelope)
+      }
+    });
+
+
+    this.output.subscribe(msg => {
+      if (msg != null && this.ws != null && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(msg.data));
+      }
+    });
+
+    this.pingInterval = IntervalObservable.create(5000).subscribe(res => {
+      this.output.next(new MessageEvent("ping", {data: new WSMessage("PING", {})}));
+    });
+
+    this.connected.subscribe(res => {
+      if (this.token != null) {
+        this.sendAuthRequest();
+      }
+    });
+  }
+
+  private connect(url, refresh: boolean = false) {
     if (!this.ws || refresh) {
       this.create(url);
     }
@@ -40,21 +81,8 @@ export class WebSocketService {
     if (this.ws) {
       this.ws.close();
     }
+
     this.ws = new WebSocket(url);
-
-    if (this.pingInterval != null) {
-      this.pingInterval.unsubscribe();
-    }
-    if (this.authInterval != null) {
-      this.authInterval.unsubscribe();
-    }
-
-    this.pingInterval = IntervalObservable.create(5000).subscribe(res => {
-      this.ping();
-    });
-    this.authInterval = IntervalObservable.create(1000).subscribe(res => {
-      this.authenticate();
-    });
 
     this.ws.onmessage = (msg) => {
       if (msg != null) {
@@ -62,43 +90,116 @@ export class WebSocketService {
       }
     };
 
-    this.output.subscribe(msg => {
-      if (msg != null && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify(msg.data));
+    this.ws.onclose = (msg) => {
+      this.connected.next(false);
+      this.authenticated = false;
+
+      console.log("Socket disconnected - reconnecting in 5s");
+      setTimeout(() => {
+        if (this.connectionErrorNotice == null || this.connectionErrorNotice.destroyedAt != null) {
+          this.connectionErrorNotice = this.notificationsService.error('Uh-oh!', "We're having some issues connecting you to the party. Reconnecting in 5 seconds.", {timeOut: 0});
+        }
+        this.create(url);
+      }, 5000);
+    };
+
+    this.ws.onopen = (msg) => {
+      this.connected.next(true);
+      if (this.connectionErrorNotice != null) {
+        this.notificationsService.remove(this.connectionErrorNotice.id);
+        this.connectionErrorNotice = null;
+        this.notificationsService.info('Success!', "You are now connected to Awsum.io");
       }
-    });
+    };
   }
 
-
-  private ping() {
-    this.output.next(new MessageEvent("ping", {data: new WSMessage("PING", {})}));
-  }
-
-  authenticate() {
-    if (this.ws != null && this.ws.readyState === WebSocket.OPEN) {
-      this.authInterval.unsubscribe();
-      this.output.next(new MessageEvent("message", {
-        data: new WSMessage("AUTH", Object.assign(
-          {},
-          {
-            userId: this.account.id,
-            loginToken: this.account.loginToken.token
-          },
-          this.authOptions
-        ))
-      }));
+  private handleMessage(envelope: MessageEnvelope) {
+    if (this.handlers[envelope.opcode]) {
+      this.handlers[envelope.opcode].forEach(handler => {
+        handler(envelope);
+      });
+    } else {
+      console.log("No handler registered for " + envelope.opcode);
+      console.log(JSON.stringify(envelope));
     }
   }
 
-  disconnect() {
-    if (this.ws) {
-      this.ws.close();
+  private sendMessage(envelope: MessageEnvelope) {
+    this.output.next(new MessageEvent(envelope.opcode, {data: envelope}));
+  }
+
+  init() {
+    this.connect(`${environment.wsHost}/api/v1/socket`, true);
+  }
+
+  postEnvelope(opcode: string, message: any) {
+    let msg = new MessageEnvelope(opcode, message);
+    if (!this.authenticated) {
+      this.awaitingAuth.push(msg);
+    } else {
+      this.sendMessage(msg);
     }
-    if (this.pingInterval != null) {
-      this.pingInterval.unsubscribe();
+  }
+
+  sendAuthRequest() {
+    if (!this.authenticated && !this.authenticating && this.connected.value) {
+      this.authenticating = true;
+      this.sendMessage(new MessageEnvelope("AUTH_REQUEST", {accountId: this.account.id, loginToken: this.token.token}));
     }
-    if (this.authInterval != null) {
-      this.authInterval.unsubscribe();
+  }
+
+  sendJoinPartyRequest(partyId: number) {
+    let msg = new MessageEnvelope("JOIN_PARTY_REQUEST", {partyId: partyId});
+    if (!this.authenticated) {
+      this.awaitingAuth.push(msg);
+    } else {
+      this.sendMessage(msg);
     }
+  }
+
+  onAuthResponse(envelope: MessageEnvelope) {
+    let authResponse = JSON.parse(envelope.body);
+    if (authResponse.success) {
+      console.log("Authentication succeeded.");
+      this.authenticated = true;
+      this.authenticating = false;
+
+      this.awaitingAuth.forEach(msg => {
+        this.sendMessage(msg);
+      });
+      this.awaitingAuth = [];
+    } else {
+      console.log("Authentication failed.");
+      this.awaitingAuth = [];
+      this.authenticated = false;
+      this.authenticating = false;
+    }
+  }
+
+  registerHandler(opcode: string, handler: any) {
+    if (!this.handlers[opcode]) {
+      this.handlers[opcode] = [];
+    }
+    this.handlers[opcode].push(handler);
+  }
+
+  unregisterHandler(opcode: string, handler: any) {
+    let idx = this.handlers[opcode].indexOf(handler);
+    this.handlers[opcode].splice(idx, 1);
+  }
+
+  isAuthenticated() {
+    return this.authenticated;
+  }
+
+}
+
+export class MessageEnvelope {
+  opcode: string;
+  body: string;
+
+  constructor(opcode: string, body: any) {
+    this.opcode = opcode;
+    this.body = (typeof body === 'object') ? JSON.stringify(body) : `${body}`;
   }
 }

@@ -3,7 +3,7 @@ import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
-import { NotificationsService } from 'angular2-notifications';
+import {NotificationsService} from 'angular2-notifications';
 import {UserAccount} from "../../models/UserAccount";
 import {environment} from "../../../environments/environment";
 
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private router: Router,
               private loginService: LoginService,
-              private notificationsService: NotificationsService ,
+              private notificationsService: NotificationsService,
               private route: ActivatedRoute,
               fb: FormBuilder,) {
     this.loginForm = fb.group({
@@ -48,14 +48,11 @@ export class LoginComponent implements OnInit {
       (token: UserAccount) => {
         if (token != null && token.id > 0) {
           this.loggedIn = true;
-          this.router.navigate(['parties']).then(() => {
-            window.location.reload(true);
-          });
+          this.router.navigate(['/parties']);
         }
       },
       err => {
         this.loggedIn = false;
-        console.log('error ' + err);
       },
     );
   }
@@ -74,13 +71,8 @@ export class LoginComponent implements OnInit {
     this.loggingIn = true;
 
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe(res => {
-      this.loginService.setAccount(res.account);
-      this.router.navigate(['parties']).then(() => {
-        window.location.reload(true);
-      });
       this.loggingIn = false;
     }, error => {
-      console.log(error);
       this.loggingIn = false;
       this.notificationsService.error("Unable to login, please check your details");
     });
@@ -92,7 +84,7 @@ export class LoginComponent implements OnInit {
     this.loginService.register(this.signupForm.value).subscribe(res => {
       this.signingUp = false;
       this.notificationsService.info('Your account has been created. Logging you in...');
-      this.loginService.setAccount(res);
+      this.loginService.setToken(res.loginToken);
       this.router.navigate(['parties']).then(() => {
         window.location.reload(true);
       });

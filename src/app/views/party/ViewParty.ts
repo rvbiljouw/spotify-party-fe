@@ -10,7 +10,7 @@ import {Party} from "../../models/Party";
 import {PartyQueue, PartyQueueEntry} from "../../models/PartyQueue";
 import {QueueService, VoteRequest} from "../../services/QueueService";
 import {DomSanitizer, Title} from "@angular/platform-browser";
-import {WebSocketService} from "../../services/WebSocketService";
+import {MessageEnvelope, WebSocketService} from "../../services/WebSocketService";
 import {environment} from "../../../environments/environment";
 import {MatDialog, PageEvent} from "@angular/material";
 import {WSMessage} from "../../models/WSMessage";
@@ -36,6 +36,7 @@ import {FavouriteService, FavouriteSongRequest} from "../../services/FavouriteSe
 import {FavouriteSong, SongType} from "../../models/FavouriteSong";
 import {Observable} from "rxjs/Observable";
 import {PartyChatComponent} from "../../widgets/PartyChat";
+import {Subject} from "rxjs/Subject";
 
 
 @Component({
@@ -46,6 +47,7 @@ import {PartyChatComponent} from "../../widgets/PartyChat";
   ],
 })
 export class ViewPartyComponent implements OnInit, OnDestroy {
+  partyId: number;
   party: Party;
   partyMembers: UserAccount[];
   queue: PartyQueue = new PartyQueue();
@@ -55,16 +57,9 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
 
   partyName: string = "Connecting...";
 
-  websocketAuthenticated = false;
-
   showNoSpotify: boolean = false;
 
   @ViewChild(YoutubePlayerComponent) youtubeFrame: YoutubePlayerComponent;
-
-  partyType: string = "SPOTIFY";
-
-  refreshTimer: Subscription;
-  progressTimer: Subscription;
 
   account: UserAccount;
   loggedIn: boolean = false;
@@ -74,7 +69,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   largeYtPlayer: boolean;
 
   spotifyDevices: SpotifyDevice[];
-  deviceTimer: Subscription;
   changingDevice: boolean;
 
   searching: boolean;
@@ -93,11 +87,19 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   @ViewChild('searchTemplate') searchTemplate: CdkPortal;
   searchOverlayRef: OverlayRef;
 
-  socketSubscription: Subscription;
   viewChat: boolean = true;
 
   favourites = new Map<string, FavouriteSong>();
   favouriting: boolean;
+
+  private ngUnsubscribe: Subject<any> = new Subject<any>();
+  private eventHandlers = [
+    {"name": "UPDATE_PARTY_QUEUE", "handler": (e) => this.onUpdatePartyQueue(e)},
+    {"name": "UPDATE_PARTY", "handler": (e) => this.onUpdateParty(e)},
+    {"name": "COMMAND", "handler": (e) => this.onCommand(e)},
+    {"name": "PARTY_NOTIFICATION", "handler": (e) => this.onPartyNotification(e)},
+    {"name": "JOIN_PARTY_RESPONSE", "handler": (e) => this.onJoinPartyResponse(e)}
+  ];
 
   constructor(private router: Router,
               private partyService: PartyService,
@@ -114,9 +116,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
               private emojiPickerOptions: EmojiPickerOptions,
               private youtubeService: YouTubeService,
               private titleService: Title,
-              public overlay: Overlay,
-              public viewContainerRef: ViewContainerRef,
-              fb: FormBuilder) {
+              public overlay: Overlay) {
     this.emojiPickerOptions.setEmojiSheet({
       url: 'sheet_apple_32.png',
       locator: EmojiPickerAppleSheetLocator
@@ -126,11 +126,10 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if ("Notification" in window) {
       Notification.requestPermission().then(function (result) {
-        console.log(result);
       });
     }
 
-    this.loginService.account.subscribe(acc => {
+    this.loginService.account.takeUntil(this.ngUnsubscribe).subscribe(acc => {
       this.account = acc;
       this.loggedIn = acc != null;
     });
@@ -141,32 +140,23 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       this.isMobileView = change.mqAlias === 'xs' || change.mqAlias === 'sm';
     });
 
-    this.route.params.subscribe(params => {
-      this.resetParty();
-      this.partyService.joinParty(+params["id"]).subscribe(party => {
-        this.partyType = party.type;
-
-        this.webSocketService.connect(`${environment.wsHost}/api/v1/partySocket`, true, {
-          partyId: party.id,
-        });
-
-        this.party = party;
-
-        this.join(this.party.id, this.party.type == 'YOUTUBE');
+    this.route.params.takeUntil(this.ngUnsubscribe).subscribe(params => {
+      this.partyId = +params["id"];
+      this.webSocketService.connected.takeUntil(this.ngUnsubscribe).subscribe(connected => {
+        if (connected) {
+          this.connect();
+        }
       });
     });
 
-    this.refreshTimer = IntervalObservable.create(10000).subscribe(res => {
-      this.refresh();
-    });
-    this.progressTimer = IntervalObservable.create(1000).subscribe(res => {
+    IntervalObservable.create(1000).takeUntil(this.ngUnsubscribe).subscribe(res => {
       if (this.queue != null && this.queue.nowPlaying != null) {
         this.progress = this.calculateProgress(this.queue.nowPlaying);
       }
     });
 
     this.refreshDevices();
-    this.deviceTimer = IntervalObservable.create(5000).subscribe(next => {
+    IntervalObservable.create(5000).takeUntil(this.ngUnsubscribe).subscribe(next => {
       this.refreshDevices();
     });
 
@@ -174,10 +164,74 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     this.searchTerm.valueChanges
       .debounceTime(400)
       .distinctUntilChanged()
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(term => {
         this.searching = true;
         this.setSongsPage({limit: this.songsLimit, offset: 0});
       });
+
+    this.eventHandlers.forEach(handler => {
+      this.webSocketService.registerHandler(handler.name, handler.handler);
+    });
+  }
+
+  onUpdatePartyQueue(message: MessageEnvelope) {
+    this.queue = JSON.parse(message.body);
+
+    this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
+      this.history = res;
+
+      this.updateFavourites(
+        [].concat(
+          this.history.items.map(entry => entry.songId),
+          this.queue.entries.map(entry => entry.songId),
+          this.queue.nowPlaying != null ? [this.queue.nowPlaying.songId] : []
+        )
+        , true);
+    });
+
+    if (this.queue != null) {
+      const nowPlaying = this.queue.nowPlaying;
+      if (nowPlaying != null) {
+        this.titleService.setTitle(`${nowPlaying.title} - ${nowPlaying.artist} -- ${this.partyName}`);
+      } else {
+        this.titleService.setTitle(`${this.partyName}`);
+      }
+    }
+  }
+
+  onUpdateParty(message: MessageEnvelope) {
+    this.party = JSON.parse(message.body) as Party;
+
+  }
+
+  onCommand(message: MessageEnvelope) {
+    let command = JSON.parse(message.body);
+    if (command.name == "PLAY") {
+      this.playYoutube(command.params.uri, command.params.position);
+    }
+  }
+
+  onJoinPartyResponse(message: MessageEnvelope) {
+    let response = JSON.parse(message.body);
+    this.party = response.party;
+    this.partyService.activeParty.next(response.party);
+
+    this.notificationsService.info('Active party changed to ' + this.party.name);
+
+    this.loginService.account.takeUntil(this.ngUnsubscribe).subscribe(acc => {
+      this.account = acc;
+      this.admin = this.party.owner.id == acc.id;
+      this.showNoSpotify = this.party.type == 'SPOTIFY' && !acc.hasSpotify
+    });
+  }
+
+  onPartyNotification(message: MessageEnvelope) {
+  }
+
+  connect() {
+    this.resetParty();
+    this.webSocketService.sendJoinPartyRequest(this.partyId);
   }
 
   setSearchFavourites(searchingFavourites: boolean) {
@@ -208,7 +262,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
           this.searchingSongs = false;
         },
         err => {
-          console.log(err);
           this.searchingSongs = false;
           this.notificationsService.error('Unable to search songs');
         },
@@ -229,7 +282,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             this.searchingSongs = false;
           },
           err => {
-            console.log(err);
             this.searchingSongs = false;
             this.notificationsService.error('Unable to search songs');
           },
@@ -246,7 +298,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
             this.searchingSongs = false;
           },
           err => {
-            console.log(err);
             this.searchingSongs = false;
             this.notificationsService.error('Unable to search songs');
           },
@@ -264,30 +315,36 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.refreshTimer.unsubscribe();
-    this.progressTimer.unsubscribe();
-    this.socketSubscription.unsubscribe();
-    if(this.searchOverlayRef != null) {
+    // this.refreshTimer.unsubscribe();
+    // this.progressTimer.unsubscribe();
+    // if (this.socketSubscription != null) {
+    //   this.socketSubscription.unsubscribe();
+    // }
+    this.eventHandlers.forEach(handler => {
+      this.webSocketService.unregisterHandler(handler.name, handler.handler);
+    });
+
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
+    if (this.searchOverlayRef != null) {
       this.searchOverlayRef.detach();
     }
-    this.searching = false;
+    // this.searching = false;
     this.resetParty();
-    console.log("Destroyed");
   }
 
   private resetParty() {
-    if (this.deviceTimer != null) {
-      this.deviceTimer.unsubscribe();
+    if (this.youtubeFrame != null) {
+      this.youtubeFrame.stop();
     }
+
     this.partyMembers = null;
     this.queue = new PartyQueue();
     this.history = new ListResponse([], 0, 0);
     this.partyName = "Connecting...";
-    this.websocketAuthenticated = false;
-    this.partyType = "SPOTIFY";
     this.admin = false;
     this.largeYtPlayer = false;
-    this.webSocketService.disconnect();
   }
 
   changeDevice(device: SpotifyDevice) {
@@ -298,7 +355,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         this.notificationsService.success(`Output device changed to ${device.name}`);
         this.refreshDevices();
       }, err => {
-        console.log(err);
         this.notificationsService.error("Unable to change output device");
         this.refreshDevices();
       })
@@ -324,7 +380,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         this.spotifyDevices = devices;
         this.changingDevice = false;
       }, err => {
-        console.log(err);
         this.changingDevice = false;
       });
     }
@@ -348,113 +403,8 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
     }
   }
 
-  join(id: number, reconnect: boolean = false) {
-    this.partyService.joinParty(id, reconnect).subscribe(party => {
-      console.log(party);
-      this.loginService.account.subscribe(acc => {
-        this.account = acc;
-        this.admin = party.owner.id == acc.id;
-        this.showNoSpotify = party.type == 'SPOTIFY' && !acc.hasSpotify
-      });
-
-      this.party = party;
-      this.partyMembers = party.members.map(m => m.account).filter(a => a.id !== this.account.id);
-
-      this.partyName = this.party.name;
-
-      this.notificationsService.info('Active party changed to ' + party.name);
-      this.refresh();
-
-      this.socketSubscription = this.webSocketService.input.subscribe((next) => {
-        if (next == null) {
-          return;
-        }
-
-        const wsMessage = JSON.parse(next.data) as WSMessage;
-        switch (wsMessage.opcode) {
-          case "AUTH":
-            const success = wsMessage.body === 'true';
-            if (success) {
-              this.webSocketService.output.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
-              this.websocketAuthenticated = true;
-            } else {
-              this.webSocketService.authenticate();
-            }
-            break;
-
-          case "PARTY_UPDATE":
-            this.refreshParty();
-            break;
-
-          case "COMMAND":
-            const command = JSON.parse(wsMessage.body);
-            if (command.name == "PLAY") {
-              if (this.party.type == "YOUTUBE") {
-                this.playYoutube(command.params.uri, command.params.position);
-              }
-            }
-            break;
-
-          case "QUEUE_UPDATE":
-            this.refresh();
-            break;
-
-          default:
-            break;
-        }
-      });
-    });
-  }
-
   private playYoutube(uri: string, position: number) {
     this.youtubeFrame.play(uri, position / 1000);
-  }
-
-  private refreshParty() {
-    this.partyService.getById(this.party.id).subscribe(party => {
-      this.loginService.account.subscribe(acc => {
-        this.account = acc;
-        this.admin = party.owner != null && party.owner.id == acc.id;
-        this.showNoSpotify = party.type == 'SPOTIFY' && !acc.hasSpotify
-      });
-
-      this.party = party;
-      this.partyMembers = party.members.map(m => m.account).filter(a => a.id !== this.account.id);
-
-      this.partyName = this.party.name;
-    });
-  }
-
-  private refresh() {
-    if (this.party != null && (this.partyType === 'YOUTUBE' || this.account.hasSpotify)) {
-
-      this.queueService.getQueue(this.party).subscribe(res => {
-        this.queue = res;
-
-        this.queueService.getHistory(this.party, 25, 0).subscribe(res => {
-          this.history = res;
-
-          this.updateFavourites(
-            [].concat(
-              this.history.items.map(entry => entry.songId),
-              this.queue.entries.map(entry => entry.songId),
-              this.queue.nowPlaying != null ? [this.queue.nowPlaying.songId] : []
-            )
-            , true);
-        });
-
-        if (this.queue != null) {
-          const nowPlaying = this.queue.nowPlaying;
-          if (nowPlaying != null) {
-            this.titleService.setTitle(`${nowPlaying.title} - ${nowPlaying.artist} -- ${this.partyName}`);
-          } else {
-            this.titleService.setTitle(`${this.partyName}`);
-          }
-        }
-      }, err => {
-        this.notificationsService.error("Couldn't retrieve queue for party.");
-      });
-    }
   }
 
   getArtistThumbnail(entry: PartyQueueEntry, style: boolean) {
@@ -495,7 +445,7 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe(res => {
-      this.partyService.refresh();
+      // this.partyService.refresh();
     })
   }
 
@@ -618,7 +568,6 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
         }
       });
     }, err => {
-      console.log(err);
       this.favouriting = false;
 
       this.updateFavourites([req.songId], false).subscribe(res => {
@@ -636,17 +585,12 @@ export class ViewPartyComponent implements OnInit, OnDestroy {
   }
 
   canAdmin() {
-    return this.party != null && (this.party.owner.id == this.account.id ||
+    return this.account != null && this.party != null && (this.party.owner.id == this.account.id ||
       this.account.accountType === AccountType.STAFF);
   }
 
   isFavourited(songId: string): boolean {
     return this.favourites.get(songId) != null;
-  }
-
-  logout() {
-    this.loginService.logout();
-    this.router.navigateByUrl('/');
   }
 
   sanitize(word: string) {

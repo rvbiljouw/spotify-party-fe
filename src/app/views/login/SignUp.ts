@@ -52,7 +52,7 @@ export class SignUpComponent implements OnInit {
     this.loginService.register(this.signupForm.value).subscribe(res => {
       this.signingUp = false;
       this.notificationsService.info('Your account has been created. Logging you in...');
-      this.loginService.setAccount(res);
+      this.loginService.setToken(res.loginToken);
       this.router.navigate(['parties']).then(() => {
         window.location.reload(true);
       });

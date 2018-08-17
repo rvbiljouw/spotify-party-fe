@@ -14,137 +14,140 @@
 
         <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
           <ng-container *ngIf="loggedIn">
-             <app-account-menu></app-account-menu>
+            <app-account-menu></app-account-menu>
           </ng-container>
         </div>
       </div>
     </mat-toolbar>
 
-    <div style="padding: 20px;" fxLayoutAlign="center" *ngIf="account != null">
+    <div fxLayoutAlign="center" *ngIf="account != null">
 
-      <div fxFlex="100" fxFlex.lt-sm="75" fxFlex.gt-md="50">
+      <div fxFlex="100" fxFlex.lt-sm="98" fxFlex.gt-md="50">
+        <div [style.padding]="isMobileView ? '10px' : '20px'">
 
-        <div class="account-header" fxLayoutAlign="start center">
-          <div class="display-picture" fxLayoutAlign="center center" [style.background-image]="getDisplayPicture()"
-               (click)="editDisplayPicture()">
-            <div class="upload-display-picture" fxLayoutAlign="center center">
-              <mat-icon>add_a_photo</mat-icon>
+
+          <div class="account-header" fxLayoutAlign="start center">
+            <div class="display-picture" fxLayoutAlign="center center" [style.background-image]="getDisplayPicture()"
+                 (click)="editDisplayPicture()">
+              <div class="upload-display-picture" fxLayoutAlign="center center">
+                <mat-icon>add_a_photo</mat-icon>
+              </div>
             </div>
+            <h2 class="header-text">{{ account.displayName }}</h2>
           </div>
-          <h2 class="header-text">{{ account.displayName }}</h2>
-        </div>
 
 
-        <mat-accordion class="account-section">
-          <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                General information
-              </mat-panel-title>
-              <mat-panel-description>
-                Change your display name, profile picture etc.
-              </mat-panel-description>
-            </mat-expansion-panel-header>
+          <mat-accordion class="account-section">
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  General <span fxHide.lt-md="true">information</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <span fxHide.lt-md="true">Change your display name, profile picture etc.</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
 
-            <form [formGroup]="accountForm" (ngSubmit)="submitAccount()" class="plain-form">
+              <form [formGroup]="accountForm" (ngSubmit)="submitAccount()" class="plain-form">
 
-              <div>
-                <mat-form-field class="full-width">
-                  <input matInput formControlName="displayName" placeholder="Display name">
-                </mat-form-field>
-              </div>
-
-              <div>
-                <mat-form-field class="full-width">
-                  <input matInput formControlName="email" placeholder="E-mail address">
-                  <mat-error *ngIf="accountForm.controls['email'].hasError('required')">
-                    This field is required
-                  </mat-error>
-                  <mat-error *ngIf="accountForm.controls['email'].hasError('email')">
-                    Please enter a valid email address
-                  </mat-error>
-                </mat-form-field>
-              </div>
-
-              <div>
-                <mat-form-field class="full-width">
-                  <input matInput type="password" formControlName="newPassword" placeholder="New password">
-
-                  <mat-error *ngIf="accountForm.controls['newPassword'].hasError('minlength')">
-                    Your password has to be at least 8 characters long.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-
-              <div>
-                <mat-form-field class="full-width">
-                  <input matInput type="password" formControlName="newPasswordConfirm"
-                         placeholder="Confirm new password">
-
-                  <mat-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('minlength')">
-                    Your password has to be at least 8 characters long.
-                  </mat-error>
-                  <mat-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('mismatch')">
-                    This password needs to match the one above
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </form>
-
-            <button color="primary" mat-raised-button [disabled]="!accountForm.valid" (click)="submitAccount()">
-              <mat-spinner *ngIf="updating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
-              Update
-            </button>
-          </mat-expansion-panel>
-
-          <mat-expansion-panel>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Spotify settings
-              </mat-panel-title>
-              <mat-panel-description>
-                Link your Spotify account and manage your devices.
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <div *ngIf="account.spotify == null">
-              <h3>Link your spotify account by clicking <a class="spotify-link"
-                                                           (click)="spotifyLogin()">here</a>.</h3>
-            </div>
-
-            <div *ngIf="account.spotify != null">
-
-              <form [formGroup]="spotifyForm" (ngSubmit)="submitSpotify()" class="plain-form">
-
-                <div style="margin-top: 20px;">
-                  <mat-form-field>
-                    <mat-select placeholder="Output device" formControlName="device">
-                      <mat-option *ngFor="let device of spotifyDevices" [value]="device.id">
-                        {{ device.name }}
-                      </mat-option>
-                    </mat-select>
+                <div>
+                  <mat-form-field class="full-width">
+                    <input matInput formControlName="displayName" placeholder="Display name">
                   </mat-form-field>
-
-                  <mat-error *ngIf="spotifyForm.controls['device'].hasError('required')">
-                    This field is required
-                  </mat-error>
-
-                  <div style="padding-bottom: 20px;"
-                       *ngIf="spotifyForm.controls['device'].invalid && spotifyForm.controls['device'].dirty"></div>
                 </div>
 
+                <div>
+                  <mat-form-field class="full-width">
+                    <input matInput formControlName="email" placeholder="E-mail address">
+                    <mat-error *ngIf="accountForm.controls['email'].hasError('required')">
+                      This field is required
+                    </mat-error>
+                    <mat-error *ngIf="accountForm.controls['email'].hasError('email')">
+                      Please enter a valid email address
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div>
+                  <mat-form-field class="full-width">
+                    <input matInput type="password" formControlName="newPassword" placeholder="New password">
+
+                    <mat-error *ngIf="accountForm.controls['newPassword'].hasError('minlength')">
+                      Your password has to be at least 8 characters long.
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div>
+                  <mat-form-field class="full-width">
+                    <input matInput type="password" formControlName="newPasswordConfirm"
+                           placeholder="Confirm new password">
+
+                    <mat-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('minlength')">
+                      Your password has to be at least 8 characters long.
+                    </mat-error>
+                    <mat-error *ngIf="accountForm.controls['newPasswordConfirm'].hasError('mismatch')">
+                      This password needs to match the one above
+                    </mat-error>
+                  </mat-form-field>
+                </div>
               </form>
 
-              <button color="primary" mat-raised-button [disabled]="!spotifyForm.valid"
-                      (click)="submitSpotify()">
+              <button color="primary" mat-raised-button [disabled]="!accountForm.valid" (click)="submitAccount()">
                 <mat-spinner *ngIf="updating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
                 Update
               </button>
+            </mat-expansion-panel>
 
-            </div>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Spotify <span fxHide.lt-md="true">settings</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <span fxHide.lt-md="true">Link your Spotify account and manage your devices.</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
 
-          </mat-expansion-panel>
-        </mat-accordion>
+              <div *ngIf="account.spotify == null">
+                <h3>Link your spotify account by clicking <a class="spotify-link"
+                                                             (click)="spotifyLogin()">here</a>.</h3>
+              </div>
+
+              <div *ngIf="account.spotify != null">
+
+                <form [formGroup]="spotifyForm" (ngSubmit)="submitSpotify()" class="plain-form">
+
+                  <div style="margin-top: 20px;">
+                    <mat-form-field>
+                      <mat-select placeholder="Output device" formControlName="device">
+                        <mat-option *ngFor="let device of spotifyDevices" [value]="device.id">
+                          {{ device.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-error *ngIf="spotifyForm.controls['device'].hasError('required')">
+                      This field is required
+                    </mat-error>
+
+                    <div style="padding-bottom: 20px;"
+                         *ngIf="spotifyForm.controls['device'].invalid && spotifyForm.controls['device'].dirty"></div>
+                  </div>
+
+                </form>
+
+                <button color="primary" mat-raised-button [disabled]="!spotifyForm.valid"
+                        (click)="submitSpotify()">
+                  <mat-spinner *ngIf="updating" class="button-spinner" [strokeWidth]="4" [diameter]="24"></mat-spinner>
+                  Update
+                </button>
+
+              </div>
+
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
       </div>
     </div>
   </app-sidebar-layout>

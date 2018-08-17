@@ -72,7 +72,6 @@ export class SidebarLayoutComponent implements OnInit {
 
   logout() {
     this.loginService.logout();
-    this.router.navigateByUrl('/');
   }
 
   sortedParties() {

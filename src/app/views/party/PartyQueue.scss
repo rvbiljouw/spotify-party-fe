@@ -1,0 +1,49 @@
+
+.column-header {
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+
+td {
+  vertical-align: center;
+  height: 60px;
+  font-size: 18px;
+}
+
+.artist-thumbnail {
+  background-image: url('https://airglide.s3.amazonaws.com/playlistThumbnails/hq/1/d19e8f1b-f210-43fa-801f-813a29f5697c.png');
+  background-size: cover;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.user-thumbnail {
+  background-image: url('https://airglide.s3.amazonaws.com/playlistThumbnails/hq/1/d19e8f1b-f210-43fa-801f-813a29f5697c.png');
+  background-size: cover;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+
+/deep/ .mat-tab-label, /deep/ .mat-tab-link {
+  font-weight: bold;
+  font-size: 20px;
+  opacity: 1.0;
+}
+
+/deep/ .mat-tab-label-active {
+  opacity: 1.0 !important;
+}
+
+/deep/ .mat-tab-body {
+  padding-top: 20px;
+}
+
+.heart-icon {
+  color: #ff1c6d;
+}

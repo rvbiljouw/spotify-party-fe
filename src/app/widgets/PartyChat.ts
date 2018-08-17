@@ -4,9 +4,9 @@ import {
 } from "@angular/core";
 import {UserAccount} from "../models/UserAccount";
 import {Party} from "../models/Party";
-import {ChatMessage} from "../models/ChatMessage";
+import {ChatMessage, PartyChatMessage} from "../models/ChatMessage";
 import {EmojifyPipe} from "angular-emojify";
-import {WebSocketService} from "../services/WebSocketService";
+import {MessageEnvelope, WebSocketService} from "../services/WebSocketService";
 import {LoginService} from "../services/LoginService";
 import {EmojiPickerAppleSheetLocator} from "angular2-emoji-picker";
 import {EmojiPickerOptions} from "angular2-emoji-picker/lib-dist/services/emoji-picker.service";
@@ -31,7 +31,7 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input() party: Party;
   @Input() partyMembers: UserAccount[];
 
-  messages: ChatMessage[] = [];
+  messages: PartyChatMessage[] = [];
 
   @ViewChild("chatInput") chatInput: ElementRef;
 
@@ -54,10 +54,13 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   emojifyPipe: EmojifyPipe = new EmojifyPipe();
 
-  chatSubscription: Subscription;
 
   nowPlayingHeight = 0;
   chatContentHeight = 0;
+
+  onAddChatMessageHandler = (e) => this.onAddChatMessage(e);
+  onAddChatHistoryHandler = (e) => this.onAddChatHistory(e);
+  onPartyJoinedHandler = (e) => this.onPartyJoined(e);
 
   constructor(private webSocketService: WebSocketService,
               private loginService: LoginService,
@@ -75,47 +78,35 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.loggedIn = acc != null;
     });
 
-    this.chatSubscription = this.webSocketService.input.subscribe((next) => {
-      if (next == null) {
-        return;
-      }
+    this.webSocketService.registerHandler('ADD_CHAT_MESSAGE', this.onAddChatMessageHandler);
+    this.webSocketService.registerHandler('ADD_CHAT_HISTORY', this.onAddChatHistoryHandler);
+    this.webSocketService.registerHandler('JOIN_PARTY_RESPONSE', this.onPartyJoinedHandler);
 
-      const wsMessage = JSON.parse(next.data) as WSMessage;
-      switch (wsMessage.opcode) {
-        case "AUTH":
-          const success = wsMessage.body === 'true';
-          if (success) {
-            this.webSocketService.output.next(new MessageEvent("chat", {data: new WSMessage("VIEW_PARTY", this.party.id)}));
-          } else {
-            this.webSocketService.authenticate();
-          }
-          break;
-
-        case "CHAT_MSG":
-          const messageEvent = JSON.parse(wsMessage.body) as ChatMessage;
-
-          this.addChatMessage(messageEvent, false);
-          break;
-        case "CHAT_MSGS":
-          const messageEvents = JSON.parse(wsMessage.body) as ChatMessage[];
-
-          messageEvents.forEach(event => this.addChatMessage(event, true));
-          break;
-
-        default:
-          break;
-      }
-    });
   }
 
   ngOnDestroy() {
-    if (this.chatSubscription) {
-      this.chatSubscription.unsubscribe();
-    }
+    this.webSocketService.unregisterHandler('ADD_CHAT_MESSAGE', this.onAddChatMessageHandler);
+    this.webSocketService.unregisterHandler('ADD_CHAT_HISTORY', this.onAddChatHistoryHandler);
+    this.webSocketService.unregisterHandler('JOIN_PARTY_RESPONSE', this.onPartyJoinedHandler);
   }
 
   ngAfterViewChecked(): void {
     this.calculateHeight();
+  }
+
+  private onAddChatMessage(env: MessageEnvelope) {
+    let message = JSON.parse(env.body) as PartyChatMessage;
+    this.renderChatMessage(message, false);
+  }
+
+  private onAddChatHistory(env: MessageEnvelope) {
+    let messages = JSON.parse(env.body) as PartyChatMessage[];
+    messages.forEach(m => this.renderChatMessage(m, true));
+  }
+
+  private onPartyJoined(env: MessageEnvelope) {
+    this.messages = [];
+    this.webSocketService.postEnvelope('CHAT_HISTORY_REQUEST', {});
   }
 
   calculateHeight() {
@@ -155,11 +146,13 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.setLastMentionInputTime(Date.now());
   }
 
-  addChatMessage(message: ChatMessage, isBulk: boolean) {
+  renderChatMessage(message: PartyChatMessage, isBulk: boolean) {
     if (this.messages.length > 100) {
       this.messages.slice(1);
     }
 
+    console.log(this.account);
+    console.log(message);
     let _messageText = message.message;
     let users = [];
     while (_messageText.indexOf('@') !== -1 && users.indexOf(this.account.displayName) === -1) {
@@ -174,7 +167,7 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.spawnNotification(message.message, null, message.sender);
       }
 
-      message.mentioningMe = true;
+      message.mention = true;
     }
 
     this.messages = this.messages.concat(message);
@@ -202,13 +195,9 @@ export class PartyChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const trimmed = message.trim();
       if (trimmed.length > 0) {
         this.chatInputModel = '';
-        this.webSocketService.output.next(new MessageEvent("chat", {
-          data: new WSMessage("CHAT", {
-            message: message,
-            partyId: this.party.id
-          })
-        }));
         this.chatInput.nativeElement.value = "";
+
+        this.webSocketService.postEnvelope('SEND_CHAT_REQUEST', {message: message});
       }
     }
   }, 150);

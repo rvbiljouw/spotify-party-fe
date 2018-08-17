@@ -1,33 +1,36 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LoginService} from '../../services/LoginService';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {FormBuilder,} from '@angular/forms';
 import {routerTransition} from '../../utils/Animations';
 import {NotificationsService} from 'angular2-notifications';
 import {UserAccount} from "../../models/UserAccount";
-import {environment} from "../../../environments/environment";
 import {PartyService} from "../../services/PartyService";
 import {Party} from "../../models/Party";
-import {ListResponse} from "../../services/ApiService";
+import {Filter, FilterType, ListResponse} from "../../services/ApiService";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Genre} from "../../models/Genre";
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './Landing.html',
-  styleUrls: ['./Landing.scss'],
+  selector: 'app-genre',
+  templateUrl: './Genre.html',
+  styleUrls: ['./Genre.scss'],
   animations: [routerTransition()],
 })
-export class LandingComponent implements OnInit {
+export class GenreComponent implements OnInit {
   parties: ListResponse<Party> = new ListResponse([], 0, 0);
   account: UserAccount;
   loggedIn: boolean = false;
-  sidebarShowing: boolean = false;
 
-  spotifyEnabled: boolean = false;
-  youtubeEnabled: boolean = false;
 
-  genres: Genre[] = [];
+  @Input()
+  genre: Genre;
+
+  @Input()
+  youtubeEnabled: boolean;
+
+  @Input()
+  spotifyEnabled: boolean;
 
   constructor(private router: Router,
               private loginService: LoginService,
@@ -39,12 +42,24 @@ export class LandingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.partyService.getParties(2, 0).subscribe(result => {
-      this.parties = result;
-    });
+    let filters = [
+      new Filter(FilterType.EQUALS, "genres.id", this.genre.id),
+      new Filter(FilterType.EQUALS, "show_on_homepage", true),
+      new Filter(FilterType.EQUALS, "access", "PUBLIC")
+    ];
 
-    this.partyService.getGenres().subscribe(res => {
-      this.genres = res;
+    if (this.youtubeEnabled && !this.spotifyEnabled) {
+      filters.push(new Filter(FilterType.EQUALS, "type", "YOUTUBE"));
+    }
+
+    if (this.spotifyEnabled && !this.youtubeEnabled) {
+      filters.push(new Filter(FilterType.EQUALS, "type", "SPOTIFY"));
+    }
+
+    console.log(filters);
+
+    this.partyService.search(filters, 25, 0, {order: 'desc', sort: 'activeMemberCount'}).subscribe(res => {
+      this.parties = res;
     });
 
     this.loginService.account.subscribe(
@@ -56,20 +71,6 @@ export class LandingComponent implements OnInit {
         this.loggedIn = false;
       },
     );
-  }
-
-  toggleSpotify() {
-    this.spotifyEnabled = !this.spotifyEnabled;
-    this.partyService.getGenres().subscribe(res => {
-      this.genres = res;
-    });
-  }
-
-  toggleYouTube() {
-    this.youtubeEnabled = !this.youtubeEnabled;
-    this.partyService.getGenres().subscribe(res => {
-      this.genres = res;
-    });
   }
 
 }

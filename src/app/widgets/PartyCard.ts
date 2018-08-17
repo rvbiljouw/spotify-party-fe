@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {QueueService} from '../services/QueueService';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatDialog} from '@angular/material';
-import { NotificationsService } from 'angular2-notifications';
+import {NotificationsService} from 'angular2-notifications';
 import {Party} from "../models/Party";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Router} from "@angular/router";
@@ -29,6 +29,8 @@ export class PartyCardComponent implements OnInit {
   @Input() party: Party;
   active: string = "false";
 
+  @Input() viewType: string = "NOW_PLAYING";
+
   constructor(private queueService: QueueService,
               private domSanitizer: DomSanitizer,
               private notificationsService: NotificationsService,
@@ -42,8 +44,8 @@ export class PartyCardComponent implements OnInit {
   join() {
     this.router.navigate(['party', this.party.id])
       .catch(err => {
-      console.log(err);
-    }).then((bool) => {
+        console.log(err);
+      }).then((bool) => {
       console.log(bool);
     })
   }

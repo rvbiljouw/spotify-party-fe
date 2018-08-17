@@ -15,9 +15,15 @@
     <ul class="mat-sidenav-links">
       <li class="header">ACTIVITIES</li>
       <li>
+        <button mat-button [routerLink]="['/']">
+          <mat-icon class="button-icon">home</mat-icon>
+          Home
+        </button>
+      </li>
+      <li>
         <button mat-button [routerLink]="['/parties']">
           <mat-icon class="button-icon">search</mat-icon>
-          Search for a party
+          Search
         </button>
       </li>
       <li>

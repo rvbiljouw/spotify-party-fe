@@ -108,17 +108,21 @@
   padding: 0 20px 0 0px;
 }
 
+.dark-theme .search-overlay {
+  background-color: rgba(33, 33, 33, 0.9);
+}
+
+not(.dark-theme) .search-overlay {
+  background-color: rgba(252, 252, 252, 0.9);
+}
+
 .search-overlay {
   & {
-    background-color: rgba(246, 246, 246, 0.99);
     width: 100%;
     height: 100%;
     overflow-y: scroll;
   }
 
-  &.dark-theme {
-    background-color: rgba(33, 33, 33, 0.9);
-  }
 
   &::before {
     filter: blur(5px);

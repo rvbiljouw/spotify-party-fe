@@ -3,7 +3,7 @@
 @include mat-core();
 
 // Define the default theme (same as the example above).
-$primary: mat-palette($mat-blue);
+$primary: mat-palette($mat-red);
 $accent: mat-palette($mat-light-blue);
 $theme: mat-light-theme($primary, $accent);
 $dark-theme: mat-dark-theme($primary, $accent);
@@ -13,4 +13,8 @@ $dark-theme: mat-dark-theme($primary, $accent);
 
 .dark-theme {
   @include angular-material-theme($dark-theme);
+
+  /deep/ .search-overlay {
+    background-color: rgba(33, 33, 33, 0.9);
+  }
 }

@@ -1,0 +1,63 @@
+<div *ngIf="queue != null">
+
+  <div fxLayout="column" fxLayoutAlign="center center" *ngIf="queue.entries.length == 0">
+    <h3>The queue is empty</h3>
+    <h4>Start by selecting a song using the search field above</h4>
+  </div>
+
+  <table class="full-width" style="display: table; width: 100%;" *ngIf="queue.entries.length > 0"
+         fxShow="false"
+         fxShow.gt-sm="true">
+    <tr>
+      <th class="column-header">Song</th>
+      <th class="column-header">Requested by</th>
+      <th></th>
+    </tr>
+    <tr *ngFor="let entry of queue.entries">
+      <td>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+          <mat-icon mat-list-icon class="artist-thumbnail"
+                    [style.background-image]="getArtistThumbnail(entry, true)"></mat-icon>
+          <span [innerHTML]="formatEntryTitle(entry)"></span>
+        </div>
+      </td>
+      <td>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+          <mat-icon mat-list-icon class="user-thumbnail"
+                    [style.background-image]="getBackgroundImage(entry.member.displayPicture)"></mat-icon>
+          <span
+            class="clickable"
+            [routerLink]="['/profiles/', entry.member.id]">{{ entry.member.displayName }}</span>
+        </div>
+      </td>
+      <td>
+        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center">
+          <button mat-icon-button color="primary" (click)="vote(entry, true, false)">
+            <mat-icon>thumb_up</mat-icon>
+            <span style="position: relative; top: 2px; left: 4px">{{entry.upvotes}}</span>
+          </button>
+
+          <button mat-icon-button color="danger" (click)="vote(entry, false, false)">
+            <mat-icon>thumb_down</mat-icon>
+            <span style="position: relative; top: 2px; left: 4px">{{entry.downvotes}}</span>
+          </button>
+
+          <button mat-icon-button class="heart-icon" [disabled]="favouriting" (click)="onFavourite.emit(entry)">
+            <mat-icon matTooltip="Remove from favourites" *ngIf="isFavourited(entry)">favorite</mat-icon>
+            <mat-icon matTooltip="Add to favourites" *ngIf="!isFavourited(entry)">favorite_border</mat-icon>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <mat-list fxHide="false" fxHide.gt-sm="true">
+    <app-queue-list-item [entry]="entry"
+                         [favouriting]="favouriting"
+                         [isFavourited]="favourites.get(entry.songId) != null"
+                         [onFavourite]="onFavourite"
+                         [canVote]="true"
+                         (onVote)="onVote($event)"
+                         *ngFor="let entry of queue.entries"></app-queue-list-item>
+  </mat-list>
+</div>

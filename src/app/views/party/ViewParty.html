@@ -3,7 +3,7 @@
   <mat-toolbar color="primary" class="navbar">
     <mat-toolbar-row>
       <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
-        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <div fxFlex="100" fxFlex.xs="20" fxFlex.sm="20" fxFlex.gt-sm="50" fxLayoutAlign="start center" fxLayoutGap="10px">
           <button mat-icon-button (click)="sidenav.toggle()">
             <mat-icon>menu</mat-icon>
           </button>
@@ -12,7 +12,7 @@
           </div>
         </div>
 
-        <div fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
+        <div fxFlex="100" fxFlex.xs="80" fxFlex.sm="80" fxFlex.gt-sm="50" fxLayoutAlign="end center" fxLayoutGap="10px">
           <div class="search-field" fxLayoutAlign="start center">
             <mat-icon matPrefix matTooltip="Search for songs to add" matTooltipPosition="below" class="search-icon">search</mat-icon>
             <input name="searchTerm" matInput [formControl]="searchTerm" shouldPlaceholderFloat="false"
@@ -38,11 +38,11 @@
             <mat-icon>speaker_phone</mat-icon>
           </button>
 
-          <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="join(party.id, true)"
-                  matTooltip="Re-connect to party"
-                  matTooltipPosition="below" class="nav-btn">
-            <mat-icon class="button-icon">refresh</mat-icon>
-          </button>
+          <!--<button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="join(party.id, true)"-->
+                  <!--matTooltip="Re-connect to party"-->
+                  <!--matTooltipPosition="below" class="nav-btn">-->
+            <!--<mat-icon class="button-icon">refresh</mat-icon>-->
+          <!--</button>-->
 
           <button fxHide.lt-md="true" class="nav-btn" mat-icon-button (click)="openSettings()"
                   matTooltip="Party settings" matTooltipPosition="below" *ngIf="canAdmin()">
@@ -60,10 +60,10 @@
           </button>
 
           <mat-menu #mobileMenu="matMenu" yPosition="below" [overlapTrigger]="false">
-            <button mat-menu-item (click)="join(party.id, true)">
-              <mat-icon>refresh</mat-icon>
-              Reconnect to party
-            </button>
+            <!--<button mat-menu-item (click)="join(party.id, true)">-->
+              <!--<mat-icon>refresh</mat-icon>-->
+              <!--Reconnect to party-->
+            <!--</button>-->
             <button mat-menu-item (click)="openSettings()">
               <mat-icon>settings</mat-icon>
               Settings
@@ -76,23 +76,16 @@
               <mat-icon>exit_to_app</mat-icon>
               Quit party
             </button>
-            <ng-container *ngIf="loggedIn">
-              <mat-divider></mat-divider>
-
-              <button mat-menu-item [routerLink]="['/account']" routerLinkActive="active">
-                <mat-icon class="button-icon">account_circle</mat-icon>
-                Manage your account
-              </button>
-              <button mat-menu-item (click)="logout()">
-                <mat-icon class="button-icon">exit_to_app</mat-icon>
-                Log out
-              </button>
-            </ng-container>
           </mat-menu>
 
           <button fxHide.gt-sm="true" class="nav-btn" mat-icon-button [matMenuTriggerFor]="mobileMenu">
             <i class="fa fa-ellipsis-h"></i>
           </button>
+
+          <ng-container>
+            <app-notification-menu></app-notification-menu>
+            <app-account-menu></app-account-menu>
+          </ng-container>
         </div>
       </div>
     </mat-toolbar-row>
@@ -153,10 +146,9 @@
 
   <div class="content" fxLayoutAlign="center">
 
-    <div fxFlex="100" fxFlex.lt-sm="90" fxFlex.gt-md="75">
+    <div fxFlex="100" fxFlex.lt-md="98" fxFlex.gt-md="75">
 
-      <div style="padding: 20px;">
-
+      <div [style.padding]="isMobileView ? '10px' : '20px'">
         <mat-toolbar *ngIf="showNoSpotify" style="margin-bottom: 10px">
           <span>You need to link your Spotify Premium account to join this party, click
             <a class="link" [routerLink]="['/account']" [queryParams]="{tab: 'spotify'}">here</a> to get started.
@@ -169,9 +161,9 @@
             <mat-card id="app-now-playing-container" class="compact-card">
               <mat-card-header>
                 <mat-card-title class="party-title-container">
-                  <img *ngIf="partyType == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon"
+                  <img *ngIf="party.type == 'YOUTUBE'" src="/assets/youtube.png" class="button-icon party-icon"
                        alt="youtube">
-                  <img *ngIf="partyType == 'SPOTIFY'" src="/assets/spotify.png" class="button-icon party-icon"
+                  <img *ngIf="party.type == 'SPOTIFY'" src="/assets/spotify.png" class="button-icon party-icon"
                        alt="spotify">
                   <span>{{ party.name }}</span>
                 </mat-card-title>
@@ -222,16 +214,17 @@
                                 </ng-container>
                               </button>
                             </mat-list-item>
-                            <mat-list-item class="now-playing-list-item">
-                              <button class="skip-btn" mat-button color="accent"
-                                      (click)="vote(queue.nowPlaying, false, true)">
-                                <mat-icon class="button-icon">skip_next</mat-icon>
-                                Vote to skip
-                              </button>
-                            </mat-list-item>
-                            <mat-list-item class="skip-msg-item now-playing-list-item">
-                              <p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
-                            </mat-list-item>
+                            <!--<mat-list-item class="now-playing-list-item">-->
+                              <!--<button class="skip-btn" mat-button color="accent"-->
+                                                     <!--(click)="vote(queue.nowPlaying, false, true)">-->
+                                <!--<mat-icon class="button-icon">skip_next</mat-icon>-->
+                                <!--Vote to skip-->
+                              <!--</button>-->
+                            <!--</mat-list-item>-->
+                            <!--<mat-list-item class="skip-msg-item now-playing-list-item">-->
+                              <!--<p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>-->
+                            <!--</mat-list-item>-->
+                            <!-- TODO: Re-enable -->
                           </mat-list>
 
                           <div *ngIf="queue == null || queue.nowPlaying == null">
@@ -289,16 +282,17 @@
                                 </ng-container>
                               </button>
                             </mat-list-item>
-                            <mat-list-item>
-                              <button class="skip-btn" mat-button color="accent"
-                                      (click)="vote(queue.nowPlaying, false, true)">
-                                <mat-icon class="button-icon">skip_next</mat-icon>
-                                Vote to skip
-                              </button>
-                            </mat-list-item>
-                            <mat-list-item class="skip-msg-item">
-                              <p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>
-                            </mat-list-item>
+                            <!--<mat-list-item>-->
+                              <!--<button class="skip-btn" mat-button color="accent"-->
+                                      <!--(click)="vote(queue.nowPlaying, false, true)">-->
+                                <!--<mat-icon class="button-icon">skip_next</mat-icon>-->
+                                <!--Vote to skip-->
+                              <!--</button>-->
+                            <!--</mat-list-item>-->
+                            <!--<mat-list-item class="skip-msg-item">-->
+                              <!--<p mat-line class="skip-msg">{{getRemainingToSkipMessage()}}</p>-->
+                            <!--</mat-list-item>-->
+                            <!-- TODO: re-enable -->
                           </mat-list>
                         </div>
                       </div>
@@ -321,9 +315,27 @@
 
         <div fxLayout="row">
           <div [@opacityInOut] fxFlex="100" style="padding: 10px;">
-            <app-party-queue [favourites]="favourites" [favouriting]="favouriting"
-                             (onFavourite)="onSetFavourited($event)"
-                             [party]="party" [queue]="queue" [history]="history"></app-party-queue>
+
+            <mat-card>
+              <mat-card-content>
+                <mat-tab-group>
+                  <mat-tab label="Queue">
+                    <app-party-queue [favourites]="favourites" [favouriting]="favouriting"
+                                     (onFavourite)="onSetFavourited($event)"
+                                     [party]="party" [queue]="queue"></app-party-queue>
+                  </mat-tab>
+                  <mat-tab label="History">
+                    <app-party-history [favourites]="favourites" [favouriting]="favouriting"
+                                     (onFavourite)="onSetFavourited($event)"
+                                     [party]="party" [history]="history"></app-party-history>
+                  </mat-tab>
+                  <mat-tab label="Settings">
+                    <app-party-settings [party]="party"></app-party-settings>
+                  </mat-tab>
+                </mat-tab-group>
+              </mat-card-content>
+            </mat-card>
+
           </div>
         </div>
       </div>
